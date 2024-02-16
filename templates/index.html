@@ -12,9 +12,9 @@
                 var clientId = "{{ client_id }}";
                 var redirectUri = "{{ redirect_uri }}";
                 var authUrl = "https://osu.ppy.sh/oauth/authorize?client_id=" + clientId + "&redirect_uri=" + encodeURIComponent(redirectUri) + "&response_type=code&scope=public+identify&state=randomval";
-            })
 
-            window.location.href = authUrl;
+                window.location.href = authUrl;
+            })
         </script>
     </body>
 </html>
