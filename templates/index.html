@@ -1,20 +1,7 @@
-<!DOCTYPE html>
+{% extends "layout.html" %}
 
-<html lang="en">
-    <head>
-        <meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1">
-        <title>auth button</title>
-    </head>
-    <body>
-        <button id="authButton">Authorize</button>
-        <script>
-            document.getElementById("authButton").addEventListener("click", function() {
-                var clientId = "{{ client_id }}";
-                var redirectUri = "{{ redirect_uri }}";
-                var authUrl = "https://osu.ppy.sh/oauth/authorize?client_id=" + clientId + "&redirect_uri=" + encodeURIComponent(redirectUri) + "&response_type=code&scope=public+identify&state=randomval";
+{% block body %}
 
-                window.location.href = authUrl;
-            })
-        </script>
-    </body>
-</html>
+<a href="/authorization"><button>Authorize</button></a>
+
+{% endblock %}
