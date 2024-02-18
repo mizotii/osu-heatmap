@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import requests, os
 
 app = Flask(__name__)
@@ -27,7 +27,7 @@ def authorize():
         "state": "randomval"
     }
     authorization_response = requests.get(authorization_url, params=authorization_params)
-    authorization_code = requests.args.get("code")
+    authorization_code = request.args.get("code")
 
     token_url = "https://osu.ppy.sh/oauth/token"
     token_data = {
