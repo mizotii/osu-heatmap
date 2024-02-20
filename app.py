@@ -1,20 +1,15 @@
+from config import Config
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 import requests, os
 
 # app config
 app = Flask(__name__)
+app.config.from_object(Config)
 
 # db config
-OH_DB_URI = os.environ.get("OH_DB_URI")
-app.config["SQLALCHEMY_DATABASE_URI"] = OH_DB_URI
+app.config["SQLALCHEMY_DATABASE_URI"] = Config.OH_DB_URI
 db = SQLAlchemy(app)
-
-CLIENT_ID = os.environ.get("OH_CLIENT_ID")
-CLIENT_SECRET = os.environ.get("OH_CLIENT_SECRET")
-REDIRECT_URI = "http://localhost:5000/callback"
-AUTH_URL = f"https://osu.ppy.sh/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=public+identify&state=randomval"
-TOKEN_URL = "https://osu.ppy.sh/oauth/token"
 
 @app.route("/")
 def home():
@@ -23,7 +18,7 @@ def home():
 
 @app.route("/authorize")
 def authorize():
-    return redirect(AUTH_URL)
+    return redirect(Config.AUTH_URL)
 
 
 @app.route("/callback")
@@ -35,20 +30,19 @@ def callback():
             "Content-Type": "application/x-www-form-urlencoded"
         }
         token_data = {
-            "client_id": CLIENT_ID,
-            "client_secret": CLIENT_SECRET,
+            "client_id": Config.CLIENT_ID,
+            "client_secret": Config.CLIENT_SECRET,
             "code": code,
             "grant_type": "authorization_code",
-            "redirect_uri": REDIRECT_URI
+            "redirect_uri": Config.REDIRECT_URI
         }
-        token_response = requests.post(TOKEN_URL, headers=token_headers, data=token_data).json()
+        token_response = requests.post(Config.TOKEN_URL, headers=token_headers, data=token_data).json()
+        db.session.add(token_response)
+        db.session.commit()
         
-        return redirect("/store_token")
-
-    
-@app.route("/store_token", methods=["POST"])
-def store_token():
-    return
+        return redirect("/success.html")
+    else:
+        return redirect("/failure.html")
 
 
 if __name__ == "__main__":
