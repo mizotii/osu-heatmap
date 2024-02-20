@@ -1,4 +1,3 @@
 # osu-heatmap
-- exchange the token for data
-- success / failure notification, return to homepage button on each
 - dynamically generate userpages
+- get some test osu! data up on my own said generated userpage
