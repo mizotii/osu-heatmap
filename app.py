@@ -1,15 +1,17 @@
 from config import Config
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
+from models import User, APIToken
 import requests, os
 
-# app config
+
+# app / db config
 app = Flask(__name__)
 app.config.from_object(Config)
-
-# db config
 app.config["SQLALCHEMY_DATABASE_URI"] = Config.OH_DB_URI
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+
 
 @app.route("/")
 def home():
@@ -37,7 +39,10 @@ def callback():
             "redirect_uri": Config.REDIRECT_URI
         }
         token_response = requests.post(Config.TOKEN_URL, headers=token_headers, data=token_data).json()
-        db.session.add(token_response)
+        access_id = token_response.get("access_token")
+        refresh_id = token_response.get("refresh_token")
+        new_token = APIToken(access_id=access_id, refresh_id=refresh_id)
+        db.session.add(new_token)
         db.session.commit()
         
         return redirect("/success.html")
