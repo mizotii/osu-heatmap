@@ -1,15 +1,18 @@
-from flask import Flask, jsonify, redirect, render_template, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask_sqlalchemy import SQLAlchemy
 import requests, os
 
 # app config
 app = Flask(__name__)
 
-# need to reconfigure these when i go live
-CLIENT_ID = os.environ.get("CLIENT_ID")
-CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
-REDIRECT_URI = "http://localhost:5000"
+# db config
+OH_DB_URI = os.environ.get("OH_DB_URI")
+app.config["SQLALCHEMY_DATABASE_URI"] = OH_DB_URI
+db = SQLAlchemy(app)
 
-# can be kept
+CLIENT_ID = os.environ.get("OH_CLIENT_ID")
+CLIENT_SECRET = os.environ.get("OH_CLIENT_SECRET")
+REDIRECT_URI = "http://localhost:5000/callback"
 AUTH_URL = f"https://osu.ppy.sh/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=public+identify&state=randomval"
 TOKEN_URL = "https://osu.ppy.sh/oauth/token"
 
@@ -40,8 +43,13 @@ def callback():
         }
         token_response = requests.post(TOKEN_URL, headers=token_headers, data=token_data).json()
         
-        return redirect("/success.html")
+        return redirect("/store_token")
 
     
+@app.route("/store_token", methods=["POST"])
+def store_token():
+    return
+
+
 if __name__ == "__main__":
     app.run(debug=True)
