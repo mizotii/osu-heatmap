@@ -1,5 +1,6 @@
 from config import Config
 from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from models import User, APIToken
 import requests, os
@@ -11,6 +12,7 @@ app.config.from_object(Config)
 app.config["SQLALCHEMY_DATABASE_URI"] = Config.OH_DB_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 @app.route("/")
@@ -45,9 +47,9 @@ def callback():
         db.session.add(new_token)
         db.session.commit()
         
-        return redirect("/success.html")
+        return redirect("success.html")
     else:
-        return redirect("/failure.html")
+        return redirect("templates/failure.html")
 
 
 if __name__ == "__main__":
