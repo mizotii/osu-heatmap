@@ -1,8 +1,8 @@
 from config import Config
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from models import User, APIToken
+from models import db, User, APIToken
 import requests, os
 
 
@@ -11,8 +11,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 app.config["SQLALCHEMY_DATABASE_URI"] = Config.OH_DB_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+db.init_app(app)
+migrate = Migrate(app, db, compare_type=True)
 
 
 @app.route("/")
@@ -43,7 +43,17 @@ def callback():
         token_response = requests.post(Config.TOKEN_URL, headers=token_headers, data=token_data).json()
         access_id = token_response.get("access_token")
         refresh_id = token_response.get("refresh_token")
-        new_token = APIToken(access_id=access_id, refresh_id=refresh_id)
+        user_headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": f"Bearer {access_id}"
+        }
+        user_response = requests.get(Config.REQUEST_USER_URL, headers=user_headers).json()
+        user_id = user_response.get("id")
+        username = user_response.get("username")
+        new_token = APIToken(access_id=access_id, refresh_id=refresh_id, user_id=user_id)
+        new_user = User(id=user_id, username=username)
+        db.session.add(new_user)
         db.session.add(new_token)
         db.session.commit()
         

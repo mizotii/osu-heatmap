@@ -8,3 +8,4 @@ class Config:
     AUTH_URL = f"https://osu.ppy.sh/oauth/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=public+identify&state=randomval"
     TOKEN_URL = "https://osu.ppy.sh/oauth/token"
     OH_DB_URI = os.environ.get("OH_DB_URI")
+    REQUEST_USER_URL = "https://osu.ppy.sh/api/v2/me"
