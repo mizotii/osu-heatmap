@@ -2,25 +2,31 @@
     import { onMount } from 'svelte';
 
     async function authRedirect() {
-        const authURL = await fetch('/config/endpoints/AUTHORIZATION_URL');
-        const clientID = await fetch('/config/client_credentials/CLIENT_ID');
-        const redirectURI = await fetch('config/endpoints/REDIRECT_URI');
+        try {
+            const configData = await fetch('/config')
+                .then(response => response.json());
 
-        const url = new URL(
-            authURL
-        );
+            // debug
+            console.log(configData.endpoints.AUTHORIZATION_URL);
 
-        const params = {
-            'client_id': clientID,
-            'redirect_uri': redirectURI,
-            'response_type': 'code',
-            'scope': 'public_identify',
-            'state': 'randomval',
+            const url = new URL(
+                configData.endpoints.AUTHORIZATION_URL
+            );
+
+            const params = {
+                'client_id': configData.client_credentials.CLIENT_ID,
+                'redirect_uri': configData.client_credentials.REDIRECT_URI,
+                'response_type': 'code',
+                'scope': 'public identify',
+                'state': 'randomval',
+            }
+            Object.keys(params)
+                .forEach(key => url.searchParams.append(key, params[key]));
+
+            window.location.href = url;
+        } catch (error) {
+            console.error('Error:', error);
         }
-        Object.keys(params)
-            .forEach(key => url.searchParams.append(key, params[key]));
-
-        window.location.href = url;
     }
 </script>
 
