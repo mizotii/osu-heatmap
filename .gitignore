@@ -1,5 +1,6 @@
 client/public/build/
 client/scripts/
+/node_modules/
 rollup.config.js
 
 .DS_Store
