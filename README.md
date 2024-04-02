@@ -1,1 +1,4 @@
-made using Svelte for frontend, Flask for backend
+Svelte frontend, Flask backend
+
+working on:
+db
