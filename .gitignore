@@ -2,8 +2,6 @@ client/node_modules/
 /node_modules/
 client/public/build/
 client/scripts/
-package.json
-package-lock.json
 rollup.config.js
 
 .DS_Store
