@@ -1,7 +1,9 @@
-from config import create_auth_url, database, get_token_data, store_token
+import requests
+from config import client_credentials, constraints, database, endpoints, get_headers
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
-from models import db
+from models import db, User
+from urllib.parse import urlencode, urljoin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = database['DB_URI']
@@ -30,6 +32,49 @@ def callback():
         return redirect("/")
     except Exception as e:
         return jsonify({'Error': str(e)})
+
+def create_auth_url():
+    payload = {
+        'client_id': client_credentials['CLIENT_ID'],
+        'redirect_uri': endpoints['REDIRECT_URI'],
+        'response_type': 'code',
+        'scope': 'public identify',
+        'state': 'randomval',
+    }
+    query = urlencode(payload)
+    url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
+    return url
+
+def get_this_user(access_token):
+    headers=get_headers(access_token)
+    response = requests.get(endpoints['BASE_URL'] + endpoints['THIS_USER'], headers=get_headers(access_token))
+    return response.json()
+
+def get_token_data(code):
+    payload = {
+        'client_id': client_credentials['CLIENT_ID'],
+        'client_secret': client_credentials['CLIENT_SECRET'],
+        'code': code,
+        'grant_type': 'authorization_code',
+        'redirect_uri': endpoints['REDIRECT_URI'],
+    }
+    response = requests.post(endpoints['BASE_URL'] + endpoints['TOKEN'], headers=get_headers(), data=payload)
+    return response.json()
+    
+def store_token(token_data):
+    access_token = token_data['access_token']
+    user = get_this_user(access_token)
+    db.session.add(
+        User(
+            id=user.get('id'),
+            name=user.get('username'),
+            access=access_token,
+            expires=token_data['expires_in'],
+            refresh=token_data['refresh_token'],
+            type=token_data['token_type']
+        )
+    )
+    return
 
 if __name__ == "__main__":
     app.run(debug = True)
