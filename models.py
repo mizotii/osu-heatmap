@@ -22,3 +22,11 @@ class Score(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(DateTime)
     accuracy = db.Column(db.Float)
+    # other stats like 300s 100s 50s misses score rank etc
+
+class Square(db.Model):
+    __tablename__ = 'squares'
+
+    date = db.Column(DateTime, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('scores.user_id'))
+    notes_clicked = db.Column(db.Integer)
