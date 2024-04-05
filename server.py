@@ -1,3 +1,5 @@
+"""backend"""
+
 import requests
 from config import client_credentials, database, endpoints, get_headers
 from flask import Flask, jsonify, redirect, request, send_from_directory
@@ -22,16 +24,13 @@ def home(path):
 def auth_redirect():
     url = create_auth_url()
     return jsonify(url)
-    
+
 @app.route("/callback")
 def callback():
-    try:
-        code = request.args.get('code')
-        token_data = get_token_data(code)
-        store_token(token_data)
-        return redirect("/")
-    except Exception as e:
-        return jsonify({'Error': str(e)})
+    code = request.args.get('code')
+    token_data = get_token_data(code)
+    store_token(token_data)
+    return redirect("/")
 
 def create_auth_url():
     payload = {
@@ -46,8 +45,10 @@ def create_auth_url():
     return url
 
 def get_this_user(access_token):
-    headers=get_headers(access_token)
-    response = requests.get(endpoints['BASE_URL'] + endpoints['THIS_USER'], headers=get_headers(access_token))
+    response = requests.get(
+        endpoints['BASE_URL'] + endpoints['THIS_USER'],
+        headers=get_headers(access_token)
+    )
     return response.json()
 
 def get_token_data(code):
@@ -58,9 +59,13 @@ def get_token_data(code):
         'grant_type': 'authorization_code',
         'redirect_uri': endpoints['REDIRECT_URI'],
     }
-    response = requests.post(endpoints['BASE_URL'] + endpoints['TOKEN'], headers=get_headers(), data=payload)
+    response = requests.post(
+        endpoints['BASE_URL'] + endpoints['TOKEN'],
+        headers=get_headers(),
+        data=payload
+    )
     return response.json()
-    
+
 def store_token(token_data):
     access_token = token_data['access_token']
     user = get_this_user(access_token)
@@ -74,7 +79,6 @@ def store_token(token_data):
             type=token_data['token_type']
         )
     )
-    return
 
 if __name__ == "__main__":
     app.run(debug = True)

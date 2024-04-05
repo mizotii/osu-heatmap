@@ -30,3 +30,4 @@ class Square(db.Model):
     date = db.Column(DateTime, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('scores.user_id'))
     notes_clicked = db.Column(db.Integer)
+    
