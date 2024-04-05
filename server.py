@@ -1,5 +1,5 @@
 import requests
-from config import client_credentials, constraints, database, endpoints, get_headers
+from config import client_credentials, database, endpoints, get_headers
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from models import db, User
