@@ -13,10 +13,8 @@ services:
       context: .
     ports:
       - 8000:8000
-    environment:
-      - CLIENT_ID=30326
-      - CLIENT_SECRET=M1O2KnOjq4DQciwDMQC1IyLnlKLpNXNZUTOHFsTq
-      - DB_URI=mysql://root:Mcgta101$$@localhost/osu_heatmap
+    env_file:
+      - .env
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
