@@ -6,7 +6,9 @@ client_credentials = {
 }
 
 constraints = {
-    'MAX_USER_LENGTH': 15
+    'MAX_TOKEN_LENGTH': 2000,
+    'MAX_TYPE_LENGTH': 6,
+    'MAX_USER_LENGTH': 15,
 }
 
 database = {

@@ -5,15 +5,18 @@ from sqlalchemy import DateTime
 
 db = SQLAlchemy()
 
+def init_db(app):
+    db.init_app(app)
+
 class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(constraints['MAX_USER_LENGTH']))
-    access = db.Column(db.String, primary_key=True)
+    access = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
     expires = db.Column(db.Integer)
-    refresh = db.Column(db.String)
-    type = db.Column(db.String)
+    refresh = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
+    type = db.Column(db.String(constraints['MAX_TYPE_LENGTH']))
 
 class Score(db.Model):
     __tablename__ = 'scores'
@@ -21,13 +24,7 @@ class Score(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(DateTime)
+    notes = db.Column(db.Integer)
     accuracy = db.Column(db.Float)
     # other stats like 300s 100s 50s misses score rank etc
-
-class Square(db.Model):
-    __tablename__ = 'squares'
-
-    date = db.Column(DateTime, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('scores.user_id'))
-    notes_clicked = db.Column(db.Integer)
     

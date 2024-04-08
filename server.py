@@ -4,13 +4,15 @@ import requests
 from config import client_credentials, database, endpoints, get_headers
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
-from models import db, User
+from flask_migrate import Migrate
+from models import init_db, db, User
 from urllib.parse import urlencode, urljoin
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = database['DB_URI']
-CORS(app, resources={r"/config": {"origins": "http://localhost:8080"}})
-db.init_app(app)
+init_db(app)
+migrate = Migrate(app, db)
+CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://localhost:8080"]}})
 
 @app.route("/")
 def base():
@@ -81,4 +83,4 @@ def store_token(token_data):
     )
 
 if __name__ == "__main__":
-    app.run(debug = True)
+    app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  server:
+    build: .
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    env_file: .env
+
+  db:
+    build:
+      context: ./db
+      args:
+        env_file: .env
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: osu_heatmap
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - data:/var/lib/mysql
+
+volumes:
+  data:

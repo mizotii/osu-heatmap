@@ -9,6 +9,18 @@
 ARG PYTHON_VERSION=3.12.2
 FROM python:${PYTHON_VERSION}-slim as base
 
+# dependencies, specifically for mysqlclient
+RUN apt-get update -y && \
+    apt-get install -y \
+    python3-dev \
+    build-essential \
+    default-libmysqlclient-dev \
+    pkg-config
+
+# dotenv reader
+ARG env_file
+ENV $(cat ${ENV_FILE} | xargs)
+
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -45,7 +57,7 @@ USER appuser
 COPY . .
 
 # Expose the port that the application listens on.
-EXPOSE 8000
+EXPOSE 5000
 
 # Run the application.
 CMD python server.py
