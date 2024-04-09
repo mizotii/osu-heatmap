@@ -20,14 +20,17 @@ endpoints = {
     'REDIRECT_URI': 'http://localhost:5000/callback',
     'AUTHORIZATION': 'oauth/authorize',
     'TOKEN': 'oauth/token',
-    'THIS_USER': '/api/v2/me/',
+    'THIS_USER': 'api/v2/me/',
 }
 
-def get_headers(token=None):
+def get_headers(base, token=None):
     headers =  {
         'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
     }
+    if base:
+        headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    else:
+        headers['Content-Type'] = 'application/json'
     if token:
         headers['Authorization'] = f'Bearer {token}'
     return headers
