@@ -22,6 +22,10 @@ def base():
 def home(path):
     return send_from_directory('client/public', path)
 
+@app.route("/profile/<id>")
+def profile():
+    return
+
 @app.route("/authorize")
 def auth_redirect():
     url = create_auth_url()
@@ -49,7 +53,7 @@ def create_auth_url():
 def get_this_user(access_token):
     response = requests.get(
         endpoints['BASE_URL'] + endpoints['THIS_USER'],
-        headers=get_headers(access_token)
+        headers=get_headers(False, access_token)
     )
     return response.json()
 
@@ -63,7 +67,7 @@ def get_token_data(code):
     }
     response = requests.post(
         endpoints['BASE_URL'] + endpoints['TOKEN'],
-        headers=get_headers(),
+        headers=get_headers(True),
         data=payload
     )
     return response.json()
@@ -81,6 +85,7 @@ def store_token(token_data):
             type=token_data['token_type']
         )
     )
+    db.session.commit()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
