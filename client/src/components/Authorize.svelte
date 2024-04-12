@@ -1,6 +1,4 @@
 <script>
-    import { onMount } from 'svelte';
-
     async function authRedirect() {
         try {
             const response = await fetch('/authorize');
