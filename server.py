@@ -6,6 +6,7 @@ from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import init_db, db, User
+from sqlalchemy import exists, select
 from urllib.parse import urlencode, urljoin
 
 app = Flask(__name__)
@@ -23,8 +24,21 @@ def home(path):
     return send_from_directory('client/public', path)
 
 @app.route("/profile/<id>")
-def profile():
-    return
+def profile(id):
+    return get_profile(id)
+
+def get_profile(id):
+    profile = {}
+    profile['name'] = db.first_or_404(select(User.name).where(User.id == id))
+    return send_from_directory('client/public', 'index.html')
+
+@app.route("/api/profile/<id>")
+def fetch_profile(id):
+    return jsonify()
+
+@app.route("/handle_search/<username>")
+def handle_search(username):
+    return jsonify(userExists=user_exists(username))
 
 @app.route("/authorize")
 def auth_redirect():
@@ -75,17 +89,22 @@ def get_token_data(code):
 def store_token(token_data):
     access_token = token_data['access_token']
     user = get_this_user(access_token)
-    db.session.add(
-        User(
-            id=user.get('id'),
-            name=user.get('username'),
-            access=access_token,
-            expires=token_data['expires_in'],
-            refresh=token_data['refresh_token'],
-            type=token_data['token_type']
+    username = user.get('username')
+    if not user_exists(username):
+        db.session.add(
+            User(
+                id=user.get('id'),
+                name=username,
+                access=access_token,
+                expires=token_data['expires_in'],
+                refresh=token_data['refresh_token'],
+                type=token_data['token_type']
+            )
         )
-    )
-    db.session.commit()
+        db.session.commit()
+
+def user_exists(username):
+    return db.session.query(exists().where(User.name == username)).scalar()
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
