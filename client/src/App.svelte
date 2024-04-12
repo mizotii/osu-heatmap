@@ -1,9 +1,11 @@
 <script>
 	import Authorize from './components/Authorize.svelte';
+	import Search from './components/Search.svelte';
 </script>
 
 <main>
 	<Authorize />
+	<Search />
 </main>
 
 <style>
