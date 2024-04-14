@@ -8,16 +8,6 @@
         userId = window.location.pathname.split('/').pop()
     }
 
-    async function fetchProfile() {
-        try {
-            const response = await fetch(`/profile/${userId}`);
-            const data = await response.json();
-            user = data.name;
-        } catch (error) {
-            console.log("Error:", error)
-        }
-    }
-
     onMount (async () => {
         getUserId();
         fetchProfile();
