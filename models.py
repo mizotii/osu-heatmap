@@ -26,5 +26,6 @@ class Score(db.Model):
     timestamp = db.Column(DateTime)
     notes = db.Column(db.Integer)
     accuracy = db.Column(db.Float)
+    rank = db.Column(db.Integer)
     # other stats like 300s 100s 50s misses score rank etc
     
