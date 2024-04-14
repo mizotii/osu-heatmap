@@ -1,7 +1,7 @@
 """backend"""
 
 import requests
-from config import client_credentials, database, endpoints, get_headers
+from config import client_credentials, database, endpoints, errors, get_headers
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -23,22 +23,9 @@ def base():
 def home(path):
     return send_from_directory('client/public', path)
 
-@app.route("/profile/<id>")
-def profile(id):
-    return get_profile(id)
-
-def get_profile(id):
-    profile = {}
-    profile['name'] = db.first_or_404(select(User.name).where(User.id == id))
-    return send_from_directory('client/public', 'index.html')
-
-@app.route("/api/profile/<id>")
-def fetch_profile(id):
-    return jsonify()
-
-@app.route("/handle_search/<username>")
-def handle_search(username):
-    return jsonify(userExists=user_exists(username))
+@app.route('/error/<type>')
+def error(type):
+    return
 
 @app.route("/authorize")
 def auth_redirect():
@@ -52,6 +39,17 @@ def callback():
     store_token(token_data)
     return redirect("/")
 
+@app.route("/u/<username>")
+def profile_redirect(username):
+    if user_exists(username):
+        return redirect(f"/u/{get_id_from_username(username)}")
+    else:
+        return redirect
+
+@app.route("/u/<int:id>")
+def generate_profile(id):
+    return
+
 def create_auth_url():
     payload = {
         'client_id': client_credentials['CLIENT_ID'],
@@ -63,6 +61,9 @@ def create_auth_url():
     query = urlencode(payload)
     url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
     return url
+
+def get_id_from_username(username):
+    return db.session.execute(select(User.id).where(User.name == username))
 
 def get_this_user(access_token):
     response = requests.get(
