@@ -1,12 +1,18 @@
 <script>
+  import { navigate } from "svelte-routing";
     import Search from "svelte-search";
 
     let value = "";
 
     async function handleSearch(username) {
-        const response = await fetch(`/handle_search/${username}`);
+        const response = await fetch(`/api/search/${username}`);
         const data = await response.json();
-
+        console.log(data.USER_FOUND);
+        if (!data.USER_FOUND) {
+            navigate(`/profile/${username}`);
+        } else {
+            navigate(`/profile/${data.USER_ID}`);
+        }
     }
 </script>
 
