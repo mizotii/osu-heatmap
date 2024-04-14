@@ -23,6 +23,10 @@ endpoints = {
     'THIS_USER': 'api/v2/me/',
 }
 
+errors = {
+    'USER_NOT_FOUND': 'user not found!',
+}
+
 def get_headers(base, token=None):
     headers =  {
         'Accept': 'application/json',
