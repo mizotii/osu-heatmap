@@ -1,7 +1,7 @@
 """backend"""
 
 import requests
-from config import client_credentials, database, endpoints, errors, get_headers
+from config import client_credentials, database, endpoints, errors, get_headers, user_search
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -23,14 +23,24 @@ def base():
 def home(path):
     return send_from_directory('client/public', path)
 
-@app.route('/error/<type>')
-def error(type):
-    return
-
 @app.route("/authorize")
 def auth_redirect():
     url = create_auth_url()
     return jsonify(url)
+
+@app.route("/api/search/<username>")
+def search(username):
+    response = user_search
+    id = get_id_from_username(username)
+    if id != None:
+        response['USER_FOUND'] = True
+        response['USER_ID'] = id
+    return jsonify(response)
+
+@app.route("api/profile/<id>")
+def profile(id):
+
+    return
 
 @app.route("/callback")
 def callback():
@@ -38,17 +48,6 @@ def callback():
     token_data = get_token_data(code)
     store_token(token_data)
     return redirect("/")
-
-@app.route("/u/<username>")
-def profile_redirect(username):
-    if user_exists(username):
-        return redirect(f"/u/{get_id_from_username(username)}")
-    else:
-        return redirect
-
-@app.route("/u/<int:id>")
-def generate_profile(id):
-    return
 
 def create_auth_url():
     payload = {
@@ -63,7 +62,7 @@ def create_auth_url():
     return url
 
 def get_id_from_username(username):
-    return db.session.execute(select(User.id).where(User.name == username))
+    return db.session.execute(select(User.id).where(User.name == username)).scalar()
 
 def get_this_user(access_token):
     response = requests.get(
@@ -86,6 +85,9 @@ def get_token_data(code):
         data=payload
     )
     return response.json()
+
+def get_user_rank(access_token):
+    return
 
 def store_token(token_data):
     access_token = token_data['access_token']
