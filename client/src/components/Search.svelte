@@ -6,9 +6,7 @@
     async function handleSearch(username) {
         const response = await fetch(`/handle_search/${username}`);
         const data = await response.json();
-        if (!data.userExists) {
-            
-        }
+
     }
 </script>
 
