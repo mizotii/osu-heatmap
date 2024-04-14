@@ -21,7 +21,7 @@
 		<Route path='/profile/:id' let:params>
 			<Profile id='{params.id}' />
 		</Route>
-		<Route path='/error' />
+		<Route path='/error' component={Error}/>
 	</div>
 </Router>
 
