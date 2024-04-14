@@ -27,6 +27,16 @@ errors = {
     'USER_NOT_FOUND': 'user not found!',
 }
 
+profile = {
+    'USERNAME': 'null',
+    'RANK': 'null',
+}
+
+user_search = {
+    'USER_FOUND': False,
+    'USER_ID': 'null',
+}
+
 def get_headers(base, token=None):
     headers =  {
         'Accept': 'application/json',
