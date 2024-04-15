@@ -30,6 +30,7 @@ errors = {
 profile = {
     'USERNAME': 'null',
     'RANK': 'null',
+    'SCORES': 'null',
 }
 
 user_search = {
