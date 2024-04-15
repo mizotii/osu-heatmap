@@ -1,19 +1,27 @@
 <script>
-  import { navigate } from "svelte-routing";
+    import { onDestroy } from "svelte";
+    import { setContext } from "svelte";
+    import { navigate } from "svelte-routing";
     import Search from "svelte-search";
+    import { userContext } from "../UserContext.svelte";
 
     let value = "";
+    let isUserValid;
 
     async function handleSearch(username) {
         const response = await fetch(`/api/search/${username}`);
         const data = await response.json();
-        console.log(data.USER_FOUND);
-        if (!data.USER_FOUND) {
+        isUserValid = data.USER_FOUND;
+        if (!isUserValid) {
             navigate(`/profile/${username}`);
         } else {
             navigate(`/profile/${data.USER_ID}`);
         }
     }
+
+    onDestroy(() => {
+
+    });
 </script>
 
 <Search label="field" hideLabel bind:value on:submit={handleSearch(value)} placeholder="player" />
