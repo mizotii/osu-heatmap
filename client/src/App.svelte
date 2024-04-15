@@ -15,7 +15,6 @@
 <Router {url}>
 	<nav>
 		<Link to='/'>Home</Link>
-		<Link to='/profile'>Profile</Link>
 	</nav>
 	<div>
 		<Route path='/profile/:id' let:params>
