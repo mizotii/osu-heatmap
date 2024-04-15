@@ -13,6 +13,7 @@ class User(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(constraints['MAX_USER_LENGTH']))
+    rank = db.Column(db.Integer)
     access = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
     expires = db.Column(db.Integer)
     refresh = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
@@ -26,6 +27,5 @@ class Score(db.Model):
     timestamp = db.Column(DateTime)
     notes = db.Column(db.Integer)
     accuracy = db.Column(db.Float)
-    rank = db.Column(db.Integer)
     # other stats like 300s 100s 50s misses score rank etc
     
