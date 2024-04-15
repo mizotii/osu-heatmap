@@ -1,11 +1,11 @@
 """backend"""
 
 import requests
-from config import client_credentials, database, endpoints, errors, get_headers, user_search
+from config import client_credentials, database, endpoints, errors, get_headers, profile, user_search
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import init_db, db, User
+from models import init_db, db, Score, User
 from sqlalchemy import exists, select
 from urllib.parse import urlencode, urljoin
 
@@ -37,10 +37,12 @@ def search(username):
         response['USER_ID'] = id
     return jsonify(response)
 
-@app.route("api/profile/<id>")
+@app.route("/api/profile/<id>")
 def profile(id):
-
-    return
+    response = profile
+    response['USERNAME'], response['RANK'] = db.session.query([User.name, User.rank]).where(User.id == id).scalar()
+    response['SCORES'] = db.session.query(Score).where(Score.user_id == id).fetchall()
+    return jsonify(response)
 
 @app.route("/callback")
 def callback():
@@ -62,7 +64,7 @@ def create_auth_url():
     return url
 
 def get_id_from_username(username):
-    return db.session.execute(select(User.id).where(User.name == username)).scalar()
+    return db.session.query(User.id).where(User.name == username).scalar()
 
 def get_this_user(access_token):
     response = requests.get(
@@ -86,8 +88,8 @@ def get_token_data(code):
     )
     return response.json()
 
-def get_user_rank(access_token):
-    return
+def get_username_from_id(id):
+    return db.session.query(User.name).where(User.id == id).scalar()
 
 def store_token(token_data):
     access_token = token_data['access_token']
