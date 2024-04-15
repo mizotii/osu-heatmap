@@ -3,7 +3,7 @@
     import { setContext } from "svelte";
     import { navigate } from "svelte-routing";
     import Search from "svelte-search";
-    import { userContext } from "../UserContext.svelte";
+    import { userContext } from "../contexts/UserContext.svelte";
 
     let value = "";
     let isUserValid;
