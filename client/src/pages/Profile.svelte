@@ -1,9 +1,6 @@
 <script>
-    import { onMount, setContext } from "svelte";
-    import { userContext } from "../contexts/UserContext.svelte";
-    import { useContext } from "svelte";
-
-    const { isUserValid } = useContext(userContext);
+    import { onMount, onDestroy } from "svelte";
+    import { isUserValid } from "../stores/profile";
 
     let userId;
     let username;
@@ -11,7 +8,7 @@
     let scores = {};
 
     async function fetchProfile() {
-        if (isUserValid) {
+        if (true) {
             userId = window.location.pathname.split('/').pop();
             const response = await fetch(`/api/profile/${userId}`);
             const data = response.json();
@@ -26,7 +23,7 @@
     })
 
     onDestroy(() => {
-        setContext(userContext);
+        isUserValid.set(null);
     });
 </script>
 
