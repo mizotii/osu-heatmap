@@ -1,5 +1,11 @@
 import os
 
+attributes = {
+    'id': 'id',
+    'name': 'username',
+    'global_rank': 'statistics.global_rank',
+}
+
 client_credentials = {
     'CLIENT_ID': os.environ.get('CLIENT_ID'),
     'CLIENT_SECRET': os.environ.get('CLIENT_SECRET'),
@@ -27,10 +33,10 @@ errors = {
     'USER_NOT_FOUND': 'user not found!',
 }
 
-profile = {
+profile_data = {
     'USERNAME': 'null',
-    'RANK': 'null',
-    'SCORES': 'null',
+    'GLOBAL_RANK': 'null',
+    'SCORES': {},
 }
 
 user_search = {
