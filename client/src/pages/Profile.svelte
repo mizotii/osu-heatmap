@@ -1,6 +1,7 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { isUserValid } from "../stores/profile";
+    import Heatmap from "../components/Heatmap.svelte";
 
     export let id;
 
@@ -31,6 +32,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{username}'s avatar"/>
     <p>#{rank}</p>
     <p>{username}</p>
+    <Heatmap />
 </profile>
 
 <style>

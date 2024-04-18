@@ -21,6 +21,7 @@
     "svelte-search": "^2.0.2"
   },
   "dependencies": {
+    "cal-heatmap": "^4.2.4",
     "sirv-cli": "^2.0.0",
     "watch": "^1.0.2"
   }
