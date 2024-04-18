@@ -1,12 +1,12 @@
 """backend"""
 
 import requests
-from config import client_credentials, database, endpoints, errors, get_headers, profile, user_search
+from config import attributes, client_credentials, database, endpoints, get_headers, profile_data, user_search
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import init_db, db, Score, User
-from sqlalchemy import exists, select
+from sqlalchemy import exists
 from urllib.parse import urlencode, urljoin
 
 app = Flask(__name__)
@@ -23,6 +23,10 @@ def base():
 def home(path):
     return send_from_directory('../client/public', path)
 
+@app.route("/profile/<path:path>")
+def profile(path):
+    return send_from_directory('../client/public', 'index.html')
+
 @app.route("/authorize")
 def auth_redirect():
     url = create_auth_url()
@@ -37,11 +41,11 @@ def search(username):
         response['USER_ID'] = id
     return jsonify(response)
 
-@app.route("/api/profile/<id>")
-def profile(id):
-    response = profile
-    response['USERNAME'], response['RANK'] = db.session.query([User.name, User.rank]).where(User.id == id).scalar()
-    response['SCORES'] = db.session.query(Score).where(Score.user_id == id).fetchall()
+@app.route("/api/profile/<int:id>")
+def fetch_profile(id):
+    response = profile_data
+    response['USERNAME'], response['GLOBAL_RANK'] = db.session.query(User.name, User.global_rank).where(User.id == id).first()
+    response['SCORES'] = db.session.query(Score).where(Score.user_id == id).all()
     return jsonify(response)
 
 @app.route("/callback")
@@ -66,6 +70,7 @@ def create_auth_url():
 def get_id_from_username(username):
     return db.session.query(User.id).where(User.name == username).scalar()
 
+# returns the User object as described in osu!API
 def get_this_user(access_token):
     response = requests.get(
         endpoints['BASE_URL'] + endpoints['THIS_USER'],
@@ -88,31 +93,45 @@ def get_token_data(code):
     )
     return response.json()
 
+# maybe make the two below functions into one later
 def get_username_from_id(id):
     return db.session.query(User.name).where(User.id == id).scalar()
 
-def store_token(token_data, isUpdate, columns):
-    # logic rework WIP
+def get_user_data(id):
+    return db.session.query(User).where(User.id == id).first()
+
+def get_user_attribute(user, column):
+    column = attributes.get(column)
+    if '.' in column:
+        keys = column.split('.')
+        for key in keys:
+            user = user.get(key)
+        return user
+    return user.get(column)
+
+def store_token(token_data):
     access_token = token_data['access_token']
-    user = get_this_user(access_token)
-    username = user.get('username')
-    if isUpdate:
-        for column in columns:
-            return
-    rank = user.get('statistics', {}).get('global_rank')
-    if not user_exists(username) and not isUpdate:
+    new_user = get_this_user(access_token)
+    username = new_user.get('username')
+    if user_exists(username):
+        old_user = get_user_data(new_user.get('id'))
+        for column in User.__table__.columns:
+            if getattr(old_user, column.key) is None:
+                setattr(old_user, column.key, get_user_attribute(new_user, column.key))
+                db.session.add(old_user)
+    else:
         db.session.add(
             User(
-                id=user.get('id'),
+                id=new_user.get('id'),
                 name=username,
+                global_rank=new_user.get('statistics', {}).get('global_rank'),
                 access=access_token,
                 expires=token_data['expires_in'],
                 refresh=token_data['refresh_token'],
                 type=token_data['token_type'],
-                rank=rank,
             )
         )
-        db.session.commit()
+    db.session.commit()
 
 def user_exists(username):
     return db.session.query(exists().where(User.name == username)).scalar()
