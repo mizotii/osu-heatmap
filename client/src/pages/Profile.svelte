@@ -2,18 +2,18 @@
     import { onMount, onDestroy } from "svelte";
     import { isUserValid } from "../stores/profile";
 
-    let userId;
+    export let id;
+
     let username;
     let rank;
     let scores = {};
 
     async function fetchProfile() {
-        if (true) {
-            userId = window.location.pathname.split('/').pop();
-            const response = await fetch(`/api/profile/${userId}`);
-            const data = response.json();
+        if (id) {
+            const response = await fetch(`/api/profile/${id}`);
+            const data = await response.json();
             username = data.USERNAME;
-            rank = data.RANK;
+            rank = data.GLOBAL_RANK;
             scores = data.SCORES;
         }
     }
@@ -28,8 +28,9 @@
 </script>
 
 <profile>
-    <img src="https://a.ppy.sh/{userId}" alt="{username}'s avatar"/>
+    <img src="https://a.ppy.sh/{id}" alt="{username}'s avatar"/>
     <p>#{rank}</p>
+    <p>{username}</p>
 </profile>
 
 <style>
