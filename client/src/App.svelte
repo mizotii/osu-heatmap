@@ -1,5 +1,5 @@
 <script>
-	import { Router, Link, Route } from 'svelte-routing';
+	import { Route, Router, Link, navigate } from 'svelte-routing';
 
 	// components
 	import Authorize from './components/Authorize.svelte';
@@ -17,7 +17,7 @@
 		<Link to='/'>Home</Link>
 	</nav>
 	<div>
-		<Route path='/profile/:id' let:params>
+		<Route path='/profile/:id' component={Profile} let:params>
 			<Profile id='{params.id}' />
 		</Route>
 		<Route path='/error' component={Error}/>
