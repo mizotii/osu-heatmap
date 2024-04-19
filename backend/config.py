@@ -6,6 +6,11 @@ attributes = {
     'global_rank': 'statistics.global_rank',
 }
 
+automatic_intervals = {
+    'REFRESH_TOKEN': '43200',
+    'REFRESH_PROFILE': '7200',
+}
+
 client_credentials = {
     'CLIENT_ID': os.environ.get('CLIENT_ID'),
     'CLIENT_SECRET': os.environ.get('CLIENT_SECRET'),
