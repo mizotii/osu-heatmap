@@ -1,7 +1,9 @@
 """backend"""
 
 import requests
-from config import attributes, client_credentials, database, endpoints, get_headers, get_user_endpoint, profile_data, user_search
+from apscheduler.schedulers.background import BackgroundScheduler
+from config import attributes, automatic_intervals, client_credentials, database, endpoints, get_headers, get_user_endpoint, profile_data, user_search
+from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -25,6 +27,7 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
+    update_user(path)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/authorize")
@@ -37,6 +40,7 @@ def search(username):
     response = user_search
     id = get_id_from_username(username)
     if id != None:
+        update_user(id)
         response['USER_FOUND'] = True
         response['USER_ID'] = id
     return jsonify(response)
@@ -52,7 +56,7 @@ def fetch_profile(id):
 def callback():
     code = request.args.get('code')
     token_data = get_token_data(code)
-    store_token(token_data)
+    store_user(token_data)
     return redirect("/")
 
 def create_auth_url():
@@ -93,7 +97,7 @@ def get_token_data(code):
     )
     return response.json()
 
-# maybe make the two below functions into one later
+# todo: maybe make the two below functions into one later
 def get_username_from_id(id):
     return db.session.query(User.name).where(User.id == id).scalar()
 
@@ -109,7 +113,11 @@ def get_user_attribute(user, column):
         return user
     return user.get(column)
 
-def store_token(token_data):
+# todo
+def refresh_tokens():
+    return
+
+def store_user(token_data):
     access_token = token_data['access_token']
     new_user = get_this_user(access_token)
     username = new_user.get('username')
@@ -133,17 +141,36 @@ def store_token(token_data):
         )
     db.session.commit()
 
-def update_user_scores(id, type=None):
-    response = request.get(
-        endpoints['BASE_URL'] + get_user_endpoint(id, type),
+def total_hits(score_statistics):
+    return score_statistics.get('count_300') + score_statistics.get('count_100') + score_statistics.get('count_50')
+
+# todo: update all user attributes, not just scores
+def update_user(user_id, type=None):
+    response = requests.get(
+        endpoints['BASE_URL'] + get_user_endpoint(user_id, type),
         headers=get_headers(True)
     )
     scores = response.json()
-    
-    return
+    for score in scores:
+        score_id = score.get('id')
+        if not score_exists(score_id):
+            db.session.add(
+                Score(
+                    id=score_id,
+                    user_id=score.get('user_id'),
+                    timestamp=datetime.fromisoformat(score.get('ended_at')),
+                    notes=(total_hits(score.get('statistics'))),
+                    accuracy=score.get('accuracy'),
+                )
+            )
+    db.session.commit()
 
 def user_exists(username):
     return db.session.query(exists().where(User.name == username)).scalar()
 
+def score_exists(score_id):
+    return db.session.query(exists().where(Score.id == score_id)).scalar()
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
+    scheduler = BackgroundScheduler()
