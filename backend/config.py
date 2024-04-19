@@ -22,11 +22,11 @@ database = {
 }
 
 endpoints = {
-    'BASE_URL': 'https://osu.ppy.sh/',
+    'BASE_URL': 'https://osu.ppy.sh',
     'REDIRECT_URI': 'http://localhost:5000/callback',
-    'AUTHORIZATION': 'oauth/authorize',
-    'TOKEN': 'oauth/token',
-    'THIS_USER': 'api/v2/me/',
+    'AUTHORIZATION': '/oauth/authorize',
+    'TOKEN': '/oauth/token',
+    'THIS_USER': '/api/v2/me/',
 }
 
 errors = {
@@ -55,3 +55,9 @@ def get_headers(base, token=None):
     if token:
         headers['Authorization'] = f'Bearer {token}'
     return headers
+
+def get_user_endpoint(user, type=None):
+    params = f'/users/{user}/scores'
+    if type:
+        params += f'/{type}'
+    return params

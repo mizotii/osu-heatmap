@@ -1,7 +1,7 @@
 """backend"""
 
 import requests
-from config import attributes, client_credentials, database, endpoints, get_headers, profile_data, user_search
+from config import attributes, client_credentials, database, endpoints, get_headers, get_user_endpoint, profile_data, user_search
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -132,6 +132,15 @@ def store_token(token_data):
             )
         )
     db.session.commit()
+
+def update_user_scores(id, type=None):
+    response = request.get(
+        endpoints['BASE_URL'] + get_user_endpoint(id, type),
+        headers=get_headers(True)
+    )
+    scores = response.json()
+    
+    return
 
 def user_exists(username):
     return db.session.query(exists().where(User.name == username)).scalar()
