@@ -2,7 +2,7 @@
 
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from config import attributes, automatic_intervals, client_credentials, database, endpoints, get_headers, get_user_endpoint, profile_data, user_search
+from config import attributes, automatic_intervals, client_credentials, database, endpoints, get_headers, get_user_score_endpoint, profile_data, score_parameters, user_search
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
@@ -59,6 +59,7 @@ def callback():
     store_user(token_data)
     return redirect("/")
 
+# todo: payload -> config
 def create_auth_url():
     payload = {
         'client_id': client_credentials['CLIENT_ID'],
@@ -71,17 +72,22 @@ def create_auth_url():
     url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
     return url
 
+def fetch_access_from_id(id):
+    print(db.session.query(User.access).where(User.id == id).scalar())
+    return db.session.query(User.access).where(User.id == id).scalar()
+
 def get_id_from_username(username):
     return db.session.query(User.id).where(User.name == username).scalar()
 
 # returns the User object as described in osu!API
 def get_this_user(access_token):
     response = requests.get(
-        endpoints['BASE_URL'] + endpoints['THIS_USER'],
+        endpoints['BASE_URL'] + endpoints['V2'] + endpoints['THIS_USER'],
         headers=get_headers(False, access_token)
     )
     return response.json()
 
+# todo: payload -> config
 def get_token_data(code):
     payload = {
         'client_id': client_credentials['CLIENT_ID'],
@@ -145,12 +151,14 @@ def total_hits(score_statistics):
     return score_statistics.get('count_300') + score_statistics.get('count_100') + score_statistics.get('count_50')
 
 # todo: update all user attributes, not just scores
-def update_user(user_id, type=None):
+def update_user(user_id):
     response = requests.get(
-        endpoints['BASE_URL'] + get_user_endpoint(user_id, type),
-        headers=get_headers(True)
+        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint('8816844'),
+        headers=get_headers(False, fetch_access_from_id(user_id)),
+        data=score_parameters
     )
     scores = response.json()
+    print(scores)
     for score in scores:
         score_id = score.get('id')
         if not score_exists(score_id):
@@ -165,6 +173,7 @@ def update_user(user_id, type=None):
             )
     db.session.commit()
 
+# todo: these are prob redundant. glad i organize functions alphabetically
 def user_exists(username):
     return db.session.query(exists().where(User.name == username)).scalar()
 

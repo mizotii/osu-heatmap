@@ -27,11 +27,12 @@ database = {
 }
 
 endpoints = {
+    'AUTHORIZATION': '/oauth/authorize',
     'BASE_URL': 'https://osu.ppy.sh',
     'REDIRECT_URI': 'http://localhost:5000/callback',
-    'AUTHORIZATION': '/oauth/authorize',
+    'THIS_USER': '/me',
     'TOKEN': '/oauth/token',
-    'THIS_USER': '/api/v2/me/',
+    'V2': '/api/v2',
 }
 
 errors = {
@@ -42,6 +43,12 @@ profile_data = {
     'USERNAME': 'null',
     'GLOBAL_RANK': 'null',
     'SCORES': {},
+}
+
+score_parameters = {
+    'scope': 'public',
+    'include_fails': '1',
+    'mode': 'osu',
 }
 
 user_search = {
@@ -61,8 +68,5 @@ def get_headers(base, token=None):
         headers['Authorization'] = f'Bearer {token}'
     return headers
 
-def get_user_endpoint(user, type=None):
-    params = f'/users/{user}/scores'
-    if type:
-        params += f'/{type}'
-    return params
+def get_user_score_endpoint(id):
+    return f'/users/{id}/scores/recent'
