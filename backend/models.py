@@ -23,9 +23,9 @@ class Score(db.Model):
     __tablename__ = 'scores'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    timestamp = db.Column(DateTime)
-    notes = db.Column(db.Integer)
-    accuracy = db.Column(db.Float)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    timestamp = db.Column(DateTime, nullable=False)
+    notes = db.Column(db.Integer, nullable=False)
+    accuracy = db.Column(db.Float, nullable=False)
     # other stats like 300s 100s 50s misses score rank etc
     
