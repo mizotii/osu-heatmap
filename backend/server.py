@@ -2,7 +2,7 @@
 
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from config import attributes, automatic_intervals, client_credentials, database, endpoints, get_headers, get_user_score_endpoint, profile_data, score_parameters, user_search
+from config import attributes, authentication_payload, automatic_intervals, client_credentials, database, endpoints, get_headers, get_refresh_payload, get_token_payload, get_user_score_endpoint, profile_data, score_parameters, user_search
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
@@ -27,7 +27,9 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    update_user(path)
+    user = get_user_out('name', path, False)
+    if user:
+        get_user_in('update', user)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/authorize")
@@ -38,17 +40,19 @@ def auth_redirect():
 @app.route("/api/search/<username>")
 def search(username):
     response = user_search
-    id = get_id_from_username(username)
-    if id != None:
-        update_user(id)
+    user = get_user_out('name', username, False)
+    if user:
+        get_user_in('update', user)
         response['USER_FOUND'] = True
-        response['USER_ID'] = id
+        response['USER_ID'] = getattr(user, 'id')
     return jsonify(response)
 
 @app.route("/api/profile/<int:id>")
 def fetch_profile(id):
+    user = get_user_out('id', id, False)
     response = profile_data
-    response['USERNAME'], response['GLOBAL_RANK'] = db.session.query(User.name, User.global_rank).where(User.id == id).first()
+    response['USERNAME'] = user.get('name')
+    response['GLOBAL_RANK'] = user.get('global_rank')
     response['SCORES'] = db.session.query(Score).where(Score.user_id == id).all()
     return jsonify(response)
 
@@ -56,129 +60,91 @@ def fetch_profile(id):
 def callback():
     code = request.args.get('code')
     token_data = get_token_data(code)
-    store_user(token_data)
+    get_user_in('update', token_data)
     return redirect("/")
 
-# todo: payload -> config
 def create_auth_url():
-    payload = {
-        'client_id': client_credentials['CLIENT_ID'],
-        'redirect_uri': endpoints['REDIRECT_URI'],
-        'response_type': 'code',
-        'scope': 'public identify',
-        'state': 'randomval',
-    }
-    query = urlencode(payload)
+    query = urlencode(authentication_payload)
     url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
     return url
 
-def fetch_access_from_id(id):
-    print(db.session.query(User.access).where(User.id == id).scalar())
-    return db.session.query(User.access).where(User.id == id).scalar()
-
-def get_id_from_username(username):
-    return db.session.query(User.id).where(User.name == username).scalar()
-
-# returns the User object as described in osu!API
-def get_this_user(access_token):
-    response = requests.get(
-        endpoints['BASE_URL'] + endpoints['V2'] + endpoints['THIS_USER'],
-        headers=get_headers(False, access_token)
-    )
-    return response.json()
-
-# todo: payload -> config
 def get_token_data(code):
-    payload = {
-        'client_id': client_credentials['CLIENT_ID'],
-        'client_secret': client_credentials['CLIENT_SECRET'],
-        'code': code,
-        'grant_type': 'authorization_code',
-        'redirect_uri': endpoints['REDIRECT_URI'],
-    }
     response = requests.post(
         endpoints['BASE_URL'] + endpoints['TOKEN'],
         headers=get_headers(True),
-        data=payload
+        data=get_token_payload(code)
     )
     return response.json()
 
-# todo: maybe make the two below functions into one later
-def get_username_from_id(id):
-    return db.session.query(User.name).where(User.id == id).scalar()
-
-def get_user_data(id):
-    return db.session.query(User).where(User.id == id).first()
-
-def get_user_attribute(user, column):
-    column = attributes.get(column)
-    if '.' in column:
-        keys = column.split('.')
-        for key in keys:
-            user = user.get(key)
-        return user
-    return user.get(column)
-
-# todo
-def refresh_tokens():
-    return
-
-def store_user(token_data):
-    access_token = token_data['access_token']
-    new_user = get_this_user(access_token)
-    username = new_user.get('username')
-    if user_exists(username):
-        old_user = get_user_data(new_user.get('id'))
-        for column in User.__table__.columns:
-            if getattr(old_user, column.key) is None:
-                setattr(old_user, column.key, get_user_attribute(new_user, column.key))
-                db.session.add(old_user)
+# functions as a user presence checker if last arg is True
+def get_user_out(attribute_type, value, check_presence_only=None):
+    valid_attributes = User.__table__.columns.keys()
+    if attribute_type not in valid_attributes:
+        raise ValueError(write_value_error(attribute_type, valid_attributes))
+    if check_presence_only:
+        return db.session.query(exists().where(getattr(User, attribute_type) == value)).scalar()
     else:
-        db.session.add(
-            User(
-                id=new_user.get('id'),
-                name=username,
-                global_rank=new_user.get('statistics', {}).get('global_rank'),
-                access=access_token,
-                expires=token_data['expires_in'],
-                refresh=token_data['refresh_token'],
-                type=token_data['token_type'],
-            )
+        return db.session.query(User).where(getattr(User, attribute_type) == value).first()
+
+# also accepts a User object as valid token data
+def get_user_in(operation_type, token_data):
+    valid_operations = ['refresh', 'update']
+    if operation_type not in valid_operations:
+        raise ValueError(write_value_error(operation_type, valid_operations))
+    
+    access = getattr(token_data, 'access_token')
+    refresh = getattr(token_data, 'refresh_token')
+
+    # creates a new user if they aren't found, updates an old user if they are
+    if operation_type == 'update':
+        response = requests.get(
+            endpoints['BASE_URL'] + endpoints['V2'] + endpoints['THIS_USER'],
+            headers=get_headers(access)
         )
-    db.session.commit()
+        new_user_data = response.json()
+        new_user_id = new_user_data.get('id')
 
-def total_hits(score_statistics):
-    return score_statistics.get('count_300') + score_statistics.get('count_100') + score_statistics.get('count_50')
+        # if user exists
+        if get_user_out('id', new_user_id, True):
+            old_user_data = get_user_out('id', new_user_id, False)
+            for key in User.__table__.columns.keys():
+                if key is not id:
+                    setattr(old_user_data, key, getattr(new_user_data, key))
 
-# todo: update all user attributes, not just scores
-def update_user(user_id):
-    response = requests.get(
-        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint('8816844'),
-        headers=get_headers(False, fetch_access_from_id(user_id)),
-        data=score_parameters
-    )
-    scores = response.json()
-    print(scores)
-    for score in scores:
-        score_id = score.get('id')
-        if not score_exists(score_id):
+        # if user is new
+        else:
             db.session.add(
-                Score(
-                    id=score_id,
-                    user_id=score.get('user_id'),
-                    timestamp=datetime.fromisoformat(score.get('ended_at')),
-                    notes=(total_hits(score.get('statistics'))),
-                    accuracy=score.get('accuracy'),
+                User(
+                    id=new_user_id,
+                    name=new_user_data.get('username'),
+                    global_rank=new_user_data.get('statistics', {}).get('global_rank'),
+                    access_token=access,
+                    expires_in=getattr(token_data, 'expires_in'),
+                    refresh_token=refresh,
+                    token_type=getattr(token_data, 'token_type'),
                 )
             )
+
+    # refreshes token
+    else:
+        old_user_data = get_user_out('refresh', refresh, False)
+        new_token = refresh_token(refresh)
+        for key in new_token.keys():
+            setattr(old_user_data, key, getattr(new_token, key))
+
+    # applies to either operation
     db.session.commit()
 
-# todo: these are prob redundant. glad i organize functions alphabetically
-def user_exists(username):
-    return db.session.query(exists().where(User.name == username)).scalar()
+def refresh_token(refresh_token):
+    response = requests.post(
+        endpoints['BASE_URL'] + endpoints['TOKEN'],
+        headers=get_headers(True),
+        data=get_refresh_payload(refresh_token)
+    )
+    return response.json()
 
-def score_exists(score_id):
-    return db.session.query(exists().where(Score.id == score_id)).scalar()
+def write_value_error(invalid, valid):
+    return f'invalid type \'{invalid}. valid types: {', '.join(valid)}.'
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

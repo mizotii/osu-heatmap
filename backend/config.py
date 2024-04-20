@@ -39,9 +39,17 @@ errors = {
     'USER_NOT_FOUND': 'user not found!',
 }
 
+fetch_token_payload = {
+    'client_id': client_credentials['CLIENT_ID'],
+    'client_secret': client_credentials['CLIENT_SECRET'],
+    'code': None,
+    'grant_type': 'authorization_code',
+    'redirect_uri': endpoints['REDIRECT_URI'],
+}
+
 profile_data = {
-    'USERNAME': 'null',
-    'GLOBAL_RANK': 'null',
+    'USERNAME': None,
+    'GLOBAL_RANK': None,
     'SCORES': {},
 }
 
@@ -53,20 +61,47 @@ score_parameters = {
 
 user_search = {
     'USER_FOUND': False,
-    'USER_ID': 'null',
+    'USER_ID': None,
 }
 
-def get_headers(base, token=None):
-    headers =  {
+authentication_payload = {
+    'client_id': client_credentials['CLIENT_ID'],
+    'redirect_uri': endpoints['REDIRECT_URI'],
+    'response_type': 'code',
+    'scope': 'public identify',
+    'state': 'randomval',
+}
+
+def get_headers(token=None):
+    headers = {
         'Accept': 'application/json',
     }
-    if base:
-        headers['Content-Type'] = 'application/x-www-form-urlencoded'
-    else:
-        headers['Content-Type'] = 'application/json'
     if token:
+        headers['Content-Type'] = 'application/json'
         headers['Authorization'] = f'Bearer {token}'
+    else:
+        headers['Content-Type'] = 'application/x-www-form-urlencoded'
     return headers
+
+def get_refresh_payload(refresh):
+    payload = {
+        'client_id': client_credentials['CLIENT_ID'],
+        'client_secret': client_credentials['CLIENT_SECRET'],
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh,
+        'scope': 'public identify',
+    }
+    return payload
+
+def get_token_payload(code):
+    payload = {
+        'client_id': client_credentials['CLIENT_ID'],
+        'client_secret': client_credentials['CLIENT_SECRET'],
+        'code': code,
+        'grant_type': 'authorization_code',
+        'redirect_uri': endpoints['REDIRECT_URI'],
+    }
+    return payload
 
 def get_user_score_endpoint(id):
     return f'/users/{id}/scores/recent'

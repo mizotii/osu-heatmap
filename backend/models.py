@@ -14,10 +14,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(constraints['MAX_USER_LENGTH']))
     global_rank = db.Column(db.Integer)
-    access = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
-    expires = db.Column(db.Integer)
-    refresh = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
-    type = db.Column(db.String(constraints['MAX_TYPE_LENGTH']))
+    access_token = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
+    expires_in = db.Column(db.Integer)
+    refresh_token = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
+    token_type = db.Column(db.String(constraints['MAX_TYPE_LENGTH']))
 
 class Score(db.Model):
     __tablename__ = 'scores'
