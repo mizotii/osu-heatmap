@@ -1,4 +1,4 @@
-from config import constraints
+from config import db_config as dc
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import DateTime
@@ -12,12 +12,17 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(constraints['MAX_USER_LENGTH']))
+    name = db.Column(db.String(dc.constraints['MAX_USER_LENGTH']))
     global_rank = db.Column(db.Integer)
-    access_token = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
+
+class Token(db.Model):
+    __tablename__ = 'tokens'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    access_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']), nullable=False)
     expires_in = db.Column(db.Integer)
-    refresh_token = db.Column(db.String(constraints['MAX_TOKEN_LENGTH']))
-    token_type = db.Column(db.String(constraints['MAX_TYPE_LENGTH']))
+    refresh_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']), nullable=False)
+    token_type = db.Column(db.String(dc.constraints['MAX_TYPE_LENGTH']), nullable=False)
 
 class Score(db.Model):
     __tablename__ = 'scores'
