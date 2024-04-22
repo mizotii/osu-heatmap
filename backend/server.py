@@ -24,9 +24,10 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    user = sc.get_user_out('name', path, False)
+    user = sc.get_user_out('id', path, False)
     if user:
-        sc.get_user_in('update', user)
+        user_token = sc.get_token_out('user_id', user.get('id'), False)
+        sc.get_user_in('update', user_token)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/authorize")
@@ -39,9 +40,11 @@ def search(username):
     response = sc.user_search
     user = sc.get_user_out('name', username, False)
     if user:
-        sc.get_user_in('update', user)
+        user_id = user.get('id')
+        user_token = sc.get_token_out('user_id', user_id, False)
+        sc.get_user_in('update', user_token)
         response['USER_FOUND'] = True
-        response['USER_ID'] = getattr(user, 'id')
+        response['USER_ID'] = user_id
     return jsonify(response)
 
 @app.route("/api/profile/<int:id>")

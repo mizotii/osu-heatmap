@@ -8,14 +8,21 @@ db = SQLAlchemy()
 def init_db(app):
     db.init_app(app)
 
-class User(db.Model):
+# makes queries JSON serializable
+class Class(db.Model):
+    __abstract__ = True
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class User(Class):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(dc.constraints['MAX_USER_LENGTH']))
     global_rank = db.Column(db.Integer)
 
-class Token(db.Model):
+class Token(Class):
     __tablename__ = 'tokens'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
@@ -24,7 +31,7 @@ class Token(db.Model):
     refresh_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']), nullable=False)
     token_type = db.Column(db.String(dc.constraints['MAX_TYPE_LENGTH']), nullable=False)
 
-class Score(db.Model):
+class Score(Class):
     __tablename__ = 'scores'
 
     id = db.Column(db.Integer, primary_key=True)

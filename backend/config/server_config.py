@@ -1,7 +1,7 @@
 import os
 import pydash as _
 import requests
-from models import db, Score, Token, User
+from models import db, Class, Score, Token, User
 from sqlalchemy import exists
 from urllib.parse import urlencode, urljoin
 
@@ -122,7 +122,6 @@ def get_user_in(operation_type, token_data):
     
     access = token_data.get('access_token')
     refresh = token_data.get('refresh_token')
-    print(token_data.get('token_type'))
 
     # creates a new user if they aren't found, updates an old user if they are
     if operation_type == 'update':
@@ -131,15 +130,14 @@ def get_user_in(operation_type, token_data):
             headers=get_headers(access)
         )
         new_user_data = response.json()
-        print(new_user_data)
         new_user_id = new_user_data.get('id')
 
         # if user exists
-        if get_user_out('id', new_user_id, True):
-            old_user_data = get_user_out('id', new_user_id, False)
+        if get_object_out(User, 'id', new_user_id, True) and get_object_out(Token, 'user_id', new_user_id, True):
+            old_user_data = get_object_out(User, 'id', new_user_id, False)
             for key in User.__table__.columns.keys():
                 if key != 'id':
-                    setattr(old_user_data, key, _.get(new_user_data, user_attributes[key]))
+                    old_user_data[key] = _.get(new_user_data, user_attributes[key])
             
 
         # if user is new
@@ -149,39 +147,43 @@ def get_user_in(operation_type, token_data):
                     id=new_user_id,
                     name=new_user_data.get(user_attributes['name']),
                     global_rank=_.get(new_user_data, user_attributes['global_rank']),
+                ),
+                Token(
+                    user_id=new_user_id,
+                    access_token=access,
+                    expires_in=token_data.get('expires_in'),
+                    refresh_token=refresh,
+                    token_type=token_data.get('token_type'),
                 )
             )
 
-            
-        db.session.add(
-            Token(
-                user_id=new_user_id,
-                access_token=access,
-                expires_in=token_data.get('expires_in'),
-                refresh_token=refresh,
-                token_type=token_data.get('token_type'),
-            )
-        )
-
     # refreshes token
     else:
-        old_user_data = get_user_out('refresh', refresh, False)
+        old_token = get_object_out(Token, 'access_token', access, False)
         new_token = refresh_token(refresh)
-        for key in new_token.keys():
-            setattr(old_user_data, key, getattr(new_token, key))
+        for key in Token.__table__.columns.keys():
+            if key != 'user_id':
+                setattr(old_token, key, _.get(new_token, key))
+
 
     # applies to either operation
     db.session.commit()
 
 # functions as a user presence checker if last arg is True
-def get_user_out(attribute_type, value, check_presence_only=None):
-    valid_attributes = User.__table__.columns.keys()
+def get_object_out(table, attribute_type, value, check_presence_only=None):
+    valid_attributes = table.__table__.columns.keys()
     if attribute_type not in valid_attributes:
         raise ValueError(write_value_error(attribute_type, valid_attributes))
     if check_presence_only:
-        return db.session.query(exists().where(getattr(User, attribute_type) == value)).scalar()
+        return db.session.query(exists().where(getattr(table, attribute_type) == value)).scalar()
     else:
-        return db.session.query(User).where(getattr(User, attribute_type) == value).first()
+        return (db.session.query(table).where(getattr(table, attribute_type) == value).first()).as_dict()
+    
+def get_token_out(attribute_type, value, check_presence_only=None):
+    return get_object_out(Token, attribute_type, value, check_presence_only)
+    
+def get_user_out(attribute_type, value, check_presence_only=None):
+    return get_object_out(User, attribute_type, value, check_presence_only)
 
 def get_user_score_endpoint(user_id):
     return f'/users/{user_id}/scores/recent'
