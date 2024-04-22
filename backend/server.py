@@ -2,18 +2,21 @@
 
 import time
 import os
+from apscheduler.schedulers.background import BackgroundScheduler
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import init_db, db, Score
+from models import init_db, db, Score, Token, User
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['DB_URI']
 init_db(app)
 migrate = Migrate(app, db)
 CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://localhost:8080"]}})
+
+scheduler = BackgroundScheduler()
 
 @app.route("/")
 def base():
@@ -25,6 +28,7 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
+    print(sc.get_recent_scores(path))
     user = sc.get_user_out('id', path, False)
     if user:
         user_token = sc.get_token_out('user_id', user['id'], False)
@@ -67,6 +71,13 @@ def callback():
     sc.get_user_in('update', token_data)
     return redirect("/")
 
+def queue_tokens(interval):
+    tokens = sc.select_all(Token, 'expires_at')
+    for token in tokens:
+        scheduler.add_job(sc.get_user_in('refresh', token), 'interval', seconds=interval)
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
-    sc.scheduler.start()
+    scheduler.start()
+    scheduler.add_job(queue_tokens(sc.get_refresh_interval()), 'cron', hour='*/12')
+    scheduler.shutdown()
