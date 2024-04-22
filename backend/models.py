@@ -27,7 +27,7 @@ class Token(Class):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     access_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']), nullable=False)
-    expires_in = db.Column(db.Integer)
+    expires_at = db.Column(db.DateTime)
     refresh_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']), nullable=False)
     token_type = db.Column(db.String(dc.constraints['MAX_TYPE_LENGTH']), nullable=False)
 
