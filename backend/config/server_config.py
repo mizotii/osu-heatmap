@@ -1,8 +1,9 @@
 import os
 import pydash as _
 import requests
+from apscheduler.schedulers.background import BackgroundScheduler
 from models import db, Class, Score, Token, User
-from sqlalchemy import exists
+from sqlalchemy import exists, func
 from urllib.parse import urlencode, urljoin
 
 automatic_intervals = {
@@ -11,12 +12,12 @@ automatic_intervals = {
 }
 
 client_credentials = {
-    'CLIENT_ID': os.environ.get('CLIENT_ID'),
-    'CLIENT_SECRET': os.environ.get('CLIENT_SECRET'),
+    'CLIENT_ID': os.environ['CLIENT_ID'],
+    'CLIENT_SECRET': os.environ['CLIENT_SECRET'],
 }
 
 database = {
-    'DB_URI': os.environ.get('DB_URI'),
+    'DB_URI': os.environ['DB_URI'],
 }
 
 endpoints = {
@@ -120,8 +121,8 @@ def get_user_in(operation_type, token_data):
     if operation_type not in valid_operations:
         raise ValueError(write_value_error(operation_type, valid_operations))
     
-    access = token_data.get('access_token')
-    refresh = token_data.get('refresh_token')
+    access = token_data['access_token']
+    refresh = token_data['refresh_token']
 
     # creates a new user if they aren't found, updates an old user if they are
     if operation_type == 'update':
@@ -130,41 +131,42 @@ def get_user_in(operation_type, token_data):
             headers=get_headers(access)
         )
         new_user_data = response.json()
-        new_user_id = new_user_data.get('id')
+        new_user_id = new_user_data['id']
 
         # if user exists
-        if get_object_out(User, 'id', new_user_id, True) and get_object_out(Token, 'user_id', new_user_id, True):
-            old_user_data = get_object_out(User, 'id', new_user_id, False)
+        if get_user_out('id', new_user_id, True) and get_token_out('user_id', new_user_id, True):
+            old_user_data = get_user_out('id', new_user_id, False)
             for key in User.__table__.columns.keys():
-                if key != 'id':
+                if key != 'id':                        
                     old_user_data[key] = _.get(new_user_data, user_attributes[key])
-            
 
         # if user is new
         else:
             db.session.add(
                 User(
                     id=new_user_id,
-                    name=new_user_data.get(user_attributes['name']),
+                    name=new_user_data[user_attributes['name']],
                     global_rank=_.get(new_user_data, user_attributes['global_rank']),
-                ),
+                )
+            )
+            db.session.commit()
+            db.session.add(                
                 Token(
                     user_id=new_user_id,
                     access_token=access,
-                    expires_in=token_data.get('expires_in'),
+                    expires_in=token_data['expires_in'],
                     refresh_token=refresh,
-                    token_type=token_data.get('token_type'),
+                    token_type=token_data['token_type'],
                 )
             )
 
     # refreshes token
     else:
-        old_token = get_object_out(Token, 'access_token', access, False)
+        old_token = get_token_out('access_token', access, False)
         new_token = refresh_token(refresh)
         for key in Token.__table__.columns.keys():
             if key != 'user_id':
                 setattr(old_token, key, _.get(new_token, key))
-
 
     # applies to either operation
     db.session.commit()
@@ -178,6 +180,18 @@ def get_object_out(table, attribute_type, value, check_presence_only=None):
         return db.session.query(exists().where(getattr(table, attribute_type) == value)).scalar()
     else:
         return (db.session.query(table).where(getattr(table, attribute_type) == value).first()).as_dict()
+    
+def get_recent_scores(user_id):
+    token_data = get_token_out('user_id', user_id, False)
+    response = requests.get(
+        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
+        headers=get_headers(token_data['access_token']),
+        data=score_parameters,
+    )
+    return response.json()
+
+def get_refresh_interval():
+    return db.session.query(func.count(Token.user_id)).scalar() / automatic_intervals['REFRESH_TOKEN']
     
 def get_token_out(attribute_type, value, check_presence_only=None):
     return get_object_out(Token, attribute_type, value, check_presence_only)
@@ -196,6 +210,19 @@ def refresh_token(refresh_token):
     )
     return response.json()
 
+def select_all(table):
+    valid_attributes = db.metadata.tables.keys()
+    if table not in valid_attributes:
+        raise ValueError(write_value_error(table, valid_attributes))
+    return db.session.query(table).all().as_dict()
+
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)
     return f'invalid type \'{invalid}. valid types: {valid_types}.'
+
+# todo: sort by last_updated
+def auto_refresh_tokens():
+    return
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(auto_refresh_tokens(), 'interval', seconds=get_refresh_interval)
