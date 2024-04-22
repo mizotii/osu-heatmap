@@ -216,7 +216,7 @@ def get_user_score_endpoint(user_id):
 def refresh_token(refresh_token):
     response = requests.post(
         endpoints['BASE_URL'] + endpoints['TOKEN'],
-        headers=get_headers(True),
+        headers=get_headers(),
         data=get_refresh_payload(refresh_token)
     )
     return response.json()
