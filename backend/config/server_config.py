@@ -1,3 +1,4 @@
+import dateutil.parser
 import os
 import pydash as _
 import requests
@@ -46,6 +47,16 @@ profile_data = {
     'GLOBAL_RANK': None,
     'SCORES': {},
 }
+
+score_attributes = {
+    'id': 'current_user_attributes.pin.score_id',
+    'user_id': 'user.id',
+    'timestamp': 'created_at',
+    'count_300': 'statistics.count_300',
+    'count_100': 'statistics.count_100',
+    'count_50': 'statistics.count_50',
+    'accuracy': 'accuracy',
+    }
 
 score_parameters = {
     'scope': 'public',
@@ -127,6 +138,7 @@ def get_token_payload(code):
     }
     return payload
 
+# my bad
 def get_user_in(operation_type, token_data):
     valid_operations = ['refresh', 'update']
     if operation_type not in valid_operations:
@@ -145,11 +157,12 @@ def get_user_in(operation_type, token_data):
         new_user_id = new_user_data['id']
 
         # if user exists
-        if get_user_out('id', new_user_id, True) and get_token_out('user_id', new_user_id, True):
+        if get_user_out('id', new_user_id, True):
             old_user_data = get_user_out('id', new_user_id, False)
             for key in User.__table__.columns.keys():
-                if key != 'id':                        
+                if key not in ('id', 'last_updated'):
                     old_user_data[key] = _.get(new_user_data, user_attributes[key])
+            old_user_data['last_updated'] = datetime.now()
 
         # if user is new
         else:
@@ -158,9 +171,12 @@ def get_user_in(operation_type, token_data):
                     id=new_user_id,
                     name=new_user_data[user_attributes['name']],
                     global_rank=_.get(new_user_data, user_attributes['global_rank']),
+                    last_updated=datetime.now(),
                 )
             )
-            db.session.commit()
+        
+        # rare case where user exists but token doesn't
+        if not get_token_out('user_id', new_user_id, True):
             db.session.add(                
                 Token(
                     user_id=new_user_id,
@@ -171,6 +187,10 @@ def get_user_in(operation_type, token_data):
                 )
             )
 
+        # update scores regardless
+        store_recent_scores(new_user_id)
+        
+
     # refreshes token
     else:
         old_token = get_token_out('access_token', access, False)
@@ -178,37 +198,33 @@ def get_user_in(operation_type, token_data):
         for key in Token.__table__.columns.keys():
             if key != 'user_id':
                 old_token[key] = _.get(new_token, token_attributes[key])
-
-    # applies to either operation
+    
     db.session.commit()
 
 # functions as a user presence checker if last arg is True
-def get_object_out(table, attribute_type, value, check_presence_only=None):
+def get_object_out(table, attribute, value, check_presence_only=None):
     valid_attributes = table.__table__.columns.keys()
-    if attribute_type not in valid_attributes:
-        raise ValueError(write_value_error(attribute_type, valid_attributes))
+    if attribute not in valid_attributes:
+        raise ValueError(write_value_error(attribute, valid_attributes))
     if check_presence_only:
-        return db.session.query(exists().where(getattr(table, attribute_type) == value)).scalar()
+        return db.session.query(exists().where(getattr(table, attribute) == value)).scalar()
     else:
-        return (db.session.query(table).where(getattr(table, attribute_type) == value).first()).as_dict()
-    
-def get_recent_scores(user_id):
-    token_data = get_token_out('user_id', user_id, False)
-    response = requests.get(
-        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
-        headers=get_headers(token_data['access_token']),
-        data=score_parameters,
-    )
-    return response.json()
+        return (db.session.query(table).where(getattr(table, attribute) == value).first()).as_dict()
 
-def get_refresh_interval():
-    return int(automatic_intervals['REFRESH_TOKEN']) / db.session.query(func.count(Token.user_id)).scalar()
+def get_interval(type):
+    valid_types = automatic_intervals.keys()
+    if type not in valid_types:
+        raise ValueError(write_value_error(type, valid_types))
+    return int(automatic_intervals[type]) / db.session.query(func.count(Token.user_id)).scalar()
+
+def get_score_out(attribute, value, check_presence_only=None):
+    return get_object_out(Score, attribute, value, check_presence_only)
     
-def get_token_out(attribute_type, value, check_presence_only=None):
-    return get_object_out(Token, attribute_type, value, check_presence_only)
+def get_token_out(attribute, value, check_presence_only=None):
+    return get_object_out(Token, attribute, value, check_presence_only)
     
-def get_user_out(attribute_type, value, check_presence_only=None):
-    return get_object_out(User, attribute_type, value, check_presence_only)
+def get_user_out(attribute, value, check_presence_only=None):
+    return get_object_out(User, attribute, value, check_presence_only)
 
 def get_user_score_endpoint(user_id):
     return f'/users/{user_id}/scores/recent'
@@ -221,15 +237,44 @@ def refresh_token(refresh_token):
     )
     return response.json()
 
-def select_all(table, sort_by):
+def select_all(table, sort_by, attribute=None, value=None):
     valid_attributes = table.__table__.columns.keys()
     if sort_by not in valid_attributes:
         raise ValueError(write_value_error(table, valid_attributes))
     data = {}
+    query = db.session.query(table)
+    if attribute:
+        query = query.where(getattr(table, attribute) == value)
     all_obj = db.session.query(table).order_by(getattr(table, sort_by).desc()).all()
     for obj in all_obj:
         data.update(obj.as_dict())
     return data
+    
+def store_recent_scores(user_id):
+    token_data = get_token_out('user_id', user_id, False)
+    response = requests.get(
+        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
+        headers=get_headers(token_data['access_token']),
+        data=score_parameters,
+    )
+    scores = response.json()
+    for score in scores:
+        score_id = _.get(score, score_attributes['id'])
+        if not get_score_out('id', score_id, True):
+            db.session.add(
+                Score(
+                    id=score_id,
+                    user_id=user_id,
+                    timestamp=dateutil.parser.isoparse(_.get(score, score_attributes['timestamp'])),
+                    notes=(
+                        _.get(score, score_attributes['count_300']) +
+                        _.get(score, score_attributes['count_100']) +
+                        _.get(score, score_attributes['count_50'])
+                    ),
+                    accuracy=_.get(score, score_attributes['accuracy']),                    
+                )
+            )
+    db.session.commit()
 
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)
