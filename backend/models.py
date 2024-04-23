@@ -21,6 +21,7 @@ class User(Class):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(dc.constraints['MAX_USER_LENGTH']))
     global_rank = db.Column(db.Integer)
+    last_updated = db.Column(db.DateTime)
 
 class Token(Class):
     __tablename__ = 'tokens'
@@ -34,9 +35,9 @@ class Token(Class):
 class Score(Class):
     __tablename__ = 'scores'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(dc.constraints['MAX_SCORE_LENGTH']), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    timestamp = db.Column(DateTime, nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False)
     notes = db.Column(db.Integer, nullable=False)
     accuracy = db.Column(db.Float, nullable=False)
     # other stats like 300s 100s 50s misses score rank etc
