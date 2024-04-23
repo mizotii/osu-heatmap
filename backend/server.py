@@ -28,9 +28,9 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    user = sc.get_user_out('id', path, False)
+    user = sc.get_user_out('id', path, as_dict=True)
     if user:
-        user_token = sc.get_token_out('user_id', user['id'], False)
+        user_token = sc.get_token_out('user_id', user['id'], as_dict=True)
         sc.get_user_in('update', user_token)
     return send_from_directory('../client/public', 'index.html')
 
@@ -43,10 +43,10 @@ def auth_redirect():
 @app.route("/api/search/<username>")
 def search(username):
     response = sc.user_search
-    user = sc.get_user_out('name', username, False)
+    user = sc.get_user_out('name', username, as_dict=True)
     if user:
         user_id = user['id']
-        user_token = sc.get_token_out('user_id', user_id, False)
+        user_token = sc.get_token_out('user_id', user_id, as_dict=True)
         sc.get_user_in('update', user_token)
         response['USER_FOUND'] = True
         response['USER_ID'] = user_id
@@ -55,7 +55,7 @@ def search(username):
 # todo: make this a function in config
 @app.route("/api/profile/<int:id>")
 def fetch_profile(id):
-    user = sc.get_user_out('id', id, False)
+    user = sc.get_user_out('id', id, as_dict=True)
     response = sc.profile_data
     response['USERNAME'] = user['name']
     response['GLOBAL_RANK'] = user['global_rank']

@@ -157,12 +157,12 @@ def get_user_in(operation_type, token_data):
         new_user_id = new_user_data['id']
 
         # if user exists
-        if get_user_out('id', new_user_id, True):
-            old_user_data = get_user_out('id', new_user_id, False)
+        if get_user_out('id', new_user_id, check_presence_only=True):
+            old_user_data = get_user_out('id', new_user_id)
             for key in User.__table__.columns.keys():
                 if key not in ('id', 'last_updated'):
-                    old_user_data[key] = _.get(new_user_data, user_attributes[key])
-            old_user_data['last_updated'] = datetime.now()
+                    old_user_data.key = _.get(new_user_data, user_attributes[key])
+            old_user_data.last_updated = datetime.now()
 
         # if user is new
         else:
@@ -176,7 +176,7 @@ def get_user_in(operation_type, token_data):
             )
         
         # rare case where user exists but token doesn't
-        if not get_token_out('user_id', new_user_id, True):
+        if not get_token_out('user_id', new_user_id, check_presence_only=True):
             db.session.add(                
                 Token(
                     user_id=new_user_id,
@@ -192,38 +192,43 @@ def get_user_in(operation_type, token_data):
 
     # refreshes token
     else:
-        old_token = get_token_out('access_token', access, False)
+        old_token = get_token_out('access_token', access)
         new_token = refresh_token(refresh)
         for key in Token.__table__.columns.keys():
-            if key != 'user_id':
-                old_token[key] = _.get(new_token, token_attributes[key])
+            if key not in ('user_id', 'last_updated'):
+                old_token.key = _.get(new_token, token_attributes[key])
+            old_token.last_updated = datetime.now() + _.get(new_token, token_attributes['expires_at'])
     
     db.session.commit()
 
 # functions as a user presence checker if last arg is True
-def get_object_out(table, attribute, value, check_presence_only=None):
+def get_object_out(table, attribute, value, check_presence_only=False, as_dict=False):
     valid_attributes = table.__table__.columns.keys()
     if attribute not in valid_attributes:
         raise ValueError(write_value_error(attribute, valid_attributes))
     if check_presence_only:
         return db.session.query(exists().where(getattr(table, attribute) == value)).scalar()
     else:
-        return (db.session.query(table).where(getattr(table, attribute) == value).first()).as_dict()
-
+        query = (db.session.query(table).where(getattr(table, attribute) == value).first())
+        if not as_dict:
+            return query
+        else:
+            return query.as_dict()
+        
 def get_interval(type):
     valid_types = automatic_intervals.keys()
     if type not in valid_types:
         raise ValueError(write_value_error(type, valid_types))
     return int(automatic_intervals[type]) / db.session.query(func.count(Token.user_id)).scalar()
 
-def get_score_out(attribute, value, check_presence_only=None):
-    return get_object_out(Score, attribute, value, check_presence_only)
+def get_score_out(attribute, value, check_presence_only=False, as_dict=False):
+    return get_object_out(Score, attribute, value, check_presence_only, as_dict)
     
-def get_token_out(attribute, value, check_presence_only=None):
-    return get_object_out(Token, attribute, value, check_presence_only)
+def get_token_out(attribute, value, check_presence_only=False, as_dict=False):
+    return get_object_out(Token, attribute, value, check_presence_only, as_dict)
     
-def get_user_out(attribute, value, check_presence_only=None):
-    return get_object_out(User, attribute, value, check_presence_only)
+def get_user_out(attribute, value, check_presence_only=False, as_dict=False):
+    return get_object_out(User, attribute, value, check_presence_only, as_dict)
 
 def get_user_score_endpoint(user_id):
     return f'/users/{user_id}/scores/recent'
@@ -250,7 +255,7 @@ def select_all(table, sort_by, attribute=None, value=None):
     return data
     
 def store_recent_scores(user_id):
-    token_data = get_token_out('user_id', user_id, False)
+    token_data = get_token_out('user_id', user_id, as_dict=True)
     response = requests.get(
         endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
         headers=get_headers(token_data['access_token']),
@@ -259,7 +264,7 @@ def store_recent_scores(user_id):
     scores = response.json()
     for score in scores:
         score_id = _.get(score, score_attributes['id'])
-        if not get_score_out('id', score_id, True):
+        if not get_score_out('id', score_id, check_presence_only=True):
             db.session.add(
                 Score(
                     id=score_id,
