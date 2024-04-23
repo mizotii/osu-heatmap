@@ -50,6 +50,8 @@ def search(username):
         sc.get_user_in('update', user_token)
         response['USER_FOUND'] = True
         response['USER_ID'] = user_id
+        response['SCORES'] = sc.select_all(Score, 'timestamp', 'user_id', user_id)
+        response['HEATMAP_DATA'] = sc.scores_to_heatmap(response['SCORES'])
     return jsonify(response)
 
 # todo: make this a function in config
@@ -59,10 +61,8 @@ def fetch_profile(id):
     response = sc.profile_data
     response['USERNAME'] = user['name']
     response['GLOBAL_RANK'] = user['global_rank']
-    # todo: create standalone for fetching scores
     response['SCORES'] = sc.select_all(Score, 'timestamp', 'user_id', id)
     response['HEATMAP_DATA'] = sc.scores_to_heatmap(response['SCORES'])
-    print(response)
     return jsonify(response)
 
 @app.route("/callback")
