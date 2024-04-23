@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/github/mizotii/osu-heatmap.svg)](https://wakatime.com/badge/github/mizotii/osu-heatmap)
+
 Svelte frontend, Flask backend
 
 working on:
