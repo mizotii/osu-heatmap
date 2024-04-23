@@ -189,7 +189,6 @@ def get_user_in(operation_type, token_data):
 
         # update scores regardless
         store_recent_scores(new_user_id)
-        
 
     # refreshes token
     else:
