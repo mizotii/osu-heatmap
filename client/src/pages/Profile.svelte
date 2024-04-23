@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { isUserValid } from "../stores/profile";
-	import SvelteHeatmap from 'svelte-heatmap';
+    import SvelteHeatmap from 'svelte-heatmap';
     import moment, { now } from 'moment';
 
     export let id;
@@ -9,6 +9,10 @@
     let username;
     let rank;
     let scores = {};
+
+    const heatmap = new SvelteHeatmap({
+        
+    })
 
     async function fetchProfile() {
         if (id) {

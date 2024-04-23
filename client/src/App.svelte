@@ -5,6 +5,9 @@
 	import Authorize from './components/Authorize.svelte';
 	import Search from './components/Search.svelte';
 
+	// admin
+	import DeleteExpiredTokens from './components/admin/DeleteExpiredTokens.svelte';
+
 	//pages
 	import Error from './pages/Error.svelte';
 	import Profile from './pages/Profile.svelte';
@@ -27,6 +30,7 @@
 <main>
 	<Authorize />
 	<Search />
+	<DeleteExpiredTokens />
 </main>
 
 <style>

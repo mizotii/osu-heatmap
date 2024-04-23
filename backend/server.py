@@ -61,6 +61,7 @@ def fetch_profile(id):
     response['GLOBAL_RANK'] = user['global_rank']
     # todo: create standalone for fetching scores
     response['SCORES'] = sc.select_all(Score, 'timestamp', 'user_id', id)
+    response['HEATMAP_DATA'] = sc.scores_to_heatmap(response['SCORES'])
     print(response)
     return jsonify(response)
 
@@ -69,6 +70,11 @@ def callback():
     code = request.args.get('code')
     token_data = sc.get_token_data(code)
     sc.get_user_in('update', token_data)
+    return redirect("/")
+
+@app.route("/delete_expired_tokens")
+def delete_expired_tokens():
+    sc.delete_expired_tokens()
     return redirect("/")
 
 def queue_daily(table, sort_by, operation_type, interval):

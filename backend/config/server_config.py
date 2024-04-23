@@ -45,7 +45,8 @@ fetch_token_payload = {
 profile_data = {
     'USERNAME': None,
     'GLOBAL_RANK': None,
-    'SCORES': {},
+    'SCORES': [],
+    'HEATMAP_DATA': [],
 }
 
 score_attributes = {
@@ -95,6 +96,18 @@ def create_auth_url():
     query = urlencode(authentication_payload)
     url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
     return url
+
+def delete_expired_tokens():
+    tokens = select_all(Token, 'expires_at')
+    now = datetime.now()
+    print(tokens)
+    for token in tokens:
+        print(token)
+        print(token['expires_at'])
+        expires_at = token['expires_at']
+        if (token['expires_at'] < now):
+            db.session.delete(get_token_out('expires_at', expires_at))
+    db.session.commit()
 
 def get_expiration(interval):
     return (datetime.now() + timedelta(seconds=interval))
@@ -146,7 +159,6 @@ def get_user_in(operation_type, token_data):
     
     access = token_data['access_token']
     refresh = token_data['refresh_token']
-
     # creates a new user if they aren't found, updates an old user if they are
     if operation_type == 'update':
         response = requests.get(
@@ -187,6 +199,8 @@ def get_user_in(operation_type, token_data):
                 )
             )
 
+        db.session.commit()
+
         # update scores regardless
         store_recent_scores(new_user_id)
 
@@ -198,8 +212,7 @@ def get_user_in(operation_type, token_data):
             if key not in ('user_id', 'last_updated'):
                 old_token.key = _.get(new_token, token_attributes[key])
             old_token.last_updated = datetime.now() + _.get(new_token, token_attributes['expires_at'])
-    
-    db.session.commit()
+        db.session.commit()
 
 # functions as a user presence checker if last arg is True
 def get_object_out(table, attribute, value, check_presence_only=False, as_dict=False):
@@ -241,17 +254,31 @@ def refresh_token(refresh_token):
     )
     return response.json()
 
+def scores_to_heatmap(scores):
+    heatmap_data = []
+    for score in scores:
+        date = (score['timestamp']).split(' ')[0]
+        if date in data.values():
+            data[date] += int(score['notes'])
+        else:
+            data = {
+                'date': (score['timestamp']).replace(' ', 'T'),
+                'value': int(score['notes'])
+            }
+    return heatmap_data
+
+# 
 def select_all(table, sort_by, attribute=None, value=None):
     valid_attributes = table.__table__.columns.keys()
     if sort_by not in valid_attributes:
         raise ValueError(write_value_error(table, valid_attributes))
-    data = {}
+    data = []
     query = db.session.query(table)
     if attribute:
         query = query.where(getattr(table, attribute) == value)
     all_obj = db.session.query(table).order_by(getattr(table, sort_by).desc()).all()
     for obj in all_obj:
-        data.update(obj.as_dict())
+        data.append(obj.as_dict())
     return data
     
 def store_recent_scores(user_id):
@@ -263,6 +290,8 @@ def store_recent_scores(user_id):
     )
     scores = response.json()
     for score in scores:
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        print(score)
         score_id = _.get(score, score_attributes['id'])
         if not get_score_out('id', score_id, check_presence_only=True):
             db.session.add(
