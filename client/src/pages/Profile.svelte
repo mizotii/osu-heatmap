@@ -8,11 +8,8 @@
 
     let username;
     let rank;
-    let scores = {};
-
-    const heatmap = new SvelteHeatmap({
-        
-    })
+    let scores = [];
+    let heatmap_data = [];
 
     async function fetchProfile() {
         if (id) {
@@ -21,6 +18,7 @@
             username = data.USERNAME;
             rank = data.GLOBAL_RANK;
             scores = data.SCORES;
+            heatmap_data = data.HEATMAP_DATA;
         }
     }
 
@@ -37,7 +35,18 @@
     <img src="https://a.ppy.sh/{id}" alt="{username}'s avatar"/>
     <p>#{rank}</p>
     <p>{username}</p>
-    
+    <div class="container">
+        <SvelteHeatmap
+            data={heatmap_data}
+            cellGap={5}
+            cellSize={1}
+            dayLabelWidth={0}
+            dayLabels={[]}
+            fontSize={8}
+            emptyColor={'#ffffff'}
+            monthLabels={[]}
+         />
+    </div>
 </profile>
 
 <style>
