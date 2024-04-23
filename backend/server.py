@@ -28,7 +28,6 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    print(sc.get_recent_scores(path))
     user = sc.get_user_out('id', path, False)
     if user:
         user_token = sc.get_token_out('user_id', user['id'], False)
@@ -61,7 +60,8 @@ def fetch_profile(id):
     response['USERNAME'] = user['name']
     response['GLOBAL_RANK'] = user['global_rank']
     # todo: create standalone for fetching scores
-    response['SCORES'] = db.session.query(Score).where(Score.user_id == id).all()
+    response['SCORES'] = sc.select_all(Score, 'timestamp', 'user_id', id)
+    print(response)
     return jsonify(response)
 
 @app.route("/callback")
@@ -71,13 +71,14 @@ def callback():
     sc.get_user_in('update', token_data)
     return redirect("/")
 
-def queue_tokens(interval):
-    tokens = sc.select_all(Token, 'expires_at')
-    for token in tokens:
-        scheduler.add_job(sc.get_user_in('refresh', token), 'interval', seconds=interval)
+def queue_daily(table, sort_by, operation_type, interval):
+    objects = sc.select_all(table, sort_by)
+    for object in objects:
+        scheduler.add_job(sc.get_user_in(operation_type, object), 'interval', seconds=interval)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
     scheduler.start()
-    scheduler.add_job(queue_tokens(sc.get_refresh_interval()), 'cron', hour='*/12')
+    scheduler.add_job(queue_daily(Token, 'expires_at', 'refresh', sc.get_interval('REFRESH_TOKEN')), 'cron', hour='*/12')
+    scheduler.add_job(queue_daily(User, 'last_updated', 'update', sc.get_interval('REFRESH_PROFILE')), 'cron', hour='*/2')
     scheduler.shutdown()
