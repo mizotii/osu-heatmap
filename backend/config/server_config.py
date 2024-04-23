@@ -2,6 +2,7 @@ import dateutil.parser
 import os
 import pydash as _
 import requests
+import time
 from datetime import datetime, timedelta
 from models import db, Class, Score, Token, User
 from sqlalchemy import exists, func
@@ -100,10 +101,7 @@ def create_auth_url():
 def delete_expired_tokens():
     tokens = select_all(Token, 'expires_at')
     now = datetime.now()
-    print(tokens)
     for token in tokens:
-        print(token)
-        print(token['expires_at'])
         expires_at = token['expires_at']
         if (token['expires_at'] < now):
             db.session.delete(get_token_out('expires_at', expires_at))
@@ -257,14 +255,10 @@ def refresh_token(refresh_token):
 def scores_to_heatmap(scores):
     heatmap_data = []
     for score in scores:
-        date = (score['timestamp']).split(' ')[0]
-        if date in data.values():
-            data[date] += int(score['notes'])
-        else:
-            data = {
-                'date': (score['timestamp']).replace(' ', 'T'),
-                'value': int(score['notes'])
-            }
+        heatmap_data.append({
+            'date': (score['timestamp']).timestamp() * 1000,
+            'value': score['notes'],
+        })
     return heatmap_data
 
 # 
@@ -290,8 +284,6 @@ def store_recent_scores(user_id):
     )
     scores = response.json()
     for score in scores:
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(score)
         score_id = _.get(score, score_attributes['id'])
         if not get_score_out('id', score_id, check_presence_only=True):
             db.session.add(
