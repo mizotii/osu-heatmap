@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { isUserValid } from "../stores/profile";
     import SvelteHeatmap from 'svelte-heatmap';
-    import moment, { now } from 'moment';
+    import moment from 'moment';
 
     export let id;
 
@@ -15,6 +15,9 @@
         if (id) {
             const response = await fetch(`/api/profile/${id}`);
             const data = await response.json();
+            for (const point of data.HEATMAP_DATA) {
+                point.date = (new Date(point.date));
+            }
             username = data.USERNAME;
             rank = data.GLOBAL_RANK;
             scores = data.SCORES;
@@ -22,8 +25,13 @@
         }
     }
 
+    function getHeatmapData() {
+        return heatmap_data;
+    }
+
     onMount (async () => {
-        fetchProfile();
+        await fetchProfile();
+        console.log(heatmap_data);
     })
 
     onDestroy(() => {
@@ -37,14 +45,20 @@
     <p>{username}</p>
     <div class="container">
         <SvelteHeatmap
-            data={heatmap_data}
+            allowOverflow={true}
             cellGap={5}
-            cellSize={1}
-            dayLabelWidth={0}
+            cellRadius={1}
+            colors={['#a1dab4', '#42b6c4', '#2c7fb9', '#263494']}
+            data={heatmap_data}
+            dayLabelWidth={20}
             dayLabels={[]}
+            emptyColor={'#808080'}
+            endDate={moment().toDate()}
             fontSize={8}
-            emptyColor={'#ffffff'}
-            monthLabels={[]}
+            monthGap={20}
+            monthLabelHeight={20}
+            startDate={moment().subtract(5, 'months').toDate()}
+            view={'monthly'}
          />
     </div>
 </profile>

@@ -256,7 +256,7 @@ def scores_to_heatmap(scores):
     heatmap_data = []
     for score in scores:
         heatmap_data.append({
-            'date': (score['timestamp']).timestamp() * 1000,
+            'date': int((score['timestamp']).timestamp() * 1000),
             'value': score['notes'],
         })
     return heatmap_data
