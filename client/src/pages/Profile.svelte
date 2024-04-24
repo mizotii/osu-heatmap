@@ -1,10 +1,12 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { isUserValid } from "../stores/profile";
-    import SvelteHeatmap from 'svelte-heatmap';
-    import moment from 'moment';
+    import CalHeatmap from "cal-heatmap";
+    import Tooltip from "cal-heatmap/plugins/Tooltip";
 
     export let id;
+
+    const cal = new CalHeatmap();
 
     let username;
     let rank;
@@ -25,13 +27,52 @@
         }
     }
 
-    function getHeatmapData() {
-        return heatmap_data;
-    }
-
     onMount (async () => {
         await fetchProfile();
         console.log(heatmap_data);
+        cal.paint(
+            {
+                data: {
+                    source: heatmap_data,
+                    x: 'date',
+                    y: 'value',
+                },
+                date: {
+                    start: new Date('2024-01-01')
+                },
+                range: 1,
+                scale: {
+                    color: {
+                        type: 'linear',
+                        scheme: 'PRGn',
+                        domain: [0, 40]
+                    }
+                },
+                domain: {
+                    type: 'year',
+                    label: { text: null },
+                },
+                subDomain: { 
+                    type: 'day',
+                    radius: 2
+                },
+                itemSelector: '#osu-heatmap',
+            },
+            [
+                [
+                    Tooltip,
+                    {
+                        text: function (date, value, dayjsDate) {
+                            return (
+                                (value ? value : 'No') +
+                                ' circles clicked on ' +
+                                dayjsDate.format('YYYY-MM-DD HH:mm:ss')
+                            );
+                        }
+                    },
+                ],
+            ]
+        );
     })
 
     onDestroy(() => {
@@ -43,24 +84,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{username}'s avatar"/>
     <p>#{rank}</p>
     <p>{username}</p>
-    <div class="container">
-        <SvelteHeatmap
-            allowOverflow={true}
-            cellGap={5}
-            cellRadius={1}
-            colors={['#a1dab4', '#42b6c4', '#2c7fb9', '#263494']}
-            data={heatmap_data}
-            dayLabelWidth={20}
-            dayLabels={[]}
-            emptyColor={'#808080'}
-            endDate={moment().toDate()}
-            fontSize={8}
-            monthGap={20}
-            monthLabelHeight={20}
-            startDate={moment().subtract(5, 'months').toDate()}
-            view={'monthly'}
-         />
-    </div>
+    <div id="osu-heatmap"></div>
 </profile>
 
 <style>
