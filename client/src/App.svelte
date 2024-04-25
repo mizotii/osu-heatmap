@@ -1,6 +1,5 @@
 <script>
 	import { Route, Router, Link, navigate } from 'svelte-routing';
-
 	// components
 	import Authorize from './components/Authorize.svelte';
 	import Search from './components/Search.svelte';
@@ -34,6 +33,7 @@
 </main>
 
 <style>
+
 	main {
 		text-align: center;
 		padding: 1em;
