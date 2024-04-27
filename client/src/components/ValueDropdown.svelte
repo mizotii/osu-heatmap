@@ -2,7 +2,7 @@
 
 </script>
 
-<button class="btn">Button</button>
+
 
 <style>
     
