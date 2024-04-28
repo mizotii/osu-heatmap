@@ -43,6 +43,15 @@ fetch_token_payload = {
     'redirect_uri': endpoints['REDIRECT_URI'],
 }
 
+hit_count_attributes = {
+    'count_300': 'statistics.count_300',
+    'count_100': 'statistics.count_100',
+    'count_50': 'statistics.count_50',
+    'count_geki': 'statistics.count_geki',
+    'count_katu': 'statistics.count_katu',
+    'count_miss': 'statistics.count_miss',
+}
+
 profile_data = {
     'USERNAME': None,
     'GLOBAL_RANK': None,
@@ -55,9 +64,6 @@ score_attributes = {
     'id': 'current_user_attributes.pin.score_id',
     'user_id': 'user.id',
     'timestamp': 'created_at',
-    'count_300': 'statistics.count_300',
-    'count_100': 'statistics.count_100',
-    'count_50': 'statistics.count_50',
     'accuracy': 'accuracy',
     }
 
@@ -92,9 +98,14 @@ rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
 ]
 
+def add_notes(ruleset, score):
+    if ruleset not in rulesets:
+        raise ValueError(write_value_error(ruleset, rulesets))
+    
+
 def create_auth_url():
     query = urlencode(authentication_payload)
-    url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)
+    url = urljoin(endpoints['BASE_URL'] + endpoints['AUTHORIZATION'], '?' + query)    
     return url
 
 def delete_expired_tokens():
@@ -221,8 +232,8 @@ def get_user_in(operation_type, token_data):
         
         # rare case where user exists but token doesn't
         if not get_token_out('user_id', new_user_id, check_presence_only=True):
-            db.session.add(                
-                Token(
+            db.session.add(                 
+                Token(  
                     user_id=new_user_id,
                     access_token=access,
                     expires_at=get_expiration(int(token_data['expires_in'])),
@@ -251,6 +262,9 @@ def get_user_score_endpoint(user_id):
     
 def get_user_out(attribute, value, check_presence_only=False, as_dict=False):
     return get_object_out(User, attribute, value, check_presence_only, as_dict)
+
+def none_to_zero(value):
+    return 0 if value is None else value
 
 def refresh_token(refresh_token):
     response = requests.post(
@@ -284,14 +298,15 @@ def select_all(table, sort_by, attribute=None, value=None):
     
 def store_recent_scores(user_id):
     token_data = get_token_out('user_id', user_id, as_dict=True)
-    response = requests.get(
-        endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
-        headers=get_headers(token_data['access_token']),
-        # debug score params
-        data=get_score_parameters('mania'),
-    )
-    scores = response.json()
-    print(scores)
+    scores = []
+    for ruleset in rulesets:
+        response = requests.get(
+            urljoin(endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id), '?' + urlencode(get_score_parameters(ruleset))),
+            headers=get_headers(token_data['access_token']),
+        )
+        data = response.json()
+        for score in data:
+            scores.append(score)
     for score in scores:
         score_id = _.get(score, score_attributes['id'])
         if not get_score_out('id', score_id, check_presence_only=True):
@@ -301,9 +316,6 @@ def store_recent_scores(user_id):
                     user_id=user_id,
                     timestamp=dateutil.parser.isoparse(_.get(score, score_attributes['timestamp'])),
                     notes=(
-                        _.get(score, score_attributes['count_300']) +
-                        _.get(score, score_attributes['count_100']) +
-                        _.get(score, score_attributes['count_50'])
                     ),
                     accuracy=_.get(score, score_attributes['accuracy']),                    
                 )
