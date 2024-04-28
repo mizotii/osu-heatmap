@@ -1,6 +1,6 @@
 [![wakatime](https://wakatime.com/badge/github/mizotii/osu-heatmap.svg)](https://wakatime.com/badge/github/mizotii/osu-heatmap)
 
-Svelte frontend, Flask backend
+Svelte frontend, Flask backend, Tailwind CSS with daisyUI components
 
 working on:
 heatmap implementation
