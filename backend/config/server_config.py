@@ -50,6 +50,7 @@ profile_data = {
     'HEATMAP_DATA': [],
 }
 
+# NOTE: id can only be tracked if user is authorized, hence CURRENT user attributes.
 score_attributes = {
     'id': 'current_user_attributes.pin.score_id',
     'user_id': 'user.id',
@@ -59,12 +60,6 @@ score_attributes = {
     'count_50': 'statistics.count_50',
     'accuracy': 'accuracy',
     }
-
-score_parameters = {
-    'scope': 'public',
-    'include_fails': '1',
-    'mode': 'osu',
-}
 
 token_attributes = {
     'user_id': 'user_id',
@@ -92,6 +87,10 @@ authentication_payload = {
     'scope': 'public identify',
     'state': 'randomval',
 }
+
+rulesets = [
+    'osu', 'taiko', 'fruits', 'mania',
+]
 
 def create_auth_url():
     query = urlencode(authentication_payload)
@@ -121,6 +120,26 @@ def get_headers(token=None):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
     return headers
 
+def get_interval(type):
+    valid_types = automatic_intervals.keys()
+    if type not in valid_types:
+        raise ValueError(write_value_error(type, valid_types))
+    return int(automatic_intervals[type]) / db.session.query(func.count(Token.user_id)).scalar()
+
+# functions as a user presence checker if last arg is True
+def get_object_out(table, attribute, value, check_presence_only=False, as_dict=False):
+    valid_attributes = table.__table__.columns.keys()
+    if attribute not in valid_attributes:
+        raise ValueError(write_value_error(attribute, valid_attributes))
+    if check_presence_only:
+        return db.session.query(exists().where(getattr(table, attribute) == value)).scalar()
+    else:
+        query = (db.session.query(table).where(getattr(table, attribute) == value).first())
+        if not as_dict:
+            return query
+        else:
+            return query.as_dict()
+
 def get_refresh_payload(refresh):
     payload = {
         'client_id': client_credentials['CLIENT_ID'],
@@ -131,6 +150,19 @@ def get_refresh_payload(refresh):
     }
     return payload
 
+def get_score_out(attribute, value, check_presence_only=False, as_dict=False):
+    return get_object_out(Score, attribute, value, check_presence_only, as_dict)
+
+def get_score_parameters(ruleset):
+    if ruleset not in rulesets:
+        raise ValueError(write_value_error(ruleset, rulesets))
+    score_parameters = {
+        'scope': 'public',
+        'include_fails': '1',
+        'mode': ruleset,
+    }
+    return score_parameters
+
 def get_token_data(code):
     response = requests.post(
         endpoints['BASE_URL'] + endpoints['TOKEN'],
@@ -138,6 +170,9 @@ def get_token_data(code):
         data=get_token_payload(code)
     )
     return response.json()
+
+def get_token_out(attribute, value, check_presence_only=False, as_dict=False):
+    return get_object_out(Token, attribute, value, check_presence_only, as_dict)
 
 def get_token_payload(code):
     payload = {
@@ -149,7 +184,6 @@ def get_token_payload(code):
     }
     return payload
 
-# my bad
 def get_user_in(operation_type, token_data):
     valid_operations = ['refresh', 'update']
     if operation_type not in valid_operations:
@@ -171,7 +205,7 @@ def get_user_in(operation_type, token_data):
             old_user_data = get_user_out('id', new_user_id)
             for key in User.__table__.columns.keys():
                 if key not in ('id', 'last_updated'):
-                    old_user_data.key = _.get(new_user_data, user_attributes[key])
+                    setattr(old_user_data, key, _.get(new_user_data, user_attributes[key]))
             old_user_data.last_updated = datetime.now()
 
         # if user is new
@@ -212,37 +246,11 @@ def get_user_in(operation_type, token_data):
             old_token.last_updated = datetime.now() + _.get(new_token, token_attributes['expires_at'])
         db.session.commit()
 
-# functions as a user presence checker if last arg is True
-def get_object_out(table, attribute, value, check_presence_only=False, as_dict=False):
-    valid_attributes = table.__table__.columns.keys()
-    if attribute not in valid_attributes:
-        raise ValueError(write_value_error(attribute, valid_attributes))
-    if check_presence_only:
-        return db.session.query(exists().where(getattr(table, attribute) == value)).scalar()
-    else:
-        query = (db.session.query(table).where(getattr(table, attribute) == value).first())
-        if not as_dict:
-            return query
-        else:
-            return query.as_dict()
-        
-def get_interval(type):
-    valid_types = automatic_intervals.keys()
-    if type not in valid_types:
-        raise ValueError(write_value_error(type, valid_types))
-    return int(automatic_intervals[type]) / db.session.query(func.count(Token.user_id)).scalar()
-
-def get_score_out(attribute, value, check_presence_only=False, as_dict=False):
-    return get_object_out(Score, attribute, value, check_presence_only, as_dict)
-    
-def get_token_out(attribute, value, check_presence_only=False, as_dict=False):
-    return get_object_out(Token, attribute, value, check_presence_only, as_dict)
+def get_user_score_endpoint(user_id):
+    return f'/users/{user_id}/scores/recent'
     
 def get_user_out(attribute, value, check_presence_only=False, as_dict=False):
     return get_object_out(User, attribute, value, check_presence_only, as_dict)
-
-def get_user_score_endpoint(user_id):
-    return f'/users/{user_id}/scores/recent'
 
 def refresh_token(refresh_token):
     response = requests.post(
@@ -261,7 +269,6 @@ def scores_to_heatmap(scores):
         })
     return heatmap_data
 
-# 
 def select_all(table, sort_by, attribute=None, value=None):
     valid_attributes = table.__table__.columns.keys()
     if sort_by not in valid_attributes:
@@ -280,9 +287,11 @@ def store_recent_scores(user_id):
     response = requests.get(
         endpoints['BASE_URL'] + endpoints['V2'] + get_user_score_endpoint(user_id),
         headers=get_headers(token_data['access_token']),
-        data=score_parameters,
+        # debug score params
+        data=get_score_parameters('mania'),
     )
     scores = response.json()
+    print(scores)
     for score in scores:
         score_id = _.get(score, score_attributes['id'])
         if not get_score_out('id', score_id, check_presence_only=True):
