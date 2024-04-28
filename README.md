@@ -3,6 +3,6 @@
 Svelte frontend, Flask backend, Tailwind CSS with daisyUI components
 
 working on:
-heatmap implementation
+switch between different modes and different counting stats
 
 this is my first ever web project -- meaning it probably won't be open source once deployed (it's not great!)
