@@ -38,7 +38,17 @@ class Score(Class):
     id = db.Column(db.String(dc.constraints['MAX_SCORE_LENGTH']), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     timestamp = db.Column(db.DateTime, nullable=False)
+    playtime = db.Column(db.Interval)
+    mode = db.Column(db.String(dc.constraints['MAX_MODE_LENGTH']))
+    count_300 = db.Column(db.Integer)
+    count_100 = db.Column(db.Integer)
+    count_50 = db.Column(db.Integer)
+    count_geki = db.Column(db.Integer)
+    count_katu = db.Column(db.Integer)
+    count_miss = db.Column(db.Integer)
     notes = db.Column(db.Integer, nullable=False)
+    # for display purposes
     accuracy = db.Column(db.Float, nullable=False)
-    # other stats like 300s 100s 50s misses score rank etc
+    max_combo = db.Column(db.Integer)
+    # need: mods (int bitset?)
     
