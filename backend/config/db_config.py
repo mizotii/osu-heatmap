@@ -1,7 +1,8 @@
 constraints = {
-    'MAX_MODE_LENGTH': 6,
-    'MAX_SCORE_LENGTH': 20,
-    'MAX_TOKEN_LENGTH': 2000,
-    'MAX_TYPE_LENGTH': 6,
-    'MAX_USER_LENGTH': 15,
+    'max_token_length': 2000,
+    'max_user_length': 15,
+    'veryshort': 16,
+    'short': 32,
+    'medium': 64,
+    'long': 255,
 }
