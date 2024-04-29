@@ -11,7 +11,7 @@ from flask_migrate import Migrate
 from models import init_db, db, Score, Token, User
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['DB_URI']
+app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 init_db(app)
 migrate = Migrate(app, db)
 CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://localhost:8080"]}})
