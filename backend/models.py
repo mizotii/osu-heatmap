@@ -1,9 +1,9 @@
 from config import db_config as dc
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, Index
 from sqlalchemy.orm import relationship
-from sqlalchemy.schema import UniqueConstraint
+from sqlalchemy.schema import PrimaryKeyConstraint
 
 db = SQLAlchemy()
 
@@ -23,7 +23,7 @@ class UserRuleset(db.Model):
 
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     last_updated = db.Column(db.DateTime)
-    username = db.Column(db.String(dc.constraints['MAX_USER_LENGTH']), db.ForeignKey('users.username'))
+    username = db.Column(db.String(dc.constraints['max_user_length']))
     # retroactive to first update
     play_count = db.Column(db.Integer)
     play_time = db.Column(db.Integer)
@@ -42,7 +42,7 @@ class User(Class):
     id = db.Column(db.Integer, primary_key=True)
     is_deleted = db.Column(db.Boolean)
     is_restricted = db.Column(db.Boolean)
-    username = db.Column(db.String(dc.constraints['MAX_USER_LENGTH']))
+    username = db.Column(db.String(dc.constraints['max_user_length']))
 
 class UserOsu(UserRuleset):
     __tablename__ = 'users_osu'
@@ -60,10 +60,10 @@ class Token(Class):
     __tablename__ = 'tokens'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    access_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']))
+    access_token = db.Column(db.String(dc.constraints['max_token_length']))
     expires_at = db.Column(db.DateTime)
-    refresh_token = db.Column(db.String(dc.constraints['MAX_TOKEN_LENGTH']))
-    token_type = db.Column(db.String(dc.constraints['MAX_TYPE_LENGTH']))
+    refresh_token = db.Column(db.String(dc.constraints['max_token_length']))
+    token_type = db.Column(db.String(dc.constraints['veryshort']))
 
 class BeatmapSet(Class):
     __tablename__ = 'beatmapsets'
@@ -92,17 +92,18 @@ class Beatmap(Class):
     beatmapset = relationship('BeatmapSet', back_populates='beatmap')
 
     __table_args__ = (
-        UniqueConstraint('beatmapset_id', 'id', name='pk_beatmap')
+        PrimaryKeyConstraint('beatmapset_id', 'id', name='pk_beatmap'),
+        Index('ix_beatmaps_id', 'id')
     )
 
 class Score(Class):
     __tablename__ = 'scores'
 
-    id = db.Column(db.String(dc.constraints['MAX_SCORE_LENGTH']), primary_key=True)
+    id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime)
     playtime = db.Column(db.Interval)
-    mode = db.Column(db.String(dc.constraints['MAX_MODE_LENGTH']))
+    mode = db.Column(db.String(dc.constraints['veryshort']))
     count_300 = db.Column(db.Integer)
     count_100 = db.Column(db.Integer)
     count_50 = db.Column(db.Integer)
@@ -115,6 +116,6 @@ class Score(Class):
     beatmap_id = db.Column(db.Integer, db.ForeignKey('beatmaps.id'))
     beatmapset_id = db.Column(db.Integer, db.ForeignKey('beatmapsets.id'))
     max_combo = db.Column(db.Integer)
-    mods = db.Column(db.String(dc.constraints['MAX_MODS_LENGTH']))
+    mods = db.Column(db.String(dc.constraints['veryshort']))
     passed = db.Column(db.Boolean)
-    rank = db.Column(db.String(dc.constraints['MAX_RANK_LENGTH']))
+    rank = db.Column(db.String(dc.constraints['veryshort']))
