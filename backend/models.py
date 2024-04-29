@@ -21,17 +21,17 @@ class Class(db.Model):
 class UserRuleset(db.Model):
     __abstract__ = True
 
-    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
     last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
     # retroactive to first update
     play_count = db.Column(db.Integer)
     play_time = db.Column(db.Integer)
-    ranked_score = db.Column(db.Integer)
+    ranked_score = db.Column(db.BigInteger)
     streak_current = db.Column(db.Integer)
     streak_longest = db.Column(db.Integer)
-    total_hits = db.Column(db.Integer)
-    total_score = db.Column(db.Integer)
+    total_hits = db.Column(db.BigInteger)
+    total_score = db.Column(db.BigInteger)
 
 class User(Class):
     __tablename__ = 'users'
@@ -39,9 +39,10 @@ class User(Class):
     avatar_url = db.Column(db.String(dc.constraints['long']))
     country_code = db.Column(db.String(dc.constraints['short']))
     cover_url = db.Column(db.String(dc.constraints['long']))
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
     is_deleted = db.Column(db.Boolean)
     is_restricted = db.Column(db.Boolean)
+    last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
 
 class UserOsu(UserRuleset):
@@ -59,7 +60,7 @@ class UserMania(UserRuleset):
 class Token(Class):
     __tablename__ = 'tokens'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     access_token = db.Column(db.String(dc.constraints['max_token_length']))
     expires_at = db.Column(db.DateTime)
     refresh_token = db.Column(db.String(dc.constraints['max_token_length']))
@@ -100,7 +101,7 @@ class Score(Class):
     __tablename__ = 'scores'
 
     id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'))
     timestamp = db.Column(db.DateTime)
     playtime = db.Column(db.Interval)
     mode = db.Column(db.String(dc.constraints['veryshort']))
