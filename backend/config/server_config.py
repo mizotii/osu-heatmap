@@ -41,6 +41,13 @@ tables = {
     'taiko': UserTaiko,
 }
 
+token_attributes = {
+    'access_token': 'access_token',
+    'expires_at': 'expires_in',
+    'refresh_token': 'refresh_token',
+    'token_type': 'token_type',
+}
+
 user_attributes = {
     'avatar_url': 'avatar_url',
     'country_code': 'country_code',
@@ -66,24 +73,26 @@ authorization_parameters = {
     'state': 'randomval',
 }
 
-def after_authorization(token):
-    id = fetch_user(token['access_token'], 'osu', 'id')
-    if get_object(Token, 'user_id', id, True):
-        refresh_token(token)
+def after_authorization(token, code):
+    id = fetch_user(token['access_token'], attribute='id')
+    hyp_user = get_object(Token, 'user_id', id)
+
+    # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
+    if hyp_user:
+        refresh_token(hyp_user, code)
+        for ruleset in rulesets:
+            direct_update_user(id, token, ruleset)
     else:
         store_token(id, token)
-    if get_object(User, 'id', id, True):
-        update_user(token)
-    else:
         store_user(token)
-    for ruleset in rulesets:
-        if get_object(tables[ruleset], 'id', id, True):
-            update_user_ruleset(token, ruleset)
-        else:
+        for ruleset in rulesets:
             store_user_ruleset(token, ruleset)
 
 def create_authorization_url():
     return urljoin(endpoints['authorize'], '?' + urlencode(authorization_parameters))
+
+def calculate_expiration(interval):
+    return (datetime.now() + timedelta(seconds=interval))
 
 def create_headers(token=None):
     headers = {
@@ -95,6 +104,18 @@ def create_headers(token=None):
     else:
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
     return headers
+
+def create_refresh_parameters(refresh):
+    if not refresh:
+        raise ValueError('could not create refresh token parameters: no refresh token provided')
+    params = {
+        'client_id': client_credentials['client_id'],
+        'client_secret': client_credentials['client_secret'],
+        'grant_type': 'refresh_token',
+        'refresh_token': refresh,
+        'scope': 'public identify',
+    }
+    return params
 
 def create_token_parameters(code):
     if not code:
@@ -108,6 +129,18 @@ def create_token_parameters(code):
     }
     return params
 
+# updates general user and osu ruleset for user by default (osu)
+def direct_update_user(id, token, ruleset):
+    if ruleset == 'osu':
+        table = User
+        old_user = get_object(table, 'id', id)
+        new_user = fetch_user(token['access_token'])
+        update_user(table, old_user, new_user)
+    table = tables[ruleset]
+    old_user = get_object(table, 'id', id)
+    new_user = fetch_user(token['access_token'], ruleset)
+    update_user(table, old_user, new_user)
+
 def fetch_token(code):
     response = requests.post(
         endpoints['token'],
@@ -116,7 +149,7 @@ def fetch_token(code):
     )
     return response.json()
 
-def fetch_user(access, ruleset, attribute=None):
+def fetch_user(access, ruleset='osu', attribute=None):
     if ruleset not in rulesets:
         raise ValueError(write_value_error(ruleset, rulesets))
     response = requests.get(
@@ -143,8 +176,35 @@ def get_object(table, attribute, value, check_exists_only=False, as_dict=False):
         else:
             return query.as_dict()
 
-def refresh_token(refresh):
-    return
+def hard_refresh_token(attribute, value, code):
+    if code is None:
+        raise ValueError('could not hard refresh token: no code provided')
+    old_token = get_object(Token, attribute, value)
+    new_token = fetch_token(code)
+    for key in Token.__table__.columns.keys():
+        if key not in ('user_id', 'expires_at'):
+            setattr(old_token, key, _.get(new_token, user_attributes[key]))
+    setattr(old_token, 'expires_at', calculate_expiration(new_token['expires_in']))
+
+def refresh_token(user, code=None):
+    if getattr(user, 'expires_at') > datetime.now():
+        return 'token is still valid!'
+    refresh = getattr(user, 'refresh_token')
+    response = requests.post(
+        endpoints['token'],
+        headers=create_headers(),
+        data=create_refresh_parameters(refresh)
+    )
+    data = response.json()
+    if 'error' in data:
+        hard_refresh_token('refresh_token', refresh, code)
+        desc = data['error_description']
+        hint = data['hint']
+        raise ValueError(f'error description: {desc} hint: {hint}')
+    for key in Token.__table__.columns.keys():
+        if key not in ('user_id', 'expires_at'):
+            setattr(user, key, _.get(data, user_attributes[key]))
+    setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
 
 # stores token, then stores all four user rulesets
 def store_token(id, token):
@@ -152,15 +212,16 @@ def store_token(id, token):
         Token(
             user_id=id,
             access_token=token['access_token'],
-            expires_at=((datetime.now()+timedelta(seconds=token['expires_in']))),
+            expires_at=(calculate_expiration(token['expires_in'])),
             refresh_token=token['refresh_token'],
             token_type=token['token_type'],
         )
     )
     db.session.commit()
 
+# todo: rework a la update functions
 def store_user(token):
-    user = fetch_user(token['access_token'], 'osu')
+    user = fetch_user(token['access_token'])
     db.session.add(
         User(
             avatar_url=_.get(user, user_attributes['avatar_url']),
@@ -193,11 +254,13 @@ def store_user_ruleset(token, ruleset):
     )
     db.session.commit()
 
-def update_user(user):
-    return
-
-def update_user_ruleset(user_ruleset):
-    return
+def update_user(table, old_user, new_user):
+    for key in table.__table__.columns.keys():
+        if key not in ('id', 'last_updated', 'streak_current', 'streak_longest'):
+            print(key)
+            print(old_user, key, _.get(new_user, user_attributes[key]))
+            setattr(old_user, key, _.get(new_user, user_attributes[key]))
+    setattr(old_user, 'last_updated', datetime.now())
 
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)

@@ -45,8 +45,9 @@ def fetch_profile(id):
 
 @app.route("/callback")
 def callback():
-    token = sc.fetch_token(request.args.get('code'))
-    sc.after_authorization(token)
+    code = request.args.get('code')
+    token = sc.fetch_token(code)
+    sc.after_authorization(token, code)
     return redirect("/")
 
 @app.route("/delete_expired_tokens")
