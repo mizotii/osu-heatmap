@@ -45,6 +45,16 @@ class User(Class):
     last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
 
+class UserDailyStatistics(Class):
+    __tablename__ = 'daily_statistics'
+
+    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
+    ruleset = db.Column(db.String(dc.constraints['short']))
+    start_date = db.Column(db.DateTime)
+    playtime = db.Column(db.Interval)
+    playcount = db.Column(db.Integer)
+    notecount = db.Column(db.Integer)
+
 class UserOsu(UserRuleset):
     __tablename__ = 'users_osu'
 
@@ -103,7 +113,6 @@ class Score(Class):
     id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'))
     timestamp = db.Column(db.DateTime)
-    playtime = db.Column(db.Interval)
     mode = db.Column(db.String(dc.constraints['veryshort']))
     count_300 = db.Column(db.Integer)
     count_100 = db.Column(db.Integer)
