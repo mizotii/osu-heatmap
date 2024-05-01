@@ -41,6 +41,13 @@ tables = {
     'taiko': UserTaiko,
 }
 
+score_attributes = {
+    'id': 'current_user_attributes.pin.score_id',
+    'user_id': 'user_id',
+    'timestamp': 'created_at',
+    'playtime': ''
+}
+
 token_attributes = {
     'access_token': 'access_token',
     'expires_at': 'expires_in',
@@ -117,6 +124,18 @@ def create_refresh_parameters(refresh):
     }
     return params
 
+def create_recents_endpoint(id):
+    return f'/users/{id}/scores/recent'
+
+def create_recents_parameters(ruleset):
+    if ruleset not in rulesets:
+        raise ValueError(write_value_error(ruleset, rulesets))
+    params = {
+        'include_fails': '1',
+        'mode': ruleset,
+    }
+    return params
+
 def create_token_parameters(code):
     if not code:
         raise ValueError('could not create token parameters: no code provided')
@@ -140,6 +159,14 @@ def direct_update_user(id, token, ruleset):
     old_user = get_object(table, 'id', id)
     new_user = fetch_user(token['access_token'], ruleset)
     update_user(table, old_user, new_user)
+
+def fetch_recent_scores(id, ruleset):
+    token = get_object(Token, 'id', id)
+    response = requests.get(
+        endpoints['api'] + urljoin(create_recents_endpoint(id), '?' + urlencode(create_recents_parameters(ruleset))),
+        headers=create_headers(getattr(token, 'access_token'))
+    )
+    return response.json()
 
 def fetch_token(code):
     response = requests.post(
@@ -205,6 +232,13 @@ def refresh_token(user, code=None):
         if key not in ('user_id', 'expires_at'):
             setattr(user, key, _.get(data, user_attributes[key]))
     setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
+
+def store_score(score):
+    db.session.add(
+        Score(
+
+        )
+    )
 
 # stores token, then stores all four user rulesets
 def store_token(id, token):
