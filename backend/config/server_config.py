@@ -4,9 +4,29 @@ import pydash as _
 import requests
 import time
 from datetime import datetime, timedelta
-from models import db, Class, Score, Token, User, UserCatch, UserMania, UserOsu, UserTaiko
+from models import db, Beatmap, BeatmapSet, Class, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
 from sqlalchemy import exists, func
 from urllib.parse import urlencode, urljoin
+
+beatmap_attributes = {
+    'beatmapset_id': 'beatmapset_id',
+    'difficulty_rating': 'difficulty_rating',
+    'id': 'id',
+    'ruleset': 'mode',
+    'total_length': 'hit_length',
+    'version': 'version',
+}
+
+beatmapset_attributes = {
+    'id': 'id',
+    'card': 'covers.card',
+    'card_2x': 'covers.card@2x',
+    'creator': 'creator',
+    'creator_id': 'user_id',
+    'status': 'status',
+    'title': 'title',
+    'title_unicode': 'title_unicode',
+}
 
 client_credentials = {
     'client_id': os.environ['CLIENT_ID'],
@@ -34,18 +54,31 @@ rulesets = [
     'fruits', 'mania', 'osu', 'taiko', 
 ]
 
+score_attributes = {
+    'id': 'current_user_attributes.pin.score_id',
+    'user_id': 'user_id',
+    'timestamp': 'created_at',
+    'ruleset': 'mode',
+    'count_300': 'statistics.count_300',
+    'count_100': 'statistics.count_100',
+    'count_50': 'statistics.count_50',
+    'count_geki': 'statistics.count_geki',
+    'count_katu': 'statistics.count_katu',
+    'count_miss': 'statistics.count_miss',
+    'accuracy': 'accuracy',
+    'beatmap_id': 'beatmap.id',
+    'beatmapset_id': 'beatmap.beatmapset_id',
+    'max_combo': 'max_combo',
+    'mods': 'mods',
+    'passed': 'passed',
+    'rank': 'rank',
+}
+
 tables = {
     'fruits': UserCatch,
     'mania': UserMania,
     'osu': UserOsu,
     'taiko': UserTaiko,
-}
-
-score_attributes = {
-    'id': 'current_user_attributes.pin.score_id',
-    'user_id': 'user_id',
-    'timestamp': 'created_at',
-    'playtime': ''
 }
 
 token_attributes = {
@@ -85,7 +118,7 @@ def after_authorization(token, code):
     hyp_user = get_object(Token, 'user_id', id)
 
     # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
-    if hyp_user:
+    """if hyp_user:
         refresh_token(hyp_user, code)
         for ruleset in rulesets:
             direct_update_user(id, token, ruleset)
@@ -93,7 +126,8 @@ def after_authorization(token, code):
         store_token(id, token)
         store_user(token)
         for ruleset in rulesets:
-            store_user_ruleset(token, ruleset)
+            store_user_ruleset(token, ruleset)"""
+    update_user_scores(id)
 
 def create_authorization_url():
     return urljoin(endpoints['authorize'], '?' + urlencode(authorization_parameters))
@@ -161,7 +195,7 @@ def direct_update_user(id, token, ruleset):
     update_user(table, old_user, new_user)
 
 def fetch_recent_scores(id, ruleset):
-    token = get_object(Token, 'id', id)
+    token = get_object(Token, 'user_id', id)
     response = requests.get(
         endpoints['api'] + urljoin(create_recents_endpoint(id), '?' + urlencode(create_recents_parameters(ruleset))),
         headers=create_headers(getattr(token, 'access_token'))
@@ -233,12 +267,85 @@ def refresh_token(user, code=None):
             setattr(user, key, _.get(data, user_attributes[key]))
     setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
 
+def select_all(table, sort_by, attribute=None, value=None):
+    valid_attributes = table.__table__.columns.keys()
+    if sort_by not in valid_attributes:
+        raise ValueError(write_value_error(table, valid_attributes))
+    data = []
+    query = db.session.query(table)
+    if attribute:
+        query = query.where(getattr(table, attribute) == value)
+    all_obj = db.session.query(table).order_by(getattr(table, sort_by).desc()).all()
+    for obj in all_obj:
+        data.append(obj.as_dict())
+    return data
+
+def store_beatmap(beatmap):
+    db.session.add(
+        Beatmap(
+            beatmapset_id=_.get(beatmap, beatmap_attributes['beatmapset_id']),
+            difficulty_rating=_.get(beatmap, beatmap_attributes['difficulty_rating']),
+            id=_.get(beatmap, beatmap_attributes['id']),
+            ruleset=_.get(beatmap, beatmap_attributes['ruleset']),
+            total_length=_.get(beatmap, beatmap_attributes['total_length']),
+            version=_.get(beatmap, beatmap_attributes['version']),
+        )
+    )
+    db.session.commit()
+
+def store_beatmapset(beatmapset):
+    db.session.add(
+        BeatmapSet(
+            id=_.get(beatmapset, beatmapset_attributes['id']),
+            card=_.get(beatmapset, beatmapset_attributes['card']),
+            card_2x=_.get(beatmapset, beatmapset_attributes['card_2x']),
+            creator=_.get(beatmapset, beatmapset_attributes['creator']),
+            creator_id=_.get(beatmapset, beatmapset_attributes['creator_id']),
+            status=_.get(beatmapset, beatmapset_attributes['status']),
+            title=_.get(beatmapset, beatmapset_attributes['title']),
+            title_unicode=_.get(beatmapset, beatmapset_attributes['title_unicode']),
+        )
+    )
+    db.session.commit()
+
+def store_daily_statistics(access, id, ruleset, date):
+    scores = db.session.query(Score).where(getattr(Score, 'timestamp').date() == date).all()
+    db.session.add(
+        UserDailyStatistics(
+            id=id,
+            ruleset=ruleset,
+            start_date=date,
+            playtime=fetch_user(access, ruleset, user_attributes['play_time']),
+            playcount=len(scores),
+            notecount=sum(getattr(score, 'notes') for score in scores),
+        )
+    )
+    db.session.commit()
+
 def store_score(score):
     db.session.add(
         Score(
-
+            id=_.get(score, score_attributes['id']),
+            user_id=_.get(score, score_attributes['user_id']),
+            timestamp=dateutil.parser.isoparse(_.get(score, score_attributes['timestamp'])),
+            ruleset=_.get(score, score_attributes['ruleset']),
+            count_300=_.get(score, score_attributes['count_300']),
+            count_100=_.get(score, score_attributes['count_100']),
+            count_50=_.get(score, score_attributes['count_50']),
+            count_geki=_.get(score, score_attributes['count_geki']),
+            count_katu=_.get(score, score_attributes['count_katu']),
+            count_miss=_.get(score, score_attributes['count_miss']),
+            notes=total_notes(score),
+            accuracy=_.get(score, score_attributes['accuracy']),
+            beatmap_id=_.get(score, score_attributes['beatmap_id']),
+            beatmapset_id=_.get(score, score_attributes['beatmapset_id']),
+            max_combo=_.get(score, score_attributes['max_combo']),
+            mods=' '.join(_.get(score, score_attributes['mods'])),
+            passed=_.get(score, score_attributes['passed']),
+            rank=_.get(score, score_attributes['rank']),
         )
     )
+    db.session.commit()
 
 # stores token, then stores all four user rulesets
 def store_token(id, token):
@@ -288,13 +395,28 @@ def store_user_ruleset(token, ruleset):
     )
     db.session.commit()
 
+def total_notes(score):
+    print(score['statistics'])    
+    return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
+
 def update_user(table, old_user, new_user):
     for key in table.__table__.columns.keys():
         if key not in ('id', 'last_updated', 'streak_current', 'streak_longest'):
-            print(key)
-            print(old_user, key, _.get(new_user, user_attributes[key]))
             setattr(old_user, key, _.get(new_user, user_attributes[key]))
     setattr(old_user, 'last_updated', datetime.now())
+
+def update_user_scores(id):
+    for ruleset in rulesets:
+        scores = fetch_recent_scores(id, ruleset)
+        for score in scores:
+            beatmap = score['beatmap']
+            beatmapset = score['beatmapset']
+            if not get_object(BeatmapSet, 'id', _.get(beatmapset, beatmapset_attributes['id']), check_exists_only=True):
+                store_beatmapset(beatmapset)
+            if not get_object(Beatmap, 'id', _.get(beatmap, beatmap_attributes['id']), check_exists_only=True):
+                store_beatmap(beatmap)
+            if not get_object(Score, 'id', _.get(score, score_attributes['id']), check_exists_only=True):
+                store_score(score)
 
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)

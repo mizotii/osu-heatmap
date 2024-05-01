@@ -52,7 +52,6 @@ def callback():
 
 @app.route("/delete_expired_tokens")
 def delete_expired_tokens():
-    sc.delete_expired_tokens()
     return redirect("/")
 
 if __name__ == "__main__":
