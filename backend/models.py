@@ -84,12 +84,9 @@ class BeatmapSet(Class):
     card_2x = db.Column(db.String(dc.constraints['long']))
     creator = db.Column(db.String(dc.constraints['max_user_length']))
     creator_id = db.Column(db.Integer)
-    difficulty_rating = db.Column(db.Float)
-    mode = db.Column(db.String(dc.constraints['short']))
     status = db.Column(db.String(dc.constraints['short']))
     title = db.Column(db.String(dc.constraints['long']))
     title_unicode = db.Column(db.String(dc.constraints['long']))
-    total_length = db.Column(db.Integer)
 
     beatmap = relationship('Beatmap', back_populates='beatmapset')
 
@@ -97,7 +94,10 @@ class Beatmap(Class):
     __tablename__ = 'beatmaps'
 
     beatmapset_id = db.Column(db.Integer, db.ForeignKey('beatmapsets.id'), primary_key=True)
+    difficulty_rating = db.Column(db.Float)
     id = db.Column(db.Integer, primary_key=True)
+    ruleset = db.Column(db.String(dc.constraints['short']))
+    total_length = db.Column(db.Integer)
     version = db.Column(db.String(dc.constraints['long']))
 
     beatmapset = relationship('BeatmapSet', back_populates='beatmap')
@@ -113,7 +113,7 @@ class Score(Class):
     id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'))
     timestamp = db.Column(db.DateTime)
-    mode = db.Column(db.String(dc.constraints['veryshort']))
+    ruleset = db.Column(db.String(dc.constraints['veryshort']))
     count_300 = db.Column(db.Integer)
     count_100 = db.Column(db.Integer)
     count_50 = db.Column(db.Integer)
