@@ -5,7 +5,7 @@ import os
 import pydash as _
 from apscheduler.schedulers.background import BackgroundScheduler
 from config import server_config as sc
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
@@ -40,7 +40,7 @@ def search(username):
     return
 
 # todo: make this a function in config
-@app.route("/api/profile/<int:id>")
+@app.route("/api/profile/<id>")
 def fetch_profile(id):
     return
 
@@ -53,6 +53,7 @@ def callback():
 
 @app.route("/delete_expired_tokens")
 def delete_expired_tokens():
+    sc.delete_expired_tokens()
     return redirect("/")
 
 def queue_dailies(date):
@@ -72,7 +73,7 @@ def queue_dailies(date):
                 note_count = _.get(new_user_ruleset, sc.user_attributes['total_hits']) - _.get(previous_user_ruleset, sc.user_attributes['total_hits'])
                 ranked_score = _.get(new_user_ruleset, sc.user_attributes['ranked_score']) - _.get(previous_user_ruleset, sc.user_attributes['ranked_score'])
                 total_score = _.get(new_user_ruleset, sc.user_attributes['total_score']) - _.get(previous_user_ruleset, sc.user_attributes['total_score'])
-                scheduler.add_job(sc.score_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])
+                scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])
                 total_interval += interval
 
 def queue_refresh():
@@ -96,6 +97,6 @@ def queue_users():
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
-    scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(datetime.now().date - timedelta(days=1))])
+    scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
