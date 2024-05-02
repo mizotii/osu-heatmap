@@ -24,7 +24,7 @@ class UserRuleset(db.Model):
     id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
     last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
-    # retroactive to first update
+    # retroactive to first update (since {registration_date})
     play_count = db.Column(db.Integer)
     play_time = db.Column(db.Integer)
     ranked_score = db.Column(db.BigInteger)
@@ -43,6 +43,7 @@ class User(Class):
     is_deleted = db.Column(db.Boolean)
     is_restricted = db.Column(db.Boolean)
     last_updated = db.Column(db.DateTime)
+    registration_date = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
 
 class UserDailyStatistics(Class):
@@ -51,9 +52,11 @@ class UserDailyStatistics(Class):
     id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
     ruleset = db.Column(db.String(dc.constraints['short']))
     start_date = db.Column(db.DateTime)
-    playtime = db.Column(db.Interval)
-    playcount = db.Column(db.Integer)
-    notecount = db.Column(db.Integer)
+    play_time = db.Column(db.Interval)
+    play_count = db.Column(db.Integer)
+    note_count = db.Column(db.Integer)
+    ranked_score = db.Column(db.Integer)
+    total_score = db.Column(db.Integer)
 
 class UserOsu(UserRuleset):
     __tablename__ = 'users_osu'
