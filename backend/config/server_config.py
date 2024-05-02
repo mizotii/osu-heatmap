@@ -50,6 +50,21 @@ endpoints = {
     'token': 'https://osu.ppy.sh/oauth/token',
 }
 
+intervals = {
+    'dailies': {
+        'hour': 0,
+        'interval': 1,
+    },
+    'hours': 24,
+    'hours_to_seconds': 3600.0,
+    'refresh': {
+        'interval': '*/2',
+    },
+    'users': {
+        'interval': '*/8',
+    }
+}
+
 rulesets = [
     'fruits', 'mania', 'osu', 'taiko', 
 ]
@@ -267,17 +282,21 @@ def refresh_token(user, code=None):
             setattr(user, key, _.get(data, user_attributes[key]))
     setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
 
-def select_all(table, sort_by, attribute=None, value=None):
+def select_all(table, attribute=None, attribute_value=None, join_by_column_other=None, join_by_column_this=None, join_by_table=None, sort_by=None, as_dict=False):
     valid_attributes = table.__table__.columns.keys()
     if sort_by not in valid_attributes:
         raise ValueError(write_value_error(table, valid_attributes))
     data = []
     query = db.session.query(table)
     if attribute:
-        query = query.where(getattr(table, attribute) == value)
-    all_obj = db.session.query(table).order_by(getattr(table, sort_by).desc()).all()
+        query = query.where(getattr(table, attribute) == attribute_value)
+    if join_by_column_other and join_by_column_this and join_by_table:
+        query = query.join(join_by_table, join_by_column_other == join_by_column_this)
+    if sort_by:
+        query = query.order_by(sort_by.desc())
+    all_obj = query.all()
     for obj in all_obj:
-        data.append(obj.as_dict())
+        data.append(obj.as_dict()) if as_dict else data.append(obj)
     return data
 
 def store_beatmap(beatmap):
@@ -308,16 +327,17 @@ def store_beatmapset(beatmapset):
     )
     db.session.commit()
 
-def store_daily_statistics(access, id, ruleset, date):
-    scores = db.session.query(Score).where(getattr(Score, 'timestamp').date() == date).all()
+def store_daily_statistics(id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score):
     db.session.add(
         UserDailyStatistics(
             id=id,
             ruleset=ruleset,
             start_date=date,
-            playtime=fetch_user(access, ruleset, user_attributes['play_time']),
-            playcount=len(scores),
-            notecount=sum(getattr(score, 'notes') for score in scores),
+            play_time=play_time,
+            play_count=play_count,
+            note_count=note_count,
+            ranked_score=ranked_score,
+            total_score=total_score,
         )
     )
     db.session.commit()
