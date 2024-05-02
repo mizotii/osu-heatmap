@@ -21,6 +21,9 @@ class Class(db.Model):
 class UserRuleset(db.Model):
     __abstract__ = True
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
     id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
     last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
@@ -50,13 +53,17 @@ class UserDailyStatistics(Class):
     __tablename__ = 'daily_statistics'
 
     id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
-    ruleset = db.Column(db.String(dc.constraints['short']))
-    start_date = db.Column(db.DateTime)
-    play_time = db.Column(db.Interval)
+    ruleset = db.Column(db.String(dc.constraints['short']), primary_key=True)
+    start_date = db.Column(db.DateTime, primary_key=True)
+    play_time = db.Column(db.Integer)
     play_count = db.Column(db.Integer)
     note_count = db.Column(db.Integer)
     ranked_score = db.Column(db.Integer)
     total_score = db.Column(db.Integer)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('id', 'ruleset', 'start_date', name='daily_statistics_pk'),
+    )
 
 class UserOsu(UserRuleset):
     __tablename__ = 'users_osu'
