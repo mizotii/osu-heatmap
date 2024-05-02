@@ -291,9 +291,6 @@ def refresh_token(user, code=None):
     setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
 
 def select_all(table, attribute=None, attribute_value=None, join_by_column_other=None, join_by_column_this=None, join_by_table=None, sort_by=None, as_dict=False):
-    valid_attributes = table.__table__.columns.keys()
-    if sort_by not in valid_attributes:
-        raise ValueError(write_value_error(table, valid_attributes))
     data = []
     query = db.session.query(table)
     if attribute:
@@ -434,7 +431,6 @@ def store_user_ruleset(token, ruleset):
     db.session.commit()
 
 def total_notes(score):
-    print(score['statistics'])    
     return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
 
 def update_user(table, old_user, new_user):
