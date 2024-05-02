@@ -3,7 +3,7 @@ import os
 import pydash as _
 import requests
 import time
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from models import db, Beatmap, BeatmapSet, Class, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
 from sqlalchemy import exists, func
 from urllib.parse import urlencode, urljoin
@@ -133,7 +133,7 @@ def after_authorization(token, code):
     hyp_user = get_object(Token, 'user_id', id)
 
     # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
-    """if hyp_user:
+    if hyp_user:
         refresh_token(hyp_user, code)
         for ruleset in rulesets:
             direct_update_user(id, token, ruleset)
@@ -141,7 +141,7 @@ def after_authorization(token, code):
         store_token(id, token)
         store_user(token)
         for ruleset in rulesets:
-            store_user_ruleset(token, ruleset)"""
+            store_user_ruleset(token, ruleset)
     update_user_scores(id)
 
 def create_authorization_url():
@@ -196,6 +196,14 @@ def create_token_parameters(code):
         'redirect_uri': endpoints['callback'],
     }
     return params
+
+def delete_expired_tokens():
+    tokens = select_all(Token, sort_by=Token.expires_at)
+    now = datetime.now()
+    for token in tokens:
+        if (getattr(token, 'expires_at') < now):
+            db.session.delete(token)
+    db.session.commit()
 
 # updates general user and osu ruleset for user by default (osu)
 def direct_update_user(id, token, ruleset):
@@ -342,6 +350,15 @@ def store_daily_statistics(id, ruleset, date, play_time, play_count, note_count,
     )
     db.session.commit()
 
+    # streak counter
+    if all(stat > 0 for stat in (play_time, play_count, note_count, ranked_score, total_score)):
+        user = get_object(tables[ruleset], 'id', id)
+        current_streak = getattr(user, 'streak_current')
+        longest_streak = getattr(user, 'streak_longest')
+        setattr(user, 'streak_current', current_streak + 1)
+        if current_streak > longest_streak:
+            setattr(user, 'streak_longest', current_streak)
+
 def store_score(score):
     db.session.add(
         Score(
@@ -392,6 +409,7 @@ def store_user(token):
             is_deleted=_.get(user, user_attributes['is_deleted']),
             is_restricted=_.get(user, user_attributes['is_restricted']),
             last_updated=datetime.now(),
+            registration_date=datetime.now(),
             username=_.get(user, user_attributes['username']),
         )
     )
@@ -421,7 +439,7 @@ def total_notes(score):
 
 def update_user(table, old_user, new_user):
     for key in table.__table__.columns.keys():
-        if key not in ('id', 'last_updated', 'streak_current', 'streak_longest'):
+        if key not in ('id', 'last_updated', 'streak_current', 'streak_longest', 'registration_date'):
             setattr(old_user, key, _.get(new_user, user_attributes[key]))
     setattr(old_user, 'last_updated', datetime.now())
 
