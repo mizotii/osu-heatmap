@@ -10,6 +10,7 @@ from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import init_db, db, Class, Score, Token, User, UserDailyStatistics
+from sqlalchemy import and_, exists
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
@@ -56,24 +57,32 @@ def delete_expired_tokens():
     sc.delete_expired_tokens()
     return redirect("/")
 
+@app.route("/queue_dailies")
+def dailies():
+    queue_dailies(date.today())
+    return redirect("/")
+
 def queue_dailies(date):
     previous_user_objects = sc.select_all(User, sort_by=User.last_updated, as_dict=True)
     interval = (sc.intervals['dailies']['interval'] * sc.intervals['hours_to_seconds']) / len(previous_user_objects)
     total_interval = 0
     for previous_user in previous_user_objects:
         id = previous_user['id']
-        token = sc.get_object(Token, 'id', id, as_dict=True)
+        token = sc.get_object(Token, 'user_id', id, as_dict=True)
         for ruleset in sc.rulesets:
-            if not sc.get_object(UserDailyStatistics, 'id', id, check_exists_only=True):
+            if not db.session.query(exists().where(and_(UserDailyStatistics.id == id, UserDailyStatistics.ruleset == ruleset, UserDailyStatistics.start_date == date))).scalar():
                 previous_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
                 sc.direct_update_user(id, token, ruleset)
                 new_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
-                play_time = _.get(new_user_ruleset, sc.user_attributes['play_time']) - _.get(previous_user_ruleset, sc.user_attributes['play_time'])
-                play_count = _.get(new_user_ruleset, sc.user_attributes['play_count']) - _.get(previous_user_ruleset, sc.user_attributes['play_count'])
-                note_count = _.get(new_user_ruleset, sc.user_attributes['total_hits']) - _.get(previous_user_ruleset, sc.user_attributes['total_hits'])
-                ranked_score = _.get(new_user_ruleset, sc.user_attributes['ranked_score']) - _.get(previous_user_ruleset, sc.user_attributes['ranked_score'])
-                total_score = _.get(new_user_ruleset, sc.user_attributes['total_score']) - _.get(previous_user_ruleset, sc.user_attributes['total_score'])
-                scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])
+                print(previous_user_ruleset)
+                print(new_user_ruleset)
+                play_time = new_user_ruleset['play_time'] - previous_user_ruleset['play_time']
+                play_count = new_user_ruleset['play_count'] - previous_user_ruleset['play_count']
+                note_count = new_user_ruleset['total_hits'] - previous_user_ruleset['total_hits']
+                ranked_score = new_user_ruleset['ranked_score'] - previous_user_ruleset['ranked_score']
+                total_score = new_user_ruleset['total_score'] - new_user_ruleset['total_score']
+                """scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=10)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])"""
+                sc.store_daily_statistics(id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score)
                 total_interval += interval
 
 def queue_refresh():
@@ -97,6 +106,7 @@ def queue_users():
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
+    scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])

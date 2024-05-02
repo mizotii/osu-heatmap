@@ -6,6 +6,7 @@
 
 	// admin
 	import DeleteExpiredTokens from './components/admin/DeleteExpiredTokens.svelte';
+	import QueueDailies from './components/admin/QueueDailies.svelte';
 
 	//pages
 	import Error from './pages/Error.svelte';
@@ -30,6 +31,7 @@
 	<Authorize />
 	<Search />
 	<DeleteExpiredTokens />
+	<QueueDailies />
 </main>
 
 <style>
