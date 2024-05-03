@@ -30,20 +30,22 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    return
+    return send_from_directory('../client/public', 'index.html')
 
 @app.route("/authorize")
 def auth_redirect():
     return jsonify(sc.create_authorization_url())
 
-@app.route("/api/search/<username>")
-def search(username):
-    return
+@app.route("/api/search")
+def search():
+    return jsonify(sc.select_all(User, as_dict=True))
 
-# todo: make this a function in config
-@app.route("/api/profile/<id>")
-def fetch_profile(id):
-    return
+@app.route("/api/profile/<int:id>/<string:ruleset>")
+@app.route("/api/profile/<int:id>")
+def fetch_profile(id, ruleset=None):
+    if not ruleset:
+        ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
+    return jsonify(sc.create_profile(id, ruleset))
 
 @app.route("/callback")
 def callback():
