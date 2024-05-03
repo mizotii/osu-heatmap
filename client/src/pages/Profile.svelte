@@ -8,33 +8,31 @@
 
     const cal = new CalHeatmap();
 
-    let username;
-    let rank;
-    let scores = [];
-    let heatmap_data = [];
+    let user;
+    let user_ruleset;
+    let user_heatmap_data;
 
     async function fetchProfile() {
         if (id) {
+            console.log(id)
             const response = await fetch(`/api/profile/${id}`);
             const data = await response.json();
-            for (const point of data.HEATMAP_DATA) {
-                point.date = (new Date(point.date));
-            }
-            username = data.USERNAME;
-            rank = data.GLOBAL_RANK;
-            scores = data.SCORES;
-            heatmap_data = data.HEATMAP_DATA;
+            user = data.user;
+            user_ruleset = data.user_ruleset;
+            user_heatmap_data = data.user_heatmap_data;
         }
     }
 
     onMount (async () => {
         await fetchProfile();
-        console.log(heatmap_data);
+        console.log(user);
+        console.log(user_ruleset);
+        console.log(user_heatmap_data);
         cal.paint(
             {
                 data: {
-                    source: heatmap_data,
-                    x: 'date',
+                    source: user_heatmap_data,
+                    x: 'start_date',
                     y: 'value',
                 },
                 date: {
@@ -81,9 +79,8 @@
 </script>
 
 <profile>
-    <img src="https://a.ppy.sh/{id}" alt="{username}'s avatar"/>
-    <p>#{rank}</p>
-    <p>{username}</p>
+    <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
+    <p>{id}</p>
     <div id="osu-heatmap"></div>
 </profile>
 
