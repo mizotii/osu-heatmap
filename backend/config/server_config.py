@@ -5,7 +5,7 @@ import requests
 import time
 from datetime import date, datetime, timedelta
 from models import db, Beatmap, BeatmapSet, Class, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
-from sqlalchemy import exists, func
+from sqlalchemy import and_, exists, func
 from urllib.parse import urlencode, urljoin
 
 beatmap_attributes = {
@@ -110,6 +110,7 @@ user_attributes = {
     'id': 'id',
     'is_deleted': 'is_deleted',
     'is_restricted': 'is_restricted',
+    'playmode': 'playmode',
     'play_count': 'statistics.play_count',
     'play_time': 'statistics.play_time',
     'ranked_score': 'statistics.ranked_score',
@@ -161,6 +162,27 @@ def create_headers(token=None):
         headers['Content-Type'] = 'application/x-www-form-urlencoded'
     return headers
 
+# todo: add scores, beatmaps, beatmapsets
+def create_profile(id, ruleset):
+    if ruleset not in rulesets:
+        raise ValueError(write_value_error(ruleset, rulesets))
+    user = get_object(User, 'id', id, as_dict=True)
+    user_ruleset = get_object(tables[ruleset], 'id', id, as_dict=True)
+    user_heatmap = db.session.query(UserDailyStatistics).\
+        where(
+            and_(
+                id == id,
+                ruleset == ruleset,
+            )
+        ).all()
+    user_heatmap_data = dailies_to_heatmap(user_heatmap)
+    profile = {
+        'user': user,
+        'user_ruleset': user_ruleset,
+        'user_heatmap_data': user_heatmap_data,
+    }
+    return profile
+
 def create_refresh_parameters(refresh):
     if not refresh:
         raise ValueError('could not create refresh token parameters: no refresh token provided')
@@ -196,6 +218,19 @@ def create_token_parameters(code):
         'redirect_uri': endpoints['callback'],
     }
     return params
+
+def dailies_to_heatmap(user_heatmap):
+    data = []
+    for obj in user_heatmap:
+        data.append({
+            'date': getattr(obj, 'start_date'),
+            'play_count': getattr(obj, 'play_count'),
+            'play_time': getattr(obj, 'play_time'),
+            'note_count': getattr(obj, 'note_count'),
+            'ranked_score': getattr(obj, 'ranked_score'),
+            'total_score': getattr(obj, 'total_score'),
+        })
+    return data
 
 def delete_expired_tokens():
     tokens = select_all(Token, sort_by=Token.expires_at)
@@ -406,6 +441,7 @@ def store_user(token):
             is_deleted=_.get(user, user_attributes['is_deleted']),
             is_restricted=_.get(user, user_attributes['is_restricted']),
             last_updated=datetime.now(),
+            playmode=_.get(user, user_attributes['playmode']),
             registration_date=datetime.now(),
             username=_.get(user, user_attributes['username']),
         )
