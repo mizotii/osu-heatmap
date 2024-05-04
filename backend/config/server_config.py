@@ -168,14 +168,13 @@ def create_profile(id, ruleset):
         raise ValueError(write_value_error(ruleset, rulesets))
     user = get_object(User, 'id', id, as_dict=True)
     user_ruleset = get_object(tables[ruleset], 'id', id, as_dict=True)
-    user_heatmap = db.session.query(UserDailyStatistics).\
-        where(
+    user_heatmap_data = db.session.query(UserDailyStatistics).\
+        filter(
             and_(
-                id == id,
-                ruleset == ruleset,
+                UserDailyStatistics.id == id,
+                UserDailyStatistics.ruleset == ruleset,
             )
-        ).all()
-    user_heatmap_data = dailies_to_heatmap(user_heatmap)
+        ).first().as_dict()
     profile = {
         'user': user,
         'user_ruleset': user_ruleset,
@@ -218,19 +217,6 @@ def create_token_parameters(code):
         'redirect_uri': endpoints['callback'],
     }
     return params
-
-def dailies_to_heatmap(user_heatmap):
-    data = []
-    for obj in user_heatmap:
-        data.append({
-            'date': getattr(obj, 'start_date'),
-            'play_count': getattr(obj, 'play_count'),
-            'play_time': getattr(obj, 'play_time'),
-            'note_count': getattr(obj, 'note_count'),
-            'ranked_score': getattr(obj, 'ranked_score'),
-            'total_score': getattr(obj, 'total_score'),
-        })
-    return data
 
 def delete_expired_tokens():
     tokens = select_all(Token, sort_by=Token.expires_at)
