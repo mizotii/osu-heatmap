@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 8adcebc4acef
+Revision ID: db02e4ec6119
 Revises: 
-Create Date: 2024-04-30 17:44:00.042563
+Create Date: 2024-05-03 16:35:07.344074
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8adcebc4acef'
+revision = 'db02e4ec6119'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,12 +24,9 @@ def upgrade():
     sa.Column('card_2x', sa.String(length=255), nullable=True),
     sa.Column('creator', sa.String(length=15), nullable=True),
     sa.Column('creator_id', sa.Integer(), nullable=True),
-    sa.Column('difficulty_rating', sa.Float(), nullable=True),
-    sa.Column('mode', sa.String(length=32), nullable=True),
     sa.Column('status', sa.String(length=32), nullable=True),
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('title_unicode', sa.String(length=255), nullable=True),
-    sa.Column('total_length', sa.Integer(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('tokens',
@@ -42,7 +39,10 @@ def upgrade():
     )
     op.create_table('beatmaps',
     sa.Column('beatmapset_id', sa.Integer(), nullable=False),
+    sa.Column('difficulty_rating', sa.Float(), nullable=True),
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('ruleset', sa.String(length=32), nullable=True),
+    sa.Column('total_length', sa.Integer(), nullable=True),
     sa.Column('version', sa.String(length=255), nullable=True),
     sa.ForeignKeyConstraint(['beatmapset_id'], ['beatmapsets.id'], ),
     sa.PrimaryKeyConstraint('beatmapset_id', 'id', name='pk_beatmap')
@@ -52,13 +52,15 @@ def upgrade():
 
     op.create_table('daily_statistics',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('ruleset', sa.String(length=32), nullable=True),
-    sa.Column('start_date', sa.DateTime(), nullable=True),
-    sa.Column('playtime', sa.Interval(), nullable=True),
-    sa.Column('playcount', sa.Integer(), nullable=True),
-    sa.Column('notecount', sa.Integer(), nullable=True),
+    sa.Column('ruleset', sa.String(length=32), nullable=False),
+    sa.Column('start_date', sa.DateTime(), nullable=False),
+    sa.Column('play_time', sa.Integer(), nullable=True),
+    sa.Column('play_count', sa.Integer(), nullable=True),
+    sa.Column('note_count', sa.Integer(), nullable=True),
+    sa.Column('ranked_score', sa.Integer(), nullable=True),
+    sa.Column('total_score', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['tokens.user_id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id', 'ruleset', 'start_date', name='daily_statistics_pk')
     )
     op.create_table('users',
     sa.Column('avatar_url', sa.String(length=255), nullable=True),
@@ -68,6 +70,8 @@ def upgrade():
     sa.Column('is_deleted', sa.Boolean(), nullable=True),
     sa.Column('is_restricted', sa.Boolean(), nullable=True),
     sa.Column('last_updated', sa.DateTime(), nullable=True),
+    sa.Column('playmode', sa.String(length=32), nullable=True),
+    sa.Column('registration_date', sa.DateTime(), nullable=True),
     sa.Column('username', sa.String(length=15), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['tokens.user_id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -132,7 +136,7 @@ def upgrade():
     sa.Column('id', sa.String(length=16), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
-    sa.Column('mode', sa.String(length=16), nullable=True),
+    sa.Column('ruleset', sa.String(length=16), nullable=True),
     sa.Column('count_300', sa.Integer(), nullable=True),
     sa.Column('count_100', sa.Integer(), nullable=True),
     sa.Column('count_50', sa.Integer(), nullable=True),

@@ -3,6 +3,7 @@
     import { isUserValid } from "../stores/profile";
     import CalHeatmap from "cal-heatmap";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
+    import ValueDropdown from "../components/ValueDropdown.svelte";
 
     export let id;
 
@@ -82,6 +83,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
     <p>{id}</p>
     <div id="osu-heatmap"></div>
+    <ValueDropdown />
 </profile>
 
 <style>
