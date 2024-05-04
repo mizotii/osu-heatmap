@@ -3,7 +3,7 @@
     import { isUserValid } from "../stores/profile";
     import CalHeatmap from "cal-heatmap";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
-    import ValueDropdown from "../components/ValueDropdown.svelte";
+    import ValueDropdown, { selectedValue } from "../components/ValueDropdown.svelte";
 
     export let id;
 
@@ -34,7 +34,7 @@
                 data: {
                     source: user_heatmap_data,
                     x: 'start_date',
-                    y: 'value',
+                    y: `${selectedValue}`,
                 },
                 date: {
                     start: new Date('2024-01-01')
