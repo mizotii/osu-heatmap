@@ -174,7 +174,9 @@ def create_profile(id, ruleset):
                 UserDailyStatistics.id == id,
                 UserDailyStatistics.ruleset == ruleset,
             )
-        ).first().as_dict()
+        ).first()
+    if user_heatmap_data:
+        user_heatmap_data = user_heatmap_data.as_dict()
     profile = {
         'user': user,
         'user_ruleset': user_ruleset,
