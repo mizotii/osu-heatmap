@@ -3,7 +3,7 @@
     import { isUserValid } from "../stores/profile";
     import CalHeatmap from "cal-heatmap";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
-    import ValueDropdown, { selectedValue } from "../components/ValueDropdown.svelte";
+    import ValueDropdown from "../components/ValueDropdown.svelte";
 
     export let id;
 
@@ -12,6 +12,8 @@
     let user;
     let user_ruleset;
     let user_heatmap_data;
+
+    let selectedValue;
 
     async function fetchProfile() {
         if (id) {
@@ -26,6 +28,7 @@
 
     onMount (async () => {
         await fetchProfile();
+        console.log(selectedValue);
         console.log(user);
         console.log(user_ruleset);
         console.log(user_heatmap_data);
@@ -83,7 +86,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
     <p>{id}</p>
     <div id="osu-heatmap"></div>
-    <ValueDropdown />
+    <ValueDropdown selectedValue={selectedValue} />
 </profile>
 
 <style>
