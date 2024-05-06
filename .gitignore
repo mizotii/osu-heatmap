@@ -1,3 +1,4 @@
+backend/db/
 client/public/build/
 client/scripts/
 client/node_modules/
