@@ -168,19 +168,21 @@ def create_profile(id, ruleset):
         raise ValueError(write_value_error(ruleset, rulesets))
     user = get_object(User, 'id', id, as_dict=True)
     user_ruleset = get_object(tables[ruleset], 'id', id, as_dict=True)
-    user_heatmap_data = db.session.query(UserDailyStatistics).\
+    rows = db.session.query(UserDailyStatistics).\
         filter(
             and_(
                 UserDailyStatistics.id == id,
                 UserDailyStatistics.ruleset == ruleset,
             )
-        ).first()
-    if user_heatmap_data:
-        user_heatmap_data = user_heatmap_data.as_dict()
+        ).all()
+    data = []
+    if rows:
+        for day in rows:
+            data.append(day.as_dict())
     profile = {
         'user': user,
         'user_ruleset': user_ruleset,
-        'user_heatmap_data': user_heatmap_data,
+        'user_heatmap_data': data,
     }
     return profile
 
@@ -204,6 +206,7 @@ def create_recents_parameters(ruleset):
         raise ValueError(write_value_error(ruleset, rulesets))
     params = {
         'include_fails': '1',
+        'limit': 999,
         'mode': ruleset,
     }
     return params
