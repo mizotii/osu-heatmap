@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { createUsersIndex, searchUsersIndex } from "./search"
-    import { navigate } from "svelte-routing";
 
     let search: 'loading' | 'ready' = 'loading'
     let searchTerm = ''
@@ -11,7 +10,6 @@
         const users = await fetch(`/api/search`).then((res) => res.json())
         createUsersIndex(users)
         search = 'ready'
-        console.log(users)
     })
 
     $: if (search === 'ready') {
