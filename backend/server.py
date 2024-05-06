@@ -30,6 +30,10 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
+    ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
+    token = sc.get_object(Token, 'user_id', path, as_dict=True)
+    sc.direct_update_user(path, token, ruleset)
+    sc.update_user_scores(path)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/authorize")
@@ -76,8 +80,6 @@ def queue_dailies(date):
                 previous_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
                 sc.direct_update_user(id, token, ruleset)
                 new_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
-                print(previous_user_ruleset)
-                print(new_user_ruleset)
                 play_time = new_user_ruleset['play_time'] - previous_user_ruleset['play_time']
                 play_count = new_user_ruleset['play_count'] - previous_user_ruleset['play_count']
                 note_count = new_user_ruleset['total_hits'] - previous_user_ruleset['total_hits']
