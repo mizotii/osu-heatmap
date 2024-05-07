@@ -5,6 +5,7 @@
     import RulesetMenu from "../components/RulesetMenu.svelte";
 
     export let id;
+    export let ruleset;
 
     let user;
     let username;
@@ -13,7 +14,12 @@
 
     async function fetchProfile() {
         if (id) {
-            const response = await fetch(`/api/profile/${id}`);
+            let endpoint = `/api/profile/${id}`;
+            if (ruleset) {
+                console.log(ruleset);
+                endpoint += `/${ruleset}`;
+            }
+            const response = await fetch(endpoint);
             const data = await response.json();
             user = data.user;
             userRuleset = data.user_ruleset;
@@ -22,6 +28,7 @@
     }
 
     onMount (async () => {
+        console.log(userRuleset);
         await fetchProfile();
         username = user.username;
     })
@@ -33,8 +40,8 @@
 
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
-    <p>{username}</p>
-    <RulesetMenu />
+    <p>{username} {ruleset}</p>
+    <RulesetMenu id={id}/>
     <Heatmap heatmapData={userHeatmapData}/>
 </profile>
 
