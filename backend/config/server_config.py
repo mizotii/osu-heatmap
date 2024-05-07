@@ -278,13 +278,14 @@ def handle_authorization(token):
     if hyp_user:
         handle_token(hyp_user, token)
         for ruleset in rulesets:
+            update_user_scores(id, ruleset)
             direct_update_user(id, token, ruleset)
     else:
         store_token(id, token)
         store_user(token)
         for ruleset in rulesets:
+            update_user_scores(id, ruleset)
             store_user_ruleset(token, ruleset)
-    update_user_scores(id)
 
 def handle_token(user, token):
     for key in Token.__table__.columns.keys():
@@ -452,18 +453,17 @@ def update_user(table, old_user, new_user):
     setattr(old_user, 'last_updated', datetime.now())
     db.session.commit()
 
-def update_user_scores(id):
-    for ruleset in rulesets:
-        scores = fetch_recent_scores(id, ruleset)
-        for score in scores:
-            beatmap = score['beatmap']
-            beatmapset = score['beatmapset']
-            if not get_object(BeatmapSet, 'id', _.get(beatmapset, beatmapset_attributes['id']), check_exists_only=True):
-                store_beatmapset(beatmapset)
-            if not get_object(Beatmap, 'id', _.get(beatmap, beatmap_attributes['id']), check_exists_only=True):
-                store_beatmap(beatmap)
-            if not get_object(Score, 'id', _.get(score, score_attributes['id']), check_exists_only=True):
-                store_score(score)
+def update_user_scores(id, ruleset):
+    scores = fetch_recent_scores(id, ruleset)
+    for score in scores:
+        beatmap = score['beatmap']
+        beatmapset = score['beatmapset']
+        if not get_object(BeatmapSet, 'id', _.get(beatmapset, beatmapset_attributes['id']), check_exists_only=True):
+            store_beatmapset(beatmapset)
+        if not get_object(Beatmap, 'id', _.get(beatmap, beatmap_attributes['id']), check_exists_only=True):
+            store_beatmap(beatmap)
+        if not get_object(Score, 'id', _.get(score, score_attributes['id']), check_exists_only=True):
+            store_score(score)
 
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)
