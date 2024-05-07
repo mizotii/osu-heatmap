@@ -1,10 +1,12 @@
 <script>
     import Base from "./Base.svelte";
 
+    export let id;
+
     let ruleset = 'osu';
 </script>
 
-<Base img='static/mode-{ruleset}.png' ruleset={ruleset} />
+<Base ruleset={ruleset} id={id}/>
 
 <style>
 

@@ -1,10 +1,12 @@
 <script>
     import Base from "./Base.svelte";
 
-    let ruleset = 'fruits';
+    export let id;
+
+    let ruleset = 'catch';
 </script>
 
-<Base img='static/mode-{ruleset}.png' ruleset={ruleset} />
+<Base ruleset={ruleset} id={id}/>
 
 <style>
 

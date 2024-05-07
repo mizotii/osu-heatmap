@@ -1,10 +1,12 @@
 <script>
     import Base from "./Base.svelte";
 
+    export let id;
+
     let ruleset = 'taiko';
 </script>
 
-<Base img='static/mode-{ruleset}.png' ruleset={ruleset} />
+<Base ruleset={ruleset} id={id}/>
 
 <style>
 
