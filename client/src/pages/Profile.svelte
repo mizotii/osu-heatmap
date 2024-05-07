@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { dataType, isUserValid } from "../stores/profile";
     import Heatmap from "../components/Heatmap.svelte";
+    import RulesetMenu from "../components/RulesetMenu.svelte";
 
     export let id;
 
@@ -33,6 +34,7 @@
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
     <p>{username}</p>
+    <RulesetMenu />
     <Heatmap heatmapData={userHeatmapData}/>
 </profile>
 
