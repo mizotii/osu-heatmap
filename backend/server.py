@@ -30,11 +30,23 @@ def home(path):
 
 @app.route("/profile/<path:path>")
 def profile(path):
-    ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
+    """ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
     token = sc.get_object(Token, 'user_id', path, as_dict=True)
     sc.direct_update_user(path, token, ruleset)
-    sc.update_user_scores(path)
+    sc.update_user_scores(path)"""
     return send_from_directory('../client/public', 'index.html')
+
+@app.route("/profile/<int:id>/<path:path>")
+def profile_ruleset(id, path):
+    """ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
+    token = sc.get_object(Token, 'user_id', path, as_dict=True)
+    sc.direct_update_user(path, token, ruleset)
+    sc.update_user_scores(path)"""
+    return send_from_directory('../client/public', 'index.html')
+
+@app.route("/profile/static/<path:path>")
+def icons(path):
+    return send_from_directory('../client/public/static', path)
 
 @app.route("/authorize")
 def auth_redirect():
@@ -47,6 +59,7 @@ def search():
 @app.route("/api/profile/<int:id>/<string:ruleset>")
 @app.route("/api/profile/<int:id>")
 def fetch_profile(id, ruleset=None):
+    print(ruleset)
     if not ruleset:
         ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
     return jsonify(sc.create_profile(id, ruleset))
