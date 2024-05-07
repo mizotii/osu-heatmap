@@ -55,7 +55,7 @@ def fetch_profile(id, ruleset=None):
 def callback():
     code = request.args.get('code')
     token = sc.fetch_token(code)
-    sc.after_authorization(token, code)
+    sc.handle_authorization(token)
     return redirect("/")
 
 @app.route("/delete_expired_tokens")

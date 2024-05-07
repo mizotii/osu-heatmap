@@ -129,22 +129,6 @@ authorization_parameters = {
     'state': 'randomval',
 }
 
-def after_authorization(token, code):
-    id = fetch_user(token['access_token'], attribute='id')
-    hyp_user = get_object(Token, 'user_id', id)
-
-    # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
-    if hyp_user:
-        refresh_token(hyp_user, code)
-        for ruleset in rulesets:
-            direct_update_user(id, token, ruleset)
-    else:
-        store_token(id, token)
-        store_user(token)
-        for ruleset in rulesets:
-            store_user_ruleset(token, ruleset)
-    update_user_scores(id)
-
 def create_authorization_url():
     return urljoin(endpoints['authorize'], '?' + urlencode(authorization_parameters))
 
@@ -286,35 +270,36 @@ def get_object(table, attribute, value, check_exists_only=False, as_dict=False):
         else:
             return query.as_dict()
 
-def hard_refresh_token(attribute, value, code):
-    if code is None:
-        raise ValueError('could not hard refresh token: no code provided')
-    old_token = get_object(Token, attribute, value)
-    new_token = fetch_token(code)
+def handle_authorization(token):
+    id = fetch_user(token['access_token'], attribute='id')
+    hyp_user = get_object(Token, 'user_id', id)
+
+    # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
+    if hyp_user:
+        handle_token(hyp_user, token)
+        for ruleset in rulesets:
+            direct_update_user(id, token, ruleset)
+    else:
+        store_token(id, token)
+        store_user(token)
+        for ruleset in rulesets:
+            store_user_ruleset(token, ruleset)
+    update_user_scores(id)
+
+def handle_token(user, token):
     for key in Token.__table__.columns.keys():
         if key not in ('user_id', 'expires_at'):
-            setattr(old_token, key, _.get(new_token, user_attributes[key]))
-    setattr(old_token, 'expires_at', calculate_expiration(new_token['expires_in']))
-
-def refresh_token(user, code=None):
-    if getattr(user, 'expires_at') > datetime.now():
-        return 'token is still valid!'
-    refresh = getattr(user, 'refresh_token')
-    response = requests.post(
+            setattr(user, key, _.get(token, token_attributes[key]))
+    setattr(user, 'expires_at', calculate_expiration(token['expires_in']))
+    db.session.commit()
+    
+def refresh_token(token):
+    response = requests.get(
         endpoints['token'],
         headers=create_headers(),
-        data=create_refresh_parameters(refresh)
+        data=create_refresh_parameters(token['refresh'])
     )
-    data = response.json()
-    if 'error' in data:
-        hard_refresh_token('refresh_token', refresh, code)
-        desc = data['error_description']
-        hint = data['hint']
-        raise ValueError(f'error description: {desc} hint: {hint}')
-    for key in Token.__table__.columns.keys():
-        if key not in ('user_id', 'expires_at'):
-            setattr(user, key, _.get(data, user_attributes[key]))
-    setattr(user, 'expires_at', calculate_expiration(data['expires_in']))
+    handle_token(response.json())
 
 def select_all(table, attribute=None, attribute_value=None, join_by_column_other=None, join_by_column_this=None, join_by_table=None, sort_by=None, as_dict=False):
     data = []
@@ -371,7 +356,6 @@ def store_daily_statistics(id, ruleset, date, play_time, play_count, note_count,
             total_score=total_score,
         )
     )
-    db.session.commit()
 
     # streak counter
     if all(stat > 0 for stat in (play_time, play_count, note_count, ranked_score, total_score)):
@@ -381,6 +365,7 @@ def store_daily_statistics(id, ruleset, date, play_time, play_count, note_count,
         setattr(user, 'streak_current', current_streak + 1)
         if current_streak > longest_streak:
             setattr(user, 'streak_longest', current_streak)
+    db.session.commit()
 
 def store_score(score):
     db.session.add(
@@ -465,6 +450,7 @@ def update_user(table, old_user, new_user):
         if key not in ('id', 'last_updated', 'streak_current', 'streak_longest', 'registration_date'):
             setattr(old_user, key, _.get(new_user, user_attributes[key]))
     setattr(old_user, 'last_updated', datetime.now())
+    db.session.commit()
 
 def update_user_scores(id):
     for ruleset in rulesets:
