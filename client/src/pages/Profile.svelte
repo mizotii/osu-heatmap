@@ -1,6 +1,7 @@
 <script>
-    import { onMount, onDestroy } from "svelte";
+    import { onMount, onDestroy, afterUpdate } from "svelte";
     import { dataType, isUserValid } from "../stores/profile";
+    import { navigate } from "svelte-routing";
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
 
@@ -27,20 +28,15 @@
         }
     }
 
-    onMount (async () => {
-        console.log(userRuleset);
+    onMount(async () => {
         await fetchProfile();
         username = user.username;
     })
-
-    onDestroy(() => {
-        isUserValid.set(null);
-    });
 </script>
 
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
-    <p>{username} {ruleset}</p>
+    <p>{username}</p>
     <RulesetMenu id={id}/>
     <Heatmap heatmapData={userHeatmapData}/>
 </profile>
