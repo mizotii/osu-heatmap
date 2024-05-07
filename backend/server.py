@@ -12,7 +12,9 @@ from flask_migrate import Migrate
 from models import init_db, db, Class, Score, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
-app = Flask(__name__)
+app = Flask(
+    __name__
+)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 init_db(app)
 migrate = Migrate(app, db)
@@ -21,31 +23,12 @@ CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://l
 scheduler = BackgroundScheduler()
 
 @app.route("/")
-def base():
-    return send_from_directory('../client/public', 'index.html')
-
 @app.route("/<path:path>")
-def home(path):
+def base(path='index.html'):
     return send_from_directory('../client/public', path)
 
-@app.route("/profile/<path:path>")
-def profile(path):
-    """ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
-    token = sc.get_object(Token, 'user_id', path, as_dict=True)
-    sc.direct_update_user(path, token, ruleset)
-    sc.update_user_scores(path)"""
-    return send_from_directory('../client/public', 'index.html')
-
-@app.route("/profile/<int:id>/<path:path>")
-def profile_ruleset(id, path):
-    """ruleset = getattr(sc.get_object(User, 'id', path), 'playmode')
-    token = sc.get_object(Token, 'user_id', path, as_dict=True)
-    sc.direct_update_user(path, token, ruleset)
-    sc.update_user_scores(path)"""
-    return send_from_directory('../client/public', 'index.html')
-
-@app.route("/profile/static/<path:path>")
-def icons(path):
+@app.route("/<path:any>/static/<path:path>")
+def icons(any, path):
     return send_from_directory('../client/public/static', path)
 
 @app.route("/authorize")
@@ -56,9 +39,20 @@ def auth_redirect():
 def search():
     return jsonify(sc.select_all(User, as_dict=True))
 
+@app.route("/profile/<int:id>")
+def profile_default(id):
+    return send_from_directory('../client/public', 'index.html')
+
+@app.route("/profile/<int:id>/<string:ruleset>")
+def profile_ruleset(id, ruleset):
+    return send_from_directory('../client/public', 'index.html')
+
 @app.route("/api/profile/<int:id>/<string:ruleset>")
 @app.route("/api/profile/<int:id>")
 def fetch_profile(id, ruleset=None):
+    # want profile to route to catch, same as osu!web
+    if ruleset == 'catch':
+        ruleset = 'fruits'
     print(ruleset)
     if not ruleset:
         ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
