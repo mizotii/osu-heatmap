@@ -62,7 +62,6 @@
 
 <heatmap>
     <div id="osu-heatmap"></div>
-    <p>{$dataType}</p>
     <select class="select select-bordered w-full max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
         <option value='note_count'>note count</option>
         <option value='play_count'>play count</option>
