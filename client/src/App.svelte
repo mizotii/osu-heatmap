@@ -20,11 +20,11 @@
 		<Link to='/'>Home</Link>
 	</nav>
 	<div>
-		<Route path='/profile/:id/' component={Profile} let:params>
-			<Profile id='{params.id}' />
+		<Route path='/profile/:id/' component={Profile} let:params let:active>
+			<Profile id='{params.id}' active={active}/>
 		</Route>
-		<Route path='/profile/:id/:ruleset' component={Profile} let:params>
-			<Profile id='{params.id}' ruleset='{params.ruleset}' />
+		<Route path='/profile/:id/:ruleset' component={Profile} let:params let:active>
+			<Profile id='{params.id}' ruleset='{params.ruleset}' active={active}/>
 		</Route>
 		<Route path='/error' component={Error}/>
 	</div>
