@@ -1,10 +1,12 @@
 <script>
     import { dataType } from "../stores/profile";
     import { onMount, afterUpdate } from "svelte";
+    import { heatmapCells } from "../../config.json";
     import CalHeatmap from "cal-heatmap";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
     export let heatmapData;
+    export let ruleset;
     
     const cal = new CalHeatmap();
 
@@ -41,12 +43,30 @@
                 [
                     Tooltip,
                     {
+                        // terrible, will refactor
                         text: function (date, value, dayjsDate) {
-                            return (
-                                (value ? value : 'No') +
-                                ' circles clicked on ' +
-                                dayjsDate.format('YYYY-MM-DD HH:mm:ss')
-                            );
+                            if ($dataType === 'play_time') {
+                                return (
+                                    Math.floor((value / 3600)).toString() +
+                                    heatmapCells[$dataType]['hours'] +
+                                    Math.floor((value / 60)).toString() +
+                                    heatmapCells[$dataType]['minutes'] +
+                                    dayjsDate.format('YYYY-MM-DD HH:mm:ss')
+                                )
+                            } else if ($dataType === 'note_count') {
+                                console.log(ruleset)
+                                return (
+                                    (value ? value : 'No') +
+                                    heatmapCells[$dataType][ruleset] +
+                                    dayjsDate.format('YYYY-MM-DD HH:mm:ss')
+                                );
+                            } else {
+                                return (
+                                    (value ? value : 'No') +
+                                    heatmapCells[$dataType] +
+                                    dayjsDate.format('YYYY-MM-DD HH:mm:ss')
+                                );
+                            }
                         }
                     },
                 ],
