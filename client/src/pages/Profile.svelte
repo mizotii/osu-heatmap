@@ -17,8 +17,9 @@
         if (id) {
             let endpoint = `/api/profile/${id}`;
             if (ruleset) {
-                console.log(ruleset);
                 endpoint += `/${ruleset}`;
+            } else {
+                ruleset = 'osu';
             }
             const response = await fetch(endpoint);
             const data = await response.json();
@@ -38,7 +39,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
     <p>{username}</p>
     <RulesetMenu id={id}/>
-    <Heatmap heatmapData={userHeatmapData}/>
+    <Heatmap heatmapData={userHeatmapData} ruleset={ruleset}/>
 </profile>
 
 <style>
