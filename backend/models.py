@@ -1,7 +1,6 @@
 from config import db_config as dc
-from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import DateTime, Index
+from sqlalchemy import Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import PrimaryKeyConstraint
 
@@ -90,11 +89,13 @@ class Token(Class):
 class BeatmapSet(Class):
     __tablename__ = 'beatmapsets'
 
+    artist = db.Column(db.String(dc.constraints['long']))
+    artist_unicode = db.Column(db.String(dc.constraints['long']))
     id = db.Column(db.Integer, primary_key=True)
-    card = db.Column(db.String(dc.constraints['long']))
-    card_2x = db.Column(db.String(dc.constraints['long']))
     creator = db.Column(db.String(dc.constraints['max_user_length']))
     creator_id = db.Column(db.Integer)
+    slimcover = db.Column(db.String(dc.constraints['long']))
+    slimcover_2x = db.Column(db.String(dc.constraints['long']))
     status = db.Column(db.String(dc.constraints['short']))
     title = db.Column(db.String(dc.constraints['long']))
     title_unicode = db.Column(db.String(dc.constraints['long']))
@@ -140,3 +141,4 @@ class Score(Class):
     mods = db.Column(db.String(dc.constraints['veryshort']))
     passed = db.Column(db.Boolean)
     rank = db.Column(db.String(dc.constraints['veryshort']))
+    score = db.Column(db.Integer)
