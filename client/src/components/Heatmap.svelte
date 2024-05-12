@@ -3,12 +3,26 @@
     import { onMount, afterUpdate } from "svelte";
     import { heatmapCells } from "../../config.json";
     import CalHeatmap from "cal-heatmap";
+    import Scores from "./scores/Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
     export let heatmapData;
+    export let id;
     export let ruleset;
+
+    let scores = [];
     
     const cal = new CalHeatmap();
+
+    cal.on('click', (event, timestamp, value) => {
+        fetchScores(id, ruleset, timestamp);
+    });
+
+    async function fetchScores(id, ruleset, timestamp) {
+        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`);
+        const data = await response.json();
+        scores = data;
+    }
 
     async function reloadHeatmap() {
         cal.paint(
@@ -77,6 +91,7 @@
     onMount (async () => {
         await reloadHeatmap();
     })
+
     afterUpdate(reloadHeatmap);
 </script>
 
@@ -89,6 +104,7 @@
         <option value='ranked_score'>ranked score</option>
         <option value='total_score'>total score</option>
     </select>
+    <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
 </heatmap>
 
 <style>
