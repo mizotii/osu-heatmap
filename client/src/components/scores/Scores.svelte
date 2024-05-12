@@ -37,6 +37,7 @@
 <style>
     .score {
         position: relative;
+        text-align: center;
     }
 
     .accuracy {
@@ -101,5 +102,7 @@
 
     .title {
         position: absolute;
+        top: 8px;
+        left: 8px;
     }
 </style>
