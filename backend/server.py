@@ -1,7 +1,4 @@
 """backend"""
-
-import time
-import os
 import pydash as _
 from apscheduler.schedulers.background import BackgroundScheduler
 from config import server_config as sc
@@ -9,7 +6,7 @@ from datetime import date, datetime, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_migrate import Migrate
-from models import init_db, db, Class, Score, Token, User, UserDailyStatistics
+from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
 app = Flask(
@@ -53,10 +50,13 @@ def fetch_profile(id, ruleset=None):
     # want profile to route to catch, same as osu!web
     if ruleset == 'catch':
         ruleset = 'fruits'
-    print(ruleset)
     if not ruleset:
         ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
     return jsonify(sc.create_profile(id, ruleset))
+
+@app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
+def fetch_scores(id, ruleset, timestamp):
+    return jsonify(sc.create_score_list(id, ruleset, timestamp))
 
 @app.route("/callback")
 def callback():
