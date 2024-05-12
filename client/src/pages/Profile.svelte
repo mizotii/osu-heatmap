@@ -39,7 +39,7 @@
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
     <p>{username}</p>
     <RulesetMenu id={id}/>
-    <Heatmap heatmapData={userHeatmapData} ruleset={ruleset}/>
+    <Heatmap heatmapData={userHeatmapData} id={id} ruleset={ruleset}/>
 </profile>
 
 <style>
