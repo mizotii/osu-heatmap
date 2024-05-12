@@ -2,10 +2,9 @@ import dateutil.parser
 import os
 import pydash as _
 import requests
-import time
-from datetime import date, datetime, timedelta
-from models import db, Beatmap, BeatmapSet, Class, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
-from sqlalchemy import and_, exists, func
+from datetime import datetime, timedelta
+from models import db, Beatmap, BeatmapSet, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
+from sqlalchemy import and_, between, exists
 from urllib.parse import urlencode, urljoin
 
 beatmap_attributes = {
@@ -18,11 +17,13 @@ beatmap_attributes = {
 }
 
 beatmapset_attributes = {
+    'artist': 'artist',
+    'artist_unicode': 'artist_unicode',
     'id': 'id',
-    'card': 'covers.card',
-    'card_2x': 'covers.card@2x',
     'creator': 'creator',
     'creator_id': 'user_id',
+    'slimcover': 'covers.slimcover',
+    'slimcover_2x': 'covers.slimcover@2x',
     'status': 'status',
     'title': 'title',
     'title_unicode': 'title_unicode',
@@ -87,6 +88,7 @@ score_attributes = {
     'mods': 'mods',
     'passed': 'passed',
     'rank': 'rank',
+    'score': 'score',
 }
 
 tables = {
@@ -194,6 +196,29 @@ def create_recents_parameters(ruleset):
         'mode': ruleset,
     }
     return params
+
+def create_score_list(id, ruleset, timestamp):
+    start = datetime.fromtimestamp(timestamp / 1000)
+    data_banners = db.session.query(Score, Beatmap, BeatmapSet).\
+        where(
+            and_(
+                Score.user_id == id,
+                Score.ruleset == ruleset,
+                between(Score.timestamp, start, start + timedelta(days=1)),
+            )
+        ).\
+        where(Score.beatmap_id == Beatmap.id).\
+        where(Beatmap.beatmapset_id == BeatmapSet.id).\
+        all()
+    scores = []
+    if data_banners:
+        for score, beatmap, beatmapset in data_banners:
+            scores.append({
+                'score_data': score.as_dict(),
+                'beatmap_data': beatmap.as_dict(),
+                'beatmapset_data': beatmapset.as_dict(),
+            })
+    return scores
 
 def create_token_parameters(code):
     if not code:
@@ -333,8 +358,8 @@ def store_beatmapset(beatmapset):
     db.session.add(
         BeatmapSet(
             id=_.get(beatmapset, beatmapset_attributes['id']),
-            card=_.get(beatmapset, beatmapset_attributes['card']),
-            card_2x=_.get(beatmapset, beatmapset_attributes['card_2x']),
+            slimcover=_.get(beatmapset, beatmapset_attributes['slimcover']),
+            slimcover_2x=_.get(beatmapset, beatmapset_attributes['slimcover_2x']),
             creator=_.get(beatmapset, beatmapset_attributes['creator']),
             creator_id=_.get(beatmapset, beatmapset_attributes['creator_id']),
             status=_.get(beatmapset, beatmapset_attributes['status']),
@@ -389,6 +414,7 @@ def store_score(score):
             mods=' '.join(_.get(score, score_attributes['mods'])),
             passed=_.get(score, score_attributes['passed']),
             rank=_.get(score, score_attributes['rank']),
+            score=_.get(score, score_attributes['score']),
         )
     )
     db.session.commit()
