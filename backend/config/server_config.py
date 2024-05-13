@@ -357,6 +357,8 @@ def store_beatmap(beatmap):
 def store_beatmapset(beatmapset):
     db.session.add(
         BeatmapSet(
+            artist=_.get(beatmapset, beatmapset_attributes['artist']),
+            artist_unicode=_.get(beatmapset, beatmapset_attributes['artist_unicode']),
             id=_.get(beatmapset, beatmapset_attributes['id']),
             slimcover=_.get(beatmapset, beatmapset_attributes['slimcover']),
             slimcover_2x=_.get(beatmapset, beatmapset_attributes['slimcover_2x']),
