@@ -40,6 +40,10 @@ def search():
 def profile_default(id):
     return send_from_directory('../client/public', 'index.html')
 
+@app.route("/sampleScore")
+def sample_score():
+    return send_from_directory('../client/public', 'index.html')
+
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
     return send_from_directory('../client/public', 'index.html')
