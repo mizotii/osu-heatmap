@@ -7,6 +7,7 @@
 	// admin
 	import DeleteExpiredTokens from './components/admin/DeleteExpiredTokens.svelte';
 	import QueueDailies from './components/admin/QueueDailies.svelte';
+	import SampleScore from './components/admin/SampleScore.svelte';
 
 	//pages
 	import Error from './pages/Error.svelte';
@@ -18,6 +19,7 @@
 <Router {url}>
 	<nav>
 		<Link to='/'>Home</Link>
+		<Link to='/sampleScore'>sample scores</Link>
 	</nav>
 	<div>
 		<Route path='/profile/:id/' component={Profile} let:params let:active>
@@ -27,6 +29,7 @@
 			<Profile id='{params.id}' ruleset='{params.ruleset}' active={active}/>
 		</Route>
 		<Route path='/error' component={Error}/>
+		<Route path='/sampleScore' component={SampleScore}/>
 	</div>
 </Router>
 
