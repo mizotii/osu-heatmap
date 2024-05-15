@@ -21,6 +21,7 @@
     async function fetchScores(id, ruleset, timestamp) {
         const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`);
         const data = await response.json();
+        console.log(data);
         scores = data;
     }
 
@@ -104,9 +105,24 @@
         <option value='ranked_score'>ranked score</option>
         <option value='total_score'>total score</option>
     </select>
-    <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
+    <div class='scores'>
+        <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
+    </div>
 </heatmap>
 
 <style>
-    
+    #osu-heatmap {
+        border: solid 10px white;
+    }
+
+    heatmap {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    select {
+        margin: 12px;
+    }
 </style>
