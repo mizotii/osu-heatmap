@@ -7,11 +7,17 @@
     export let id;
 </script>
 
-<Osu id={id}/>
-<Taiko id={id}/>
-<Catch id={id}/>
-<Mania id={id}/>
+<rulesets>
+    <Osu id={id}/>
+    <Taiko id={id}/>
+    <Catch id={id}/>
+    <Mania id={id}/>
+</rulesets>
 
 <style>
+    rulesets {
+        display: flex;
+        flex-direction: row;
+    }
     
 </style>
