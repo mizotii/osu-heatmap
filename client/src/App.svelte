@@ -11,6 +11,7 @@
 
 	//pages
 	import Error from './pages/Error.svelte';
+  	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
 	export let url = '';
@@ -19,9 +20,10 @@
 <Router {url}>
 	<nav>
 		<Link to='/'>Home</Link>
-		<Link to='/sampleScore'>sample scores</Link>
+		<Link to='/sampleScore'>sampleScores</Link>
 	</nav>
 	<div>
+		<Route path='/home' component={Home}></Route>
 		<Route path='/profile/:id/' component={Profile} let:params let:active>
 			<Profile id='{params.id}' active={active}/>
 		</Route>
@@ -34,10 +36,6 @@
 </Router>
 
 <main>
-	<Authorize />
-	<Search />
-	<DeleteExpiredTokens />
-	<QueueDailies />
 </main>
 
 <style>
