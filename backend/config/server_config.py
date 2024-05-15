@@ -409,7 +409,7 @@ def store_score(score):
             count_katu=_.get(score, score_attributes['count_katu']),
             count_miss=_.get(score, score_attributes['count_miss']),
             notes=total_notes(score),
-            accuracy=_.get(score, score_attributes['accuracy']),
+            accuracy=round(_.get(score, score_attributes['accuracy']), 4) * 100,
             beatmap_id=_.get(score, score_attributes['beatmap_id']),
             beatmapset_id=_.get(score, score_attributes['beatmapset_id']),
             max_combo=_.get(score, score_attributes['max_combo']),
