@@ -37,10 +37,40 @@
 
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
-    <p>{username}</p>
-    <RulesetMenu id={id}/>
-    <Heatmap heatmapData={userHeatmapData} id={id} ruleset={ruleset}/>
+    <div class='username'>{username}</div>
+    <div class='rulesets'>
+        <RulesetMenu id={id}/>
+    </div>
+    <div class='heatmap'>
+        <Heatmap heatmapData={userHeatmapData} id={id} ruleset={ruleset}/>
+    </div>
 </profile>
 
 <style>
+    profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    img {
+        height: 200px;
+        border: solid 1px white;
+    }
+
+    .heatmap {
+        width: 634px;
+        margin: 12px;
+    }
+
+    .rulesets {
+        margin: 12px;
+    }
+
+    .username {
+        color: white;
+        font-weight: 500;
+        font-size: 48px;
+    }
 </style>
