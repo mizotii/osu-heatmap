@@ -1,4 +1,6 @@
 <script>
+    import { scoreNotes } from "../../../config.json";
+
     export let isHidden;
     export let scores;
     export let ruleset;
@@ -8,16 +10,24 @@
     {#if !isHidden}
         {#each scores as score}
             <div class='score'>
-                <img src='{score.beatmapset_data.slimcover_2x}' alt='score background'>
+                <div class='img'>
+                    <img src='{score.beatmapset_data.slimcover_2x}' alt='score background'>
+                </div>
                 <div class='top'>
                     <div class='title'>{score.beatmapset_data.title} [{score.beatmap_data.version}]</div>
-                    <div class='total-score'>{score.score_data.score}</div>
-                    <div class='notes'>{score.score_data.notes}</div>
+                    <div class='total-score'>score: +{score.score_data.score}</div>
                 </div>
                 <div class='bottom'>
-                    <div class='artist'>{score.beatmapset_data.artist}</div>
-                    <div class='timestamp'>{score.score_data.timestamp}</div>
-                    <div class='mods'>{score.score_data.mods}</div>
+                    <div class='left'>
+                        <div class='artist'>{score.beatmapset_data.artist}</div>
+                        <div class='timestamp'>{score.score_data.timestamp}</div>
+                        <div class='mods'>{score.score_data.mods}</div>
+                    </div>
+                </div>
+                <div class='notes'>
+                    <div class='total-notes'>
+                        {scoreNotes[ruleset]}: +{score.score_data.notes}
+                    </div>
                     <div class='note-splits'>
                         {score.score_data.count_300} / 
                         {#if ruleset == 'mania'}
@@ -40,67 +50,84 @@
 
 <style>
     .score {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        align-items: flex-start;
+        position: relative;
         text-align: center;
         margin: 12px;
         height: 50px;
-        width: 750px;
+        width: 900px;
         overflow: hidden;
         border: solid 1px white;
         color: white;
-        position: relative;
     }
 
-    img {
-        max-width: 100%;
-        max-height: 100vh;
-        filter: blur(4px) brightness(50%);
+    .img {
+        filter: blur(4px) brightness(33%);
     }
-    
+
     .top {
+        position: absolute;
+        padding-top: 4px;
+        left: 0%;
+        top: 0%;
         height: 60%;
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
+        width: 80%;
+        font-size: 16px;
         font-weight: bold;
     }
 
+    .top > .title {
+        text-align: left;
+        padding-left: 6px;
+        float: left;
+        left: 0%;
+        width: 60%;
+    }
+
+    .top > .total-score {
+        float: left;
+        left: 60%;
+        width: 20%;
+    }
+
     .bottom {
+        position: absolute;
+        padding-bottom: 4px;
+        top: 60%;
+        left: 0%;
         height: 40%;
-        width: 100%;
-        display: flex;
-        justify-content: flex-end space-between;
-        font-size: 0.5em;
+        width: 80%;
+        font-size: 10px;
     }
 
-    /*.title {
-    }
-
-    .total-score {
+    .bottom > .left {
+        display: inline-flex;
+        text-align: left;
+        padding-left: 6px;
+        float: left;
+        left: 0%;
+        width: 80%;
+        gap: 6px;
     }
 
     .notes {
-    }*/
-    
-    .note-splits {
-        color: white;
+        position: absolute;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        top: 0%;
+        left: 80%;
+        height: 100%;
+        width: 20%;
         font-size: 16px;
-        text-align: right;
+        text-align: center;
+        font-weight: bold;
     }
 
-    /*.mods {
-    }*/
+    .notes > .note-splits {
+        font-size: 10px;
+    }
 
     .timestamp {
-        margin-left: 6px;
         color: grey;
-    }
-
-    .artist {
-        color: inherit;
     }
 
     @media only screen and (max-width: 600px) {
