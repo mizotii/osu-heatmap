@@ -5,7 +5,7 @@
     let scores = [];
 
     async function getSample() {
-        const response = await fetch(`/api/scores/8816844/taiko/1715644800000`);
+        const response = await fetch(`/api/scores/8816844/taiko/1715731200000`);
         const data = await response.json();
         console.log(data);
         scores = data;
