@@ -15,6 +15,7 @@
     const cal = new CalHeatmap();
 
     cal.on('click', (event, timestamp, value) => {
+        console.log(timestamp);
         fetchScores(id, ruleset, timestamp);
     });
 
@@ -97,7 +98,6 @@
 </script>
 
 <heatmap>
-    <div id="osu-heatmap"></div>
     <select class="select select-bordered w-full max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
         <option value='note_count'>note count</option>
         <option value='play_count'>play count</option>
@@ -105,6 +105,7 @@
         <option value='ranked_score'>ranked score</option>
         <option value='total_score'>total score</option>
     </select>
+    <div id="osu-heatmap"></div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
