@@ -23,7 +23,7 @@
 		<Link to='/sampleScore'>sampleScores</Link>
 	</nav>
 	<div>
-		<Route path='/home' component={Home}></Route>
+		<Route path='/' component={Home}></Route>
 		<Route path='/profile/:id/' component={Profile} let:params let:active>
 			<Profile id='{params.id}' active={active}/>
 		</Route>
