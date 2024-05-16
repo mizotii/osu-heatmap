@@ -1,11 +1,13 @@
 """backend"""
 import pydash as _
+import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from config import server_config as sc
 from datetime import date, datetime, timedelta
-from flask import Flask, jsonify, redirect, request, send_from_directory
+from flask import Flask, jsonify, redirect, request, send_from_directory, session
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
@@ -13,6 +15,10 @@ app = Flask(
     __name__
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
+app.config['SESSION_PERMANENT'] = True
+app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = sc.client_credentials['sessions_secret']
+Session(app)
 init_db(app)
 migrate = Migrate(app, db)
 CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://localhost:8080"]}})
@@ -66,8 +72,24 @@ def fetch_scores(id, ruleset, timestamp):
 def callback():
     code = request.args.get('code')
     token = sc.fetch_token(code)
-    sc.handle_authorization(token)
+    username = sc.handle_authorization(token)
+
+    login = {
+        'username': username,
+    }
+    requests.post('/login', json=login)
     return redirect("/")
+
+@app.route("/login", methods=['POST'])
+def login():
+    if request.method == 'POST':
+        session['username'] = request.form['username']
+    return redirect('/')
+
+@app.route("/logout")
+def logout():
+    session.pop('username', None)
+    return redirect('/')
 
 @app.route("/delete_expired_tokens")
 def delete_expired_tokens():

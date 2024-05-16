@@ -32,6 +32,7 @@ beatmapset_attributes = {
 client_credentials = {
     'client_id': os.environ['CLIENT_ID'],
     'client_secret': os.environ['CLIENT_SECRET'],
+    'sessions_secret': os.environ['SESSIONS_SECRET']
 }
 
 database = {
@@ -311,6 +312,7 @@ def handle_authorization(token):
         for ruleset in rulesets:
             update_user_scores(id, ruleset)
             store_user_ruleset(token, ruleset)
+    return getattr(get_object(User, 'id', id), 'username')
 
 def handle_token(user, token):
     for key in Token.__table__.columns.keys():
