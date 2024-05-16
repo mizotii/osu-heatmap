@@ -1,2 +1,1 @@
-web: gunicorn backend.server:app
-release: cd client && npm install && npm start
+web: python backend/server.py
