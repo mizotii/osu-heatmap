@@ -13,5 +13,11 @@
         },
         "ranked_score": " ranked score on ",
         "total_score": " total score on "
+    },
+    "scoreNotes": {
+        "osu": " circles",
+        "taiko": " drums",
+        "catch": " fruits",
+        "mania": " keys"
     }
 }
