@@ -70,7 +70,7 @@
         left: 0%;
         top: 0%;
         height: 60%;
-        width: 80%;
+        width: 85%;
         font-size: 16px;
         font-weight: bold;
     }
@@ -80,13 +80,12 @@
         padding-left: 6px;
         float: left;
         left: 0%;
-        width: 60%;
     }
 
     .top > .total-score {
-        float: left;
-        left: 60%;
-        width: 20%;
+        text-align: right;
+        float: right;
+        left: 75%;
     }
 
     .bottom {
@@ -95,7 +94,7 @@
         top: 60%;
         left: 0%;
         height: 40%;
-        width: 80%;
+        width: 85%;
         font-size: 10px;
     }
 
@@ -114,9 +113,9 @@
         padding-top: 4px;
         padding-bottom: 4px;
         top: 0%;
-        left: 80%;
+        right: 0%;
         height: 100%;
-        width: 20%;
+        width: 15%;
         font-size: 16px;
         text-align: center;
         font-weight: bold;
