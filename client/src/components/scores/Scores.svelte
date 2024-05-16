@@ -8,33 +8,31 @@
     {#if !isHidden}
         {#each scores as score}
             <div class='score'>
-                <div class='background'>
-                    <img src='{score.beatmapset_data.slimcover_2x}' alt='score background'>
-                </div>
-                <div class='accuracy'>{score.score_data.accuracy}</div>
-                <div class='note-splits'>
-                    {score.score_data.count_300} / 
-                    {#if ruleset == 'mania'}
-                        {score.score_data.count_geki} / 
-                    {/if}
-                    {score.score_data.count_100} / 
-                    {#if ruleset == 'mania'}
-                        {score.score_data.count_katu} / 
-                    {/if}
-                    {#if ruleset != 'taiko'}
-                        {score.score_data.count_50} / 
-                    {/if}
-                    {score.score_data.count_miss}
-                </div>
-                <div class='notes'>{score.score_data.notes}</div>
-                <div class='max_combo'>{score.score_data.max_combo}</div>
-                <div class='mods'>{score.score_data.mods}</div>
-                <div class='total-score'>{score.score_data.score}</div>
-                <div class='song-info'>
+                <img src='{score.beatmapset_data.slimcover_2x}' alt='score background'>
+                <div class='top'>
                     <div class='title'>{score.beatmapset_data.title} [{score.beatmap_data.version}]</div>
-                    <div class='artist'>{score.beatmapset_data.artist}</div>
+                    <div class='total-score'>{score.score_data.score}</div>
+                    <div class='notes'>{score.score_data.notes}</div>
                 </div>
-                <div class='creator'>{score.beatmapset_data.creator}</div>
+                <div class='bottom'>
+                    <div class='artist'>{score.beatmapset_data.artist}</div>
+                    <div class='timestamp'>{score.score_data.timestamp}</div>
+                    <div class='mods'>{score.score_data.mods}</div>
+                    <div class='note-splits'>
+                        {score.score_data.count_300} / 
+                        {#if ruleset == 'mania'}
+                            {score.score_data.count_geki} / 
+                        {/if}
+                        {score.score_data.count_100} / 
+                        {#if ruleset == 'mania'}
+                            {score.score_data.count_katu} / 
+                        {/if}
+                        {#if ruleset != 'taiko'}
+                            {score.score_data.count_50} / 
+                        {/if}
+                        {score.score_data.count_miss}
+                    </div>
+                </div>
             </div>
         {/each}
     {/if}
@@ -42,7 +40,10 @@
 
 <style>
     .score {
-        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: flex-start;
         text-align: center;
         margin: 12px;
         height: 50px;
@@ -50,63 +51,56 @@
         overflow: hidden;
         border: solid 1px white;
         color: white;
+        position: relative;
     }
 
-    .background {
+    img {
+        max-width: 100%;
+        max-height: 100vh;
         filter: blur(4px) brightness(50%);
     }
-
-    /*.accuracy {
-        position: absolute;
-    }*/
     
-    .note-splits {
-        position: absolute;
-        width: 215px;
-        right: 10px;
-        color: white;
-        font-size: 16px;
+    .top {
+        height: 60%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
         font-weight: bold;
-        top: 12.5px;
-        text-align: right;
     }
 
-    /*.notes {
-        position: absolute;
-    }
-
-    .max_combo {
-        position: absolute;
-    }
-
-    .mods {
-        position: absolute;
-    }
-
-    .total-score {
-        position: absolute;
-    }*/
-
-    .song-info {
-        position: absolute;
-        text-align: left;
-        width: 515px;
-        height: 25px;
-        top: 6.5px;
-        left: 10px;
-        font-size: 16px;
-    }
-
-    .artist {
+    .bottom {
+        height: 40%;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end space-between;
         font-size: 0.5em;
     }
 
-    .creator {
-        position: absolute;
+    /*.title {
     }
 
-    .title {
-        font-weight: bold;
+    .total-score {
+    }
+
+    .notes {
+    }*/
+    
+    .note-splits {
+        color: white;
+        font-size: 16px;
+        text-align: right;
+    }
+
+    /*.mods {
+    }*/
+
+    .timestamp {
+        margin-left: 6px;
+        color: grey;
+    }
+
+    .artist {
+        color: inherit;
     }
 
     @media only screen and (max-width: 600px) {
