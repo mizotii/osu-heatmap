@@ -19,6 +19,7 @@
             if (ruleset) {
                 endpoint += `/${ruleset}`;
             } else {
+                // TODO: get default playmode
                 ruleset = 'osu';
             }
             const response = await fetch(endpoint);
