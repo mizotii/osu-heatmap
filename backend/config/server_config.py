@@ -4,7 +4,7 @@ import pydash as _
 import requests
 from datetime import datetime, timedelta
 from models import db, Beatmap, BeatmapSet, Score, Token, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
-from sqlalchemy import and_, between, exists
+from sqlalchemy import and_, between, desc, exists
 from urllib.parse import urlencode, urljoin
 
 beatmap_attributes = {
@@ -210,6 +210,7 @@ def create_score_list(id, ruleset, timestamp):
         ).\
         where(Score.beatmap_id == Beatmap.id).\
         where(Beatmap.beatmapset_id == BeatmapSet.id).\
+        order_by(desc(Score.timestamp)).\
         all()
     scores = []
     if data_banners:
