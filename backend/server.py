@@ -17,7 +17,6 @@ app = Flask(
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SESSION_PERMANENT'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
-app.config.from_object('config.ProductionConfig')
 app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
