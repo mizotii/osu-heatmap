@@ -10,7 +10,6 @@ from flask_migrate import Migrate
 from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
-from waitress import serve
 
 app = Flask(
     __name__
@@ -145,7 +144,7 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=8080)
+    app.run()
     scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
