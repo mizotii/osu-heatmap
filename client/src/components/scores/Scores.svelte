@@ -29,14 +29,14 @@
                         {scoreNotes[ruleset]}: +{score.score_data.notes}
                     </div>
                     <div class='note-splits'>
-                        {score.score_data.count_300} / 
                         {#if ruleset == 'mania'}
                             {score.score_data.count_geki} / 
                         {/if}
-                        {score.score_data.count_100} / 
+                        {score.score_data.count_300} / 
                         {#if ruleset == 'mania'}
                             {score.score_data.count_katu} / 
                         {/if}
+                        {score.score_data.count_100} / 
                         {#if ruleset != 'taiko'}
                             {score.score_data.count_50} / 
                         {/if}
