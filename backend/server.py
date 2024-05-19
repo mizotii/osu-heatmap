@@ -11,6 +11,8 @@ from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
+local = 'http://localhost:5000'
+
 app = Flask(
     __name__
 )
@@ -77,14 +79,14 @@ def callback():
     login = {
         'username': username,
     }
-    requests.post('/login', json=login)
-    return redirect("/")
+    requests.post(f'{local}/login', json=login)
+    id = getattr(sc.get_object(User, 'username', username), 'id')
+    return redirect(f'/profile/{id}')
 
 @app.route("/login", methods=['POST'])
 def login():
     if request.method == 'POST':
-        session['username'] = request.form['username']
-    return redirect('/')
+        session['username'] = request.form.get('username')
 
 @app.route("/logout")
 def logout():
