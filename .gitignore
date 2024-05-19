@@ -1,4 +1,5 @@
 backend/db/
+backend/flask_session/
 client/public/build/
 client/scripts/
 client/node_modules/
