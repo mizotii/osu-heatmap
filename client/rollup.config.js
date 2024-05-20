@@ -84,7 +84,7 @@ export default {
 
 		replace({
 			preventAssignment: true,
-			'process.env.BACKEND_API': JSON.stringify('BACKEND_API'),
+			'process.env.BACKEND_API': JSON.stringify(process.env.BACKEND_API),
 		})
 	],
 	watch: {
