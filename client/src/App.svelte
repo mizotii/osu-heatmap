@@ -15,7 +15,11 @@
   	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
-	export let url = process.env.BACKEND_API;
+	export let url = '';
+
+	onMount(() => {
+		console.log(process.env.BACKEND_API);
+	})
 </script>
 
 <Router {url}>
