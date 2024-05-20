@@ -1,7 +1,9 @@
 <script>
+    const apiEndpoint = process.env.BACKEND_API;
+
     async function deleteExpiredTokens() {
         try {
-            await fetch('/delete_expired_tokens');
+            await fetch(`${apiEndpoint}/delete_expired_tokens`);
         } catch (error) {
             console.error('error: ', error);
         }

@@ -1,7 +1,9 @@
 <script>
+    const apiEndpoint = process.env.BACKEND_API;
+    
     async function queueDailies() {
         try {
-            await fetch('/queue_dailies');
+            await fetch(`${apiEndpoint}/queue_dailies`);
         } catch (error) {
             console.error('error: ', error);
         }
