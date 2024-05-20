@@ -1,5 +1,6 @@
 <script>
 	import { Route, Router, Link, navigate } from 'svelte-routing';
+	import { onMount } from 'svelte';
 	// components
 	import Authorize from './components/Authorize.svelte';
 	import Search from './components/Search.svelte';
@@ -14,7 +15,11 @@
   	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
-	const url = process.env.BACKEND_API;
+	export let url = process.env.BACKEND_API;
+
+	onMount(() => {
+		console.log('url');
+	})
 </script>
 
 <Router {url}>
