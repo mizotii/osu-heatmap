@@ -142,7 +142,7 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host=sc.endpoints['backend'], port=5000)
     scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
