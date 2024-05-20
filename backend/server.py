@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
+from waitress import serve
 
 app = Flask(
     __name__
@@ -17,6 +18,7 @@ app = Flask(
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SESSION_PERMANENT'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
+app.config.from_object('config.ProductionConfig')
 app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
@@ -77,7 +79,8 @@ def callback():
     login = {
         'username': username,
     }
-    requests.post(f'{sc.endpoints['local']}/login', json=login)
+    local = sc.endpoints['local']
+    requests.post(f'{local}/login', json=login)
     id = getattr(sc.get_object(User, 'username', username), 'id')
     return redirect(f'/profile/{id}')
 
@@ -142,7 +145,7 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
-    app.run(debug=True, host=sc.endpoints['backend'], port=5000)
+    serve(app, host='0.0.0.0', port=8080)
     scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
