@@ -8,6 +8,7 @@ import css from 'rollup-plugin-css-only';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
+import replace from '@rollup/plugin-replace';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -82,6 +83,7 @@ export default {
 		production && terser(),
 
 		replace({
+			preventAssignment: true,
 			'process.env.BACKEND_API': JSON.stringify('BACKEND_API'),
 		})
 	],
