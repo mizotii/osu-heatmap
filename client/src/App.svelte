@@ -16,10 +16,6 @@
 	import Profile from './pages/Profile.svelte';
 
 	export let url = process.env.BACKEND_API;
-
-	onMount(() => {
-		console.log(url);
-	})
 </script>
 
 <Router {url}>
