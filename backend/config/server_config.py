@@ -42,7 +42,10 @@ database = {
 endpoints = {
     'authorize': 'https://osu.ppy.sh/oauth/authorize',
     'api': 'https://osu.ppy.sh/api/v2',
+    'backend': os.environ.get('BACKEND_API'),
     'callback': 'http://localhost:5000/callback',
+    'frontend': os.environ.get('FRONTEND_URL'),
+    'local': 'http://localhost:5000',
     'this_user': {
         'osu': '/me',
         'taiko': '/me/taiko',

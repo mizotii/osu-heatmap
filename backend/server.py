@@ -11,8 +11,6 @@ from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
-local = 'http://localhost:5000'
-
 app = Flask(
     __name__
 )
@@ -23,7 +21,7 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
-CORS(app, resources={r"/config": {"origins": ["http://localhost:8000", "http://localhost:8080"]}})
+CORS(app, resources={r"/*": {"origins": sc.endpoints['frontend']}})
 
 scheduler = BackgroundScheduler()
 
@@ -79,7 +77,7 @@ def callback():
     login = {
         'username': username,
     }
-    requests.post(f'{local}/login', json=login)
+    requests.post(f'{sc.endpoints['local']}/login', json=login)
     id = getattr(sc.get_object(User, 'username', username), 'id')
     return redirect(f'/profile/{id}')
 
