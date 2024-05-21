@@ -15,7 +15,7 @@
   	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
-	export let url = process.env.FRONTEND_URL;
+	export let '';
 
 	onMount(() => {
 		console.log(url);
