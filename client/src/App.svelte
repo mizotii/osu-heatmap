@@ -15,7 +15,7 @@
   	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
-	export let '';
+	export let url = '';
 
 	onMount(() => {
 		console.log(url);
