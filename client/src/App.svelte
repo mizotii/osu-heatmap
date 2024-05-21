@@ -18,6 +18,7 @@
 	export let url = process.env.FRONTEND_URL;
 
 	onMount(() => {
+		console.log(url);
 		console.log(process.env.BACKEND_API);
 	})
 </script>
