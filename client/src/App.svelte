@@ -18,8 +18,6 @@
 	export let url = '';
 
 	onMount(() => {
-		console.log(url);
-		console.log(process.env.BACKEND_API);
 	})
 </script>
 
