@@ -4,6 +4,7 @@
     async function authRedirect() {
         try {
             const response = await fetch(`${apiEndpoint}/authorize`);
+            console.log(`${apiEndpoint}/authorize`)
             const data = await response.json();
             console.log(data);
             window.location.href = data;
