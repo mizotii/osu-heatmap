@@ -26,7 +26,6 @@ CORS(
     origins=[sc.endpoints['frontend']],
     allow_headers=['Origin', 'Content-Type', 'Accept', 'Authorization'],
     methods=['GET', 'POST'],
-    origins=['*'],
 )
 
 scheduler = BackgroundScheduler()
