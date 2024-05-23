@@ -23,6 +23,9 @@ init_db(app)
 migrate = Migrate(app, db)
 CORS(
     app,
+    origins=[sc.endpoints['frontend']],
+    allow_headers=['Origin', 'Content-Type', 'Accept', 'Authorization'],
+    methods=['GET', 'POST'],
     origins=['*'],
 )
 
