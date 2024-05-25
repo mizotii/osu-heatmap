@@ -70,7 +70,6 @@
                                     dayjsDate.format('YYYY-MM-DD HH:mm:ss')
                                 )
                             } else if ($dataType === 'note_count') {
-                                console.log(ruleset)
                                 return (
                                     (value ? value : 'No') +
                                     heatmapCells[$dataType][ruleset] +
