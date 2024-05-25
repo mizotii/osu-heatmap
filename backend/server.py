@@ -138,7 +138,7 @@ def queue_refresh():
 
 def queue_users():
     tokens = sc.select_all(Token, join_by_table=User, join_by_column_other=User.id, join_by_column_this=Token.user_id, sort_by=User.last_updated, as_dict=True)
-    interval = ((sc.intervals['hours'] / int(sc.intervals['users']['interval']).strip('*/')) * sc.intervals['hours_to_seconds']) / (len(tokens) * len(sc.rulesets))
+    interval = 0 if not tokens else ((sc.intervals['hours'] / int(sc.intervals['users']['interval']).strip('*/')) * sc.intervals['hours_to_seconds']) / (len(tokens) * len(sc.rulesets))
     total_interval = 0
     for token in tokens:
         id = token['user_id']
