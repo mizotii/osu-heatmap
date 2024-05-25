@@ -17,7 +17,6 @@
     const cal = new CalHeatmap();
 
     cal.on('click', (event, timestamp, value) => {
-        console.log(timestamp);
         fetchScores(id, ruleset, timestamp);
     });
 
