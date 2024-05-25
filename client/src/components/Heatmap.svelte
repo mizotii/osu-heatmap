@@ -23,7 +23,6 @@
     async function fetchScores(id, ruleset, timestamp) {
         const response = await fetch(`${apiEndpoint}/api/scores/${id}/${ruleset}/${timestamp}`);
         const data = await response.json();
-        console.log(data);
         scores = data;
     }
 
