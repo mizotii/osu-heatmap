@@ -21,7 +21,7 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
-CORS(app)
+CORS(app, resources={r"/*": {'origins': '*'}})
 
 scheduler = BackgroundScheduler()
 
