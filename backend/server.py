@@ -5,7 +5,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from config import server_config as sc
 from datetime import date, datetime, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory, session
-from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
@@ -21,7 +20,6 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
-CORS(app, origins='https://osu-heatm.app')
 
 scheduler = BackgroundScheduler()
 
@@ -143,7 +141,6 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
-    print(sc.endpoints['frontend'])
     app.run()
     scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
