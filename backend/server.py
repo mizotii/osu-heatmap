@@ -21,7 +21,7 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
-CORS(app, origins=['https://osu-heatm.app', 'https://osu-heatm.app/'])
+CORS(app, origins='https://osu-heatm.app')
 
 scheduler = BackgroundScheduler()
 
