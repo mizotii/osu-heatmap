@@ -10,9 +10,7 @@ from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
-app = Flask(
-    __name__
-)
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SESSION_PERMANENT'] = True
 app.config['SESSION_TYPE'] = 'filesystem'
