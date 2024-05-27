@@ -69,11 +69,6 @@ def callback():
     code = request.args.get('code')
     token = sc.fetch_token(code)
     username = sc.handle_authorization(token)
-
-    login = {
-        'username': username,
-    }
-    requests.post(f'https://mizotii-api.xyz/login', json=login)
     id = getattr(sc.get_object(User, 'username', username), 'id')
     return redirect(f'/profile/{id}')
 
