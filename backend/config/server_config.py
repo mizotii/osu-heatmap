@@ -42,9 +42,8 @@ database = {
 endpoints = {
     'authorize': 'https://osu.ppy.sh/oauth/authorize',
     'api': 'https://osu.ppy.sh/api/v2',
-    'backend': os.environ.get('BACKEND_API'),
-    'callback': 'https://mizotii-api.xyz/callback',
-    'frontend': os.environ.get('FRONTEND_URL'),
+    'backend': 'https://mizotii-api.xyz',
+    'frontend': 'https://osu-heatm.app',
     'this_user': {
         'osu': '/me',
         'taiko': '/me/taiko',
@@ -128,7 +127,7 @@ user_attributes = {
 
 authorization_parameters = {
     'client_id': client_credentials['client_id'],
-    'redirect_uri': endpoints['callback'],
+    'redirect_uri': f'{endpoints['backend']}/callback',
     'response_type': 'code',
     'scope': 'public identify',
     'state': 'randomval',
@@ -232,7 +231,7 @@ def create_token_parameters(code):
         'client_secret': client_credentials['client_secret'],
         'code': code,
         'grant_type': 'authorization_code',
-        'redirect_uri': endpoints['callback'],
+        'redirect_uri': f'{endpoints['backend']}/callback',
     }
     return params
 
