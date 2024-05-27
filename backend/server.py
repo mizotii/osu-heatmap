@@ -21,7 +21,7 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
-CORS(app, resources={r"/*": {'origins': '*'}})
+CORS(app, resources={r"/*": {'origins': sc.endpoints['frontend']}})
 
 scheduler = BackgroundScheduler()
 
@@ -143,6 +143,7 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
+    print(sc.endpoints['frontend'])
     app.run()
     scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
