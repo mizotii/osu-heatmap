@@ -73,8 +73,7 @@ def callback():
     login = {
         'username': username,
     }
-    local = sc.endpoints['local']
-    requests.post(f'{local}/login', json=login)
+    requests.post(f'https://mizotii-api.xyz/login', json=login)
     id = getattr(sc.get_object(User, 'username', username), 'id')
     return redirect(f'/profile/{id}')
 
