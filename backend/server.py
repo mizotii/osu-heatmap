@@ -70,7 +70,7 @@ def callback():
     token = sc.fetch_token(code)
     username = sc.handle_authorization(token)
     id = getattr(sc.get_object(User, 'username', username), 'id')
-    return redirect(f'/profile/{id}')
+    return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
 
 @app.route("/login", methods=['POST'])
 def login():
@@ -85,12 +85,12 @@ def logout():
 @app.route("/delete_expired_tokens")
 def delete_expired_tokens():
     sc.delete_expired_tokens()
-    return redirect("/")
+    return redirect(sc.endpoints['frontend'])
 
 @app.route("/queue_dailies")
 def dailies():
     queue_dailies(date.today())
-    return redirect("/")
+    return redirect(sc.endpoints['frontend'])
 
 def queue_dailies(date):
     previous_user_objects = sc.select_all(User, sort_by=User.last_updated, as_dict=True)
