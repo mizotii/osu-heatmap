@@ -40,10 +40,17 @@ def search():
 
 @app.route("/profile/<int:id>")
 def profile_default(id):
+    ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
+    token = sc.get_object(Token, 'user_id', id, as_dict=True)
+    sc.direct_update_user(id, token, ruleset)
+    sc.update_user_scores(id)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
+    token = sc.get_object(Token, 'user_id', id, as_dict=True)
+    sc.direct_update_user(id, token, ruleset)
+    sc.update_user_scores(id)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
@@ -95,7 +102,7 @@ def queue_dailies(date):
                 note_count = new_user_ruleset['total_hits'] - previous_user_ruleset['total_hits']
                 ranked_score = new_user_ruleset['ranked_score'] - previous_user_ruleset['ranked_score']
                 total_score = new_user_ruleset['total_score'] - new_user_ruleset['total_score']
-                """scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=10)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])"""
+                scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=10)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])
                 sc.store_daily_statistics(id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score)
                 total_interval += interval
 
