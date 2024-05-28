@@ -6,8 +6,6 @@
 	import Search from './components/Search.svelte';
 
 	// admin
-	import DeleteExpiredTokens from './components/admin/DeleteExpiredTokens.svelte';
-	import QueueDailies from './components/admin/QueueDailies.svelte';
 	import SampleScore from './components/admin/SampleScore.svelte';
 
 	//pages
