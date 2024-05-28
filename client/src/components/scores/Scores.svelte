@@ -132,7 +132,6 @@
     @media only screen and (max-width: 600px) {
         .score {
             width: 90%;
-            color: black;
         }
     }
 </style>
