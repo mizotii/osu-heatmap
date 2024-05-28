@@ -7,8 +7,6 @@
 
 <Authorize />
 <Search />
-<DeleteExpiredTokens />
-<QueueDailies />
 
 <style>
 

@@ -235,14 +235,6 @@ def create_token_parameters(code):
     }
     return params
 
-def delete_expired_tokens():
-    tokens = select_all(Token, sort_by=Token.expires_at)
-    now = datetime.now()
-    for token in tokens:
-        if (getattr(token, 'expires_at') < now):
-            db.session.delete(token)
-    db.session.commit()
-
 # updates general user and osu ruleset for user by default (osu)
 def direct_update_user(id, token, ruleset):
     if ruleset == 'osu':

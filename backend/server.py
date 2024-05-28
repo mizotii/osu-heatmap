@@ -42,10 +42,6 @@ def search():
 def profile_default(id):
     return send_from_directory('../client/public', 'index.html')
 
-@app.route("/sampleScore")
-def sample_score():
-    return send_from_directory('../client/public', 'index.html')
-
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
     return send_from_directory('../client/public', 'index.html')
@@ -81,16 +77,6 @@ def login():
 def logout():
     session.pop('username', None)
     return redirect('/')
-
-@app.route("/delete_expired_tokens")
-def delete_expired_tokens():
-    sc.delete_expired_tokens()
-    return redirect(sc.endpoints['frontend'])
-
-@app.route("/queue_dailies")
-def dailies():
-    queue_dailies(date.today())
-    return redirect(sc.endpoints['frontend'])
 
 def queue_dailies(date):
     previous_user_objects = sc.select_all(User, sort_by=User.last_updated, as_dict=True)
