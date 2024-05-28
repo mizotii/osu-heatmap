@@ -1,12 +1,6 @@
 <script>
-	import { Route, Router, Link, navigate } from 'svelte-routing';
+	import { Route, Router, Link } from 'svelte-routing';
 	import { onMount } from 'svelte';
-	// components
-	import Authorize from './components/Authorize.svelte';
-	import Search from './components/Search.svelte';
-
-	// admin
-	import SampleScore from './components/admin/SampleScore.svelte';
 
 	//pages
 	import Error from './pages/Error.svelte';
@@ -22,7 +16,6 @@
 <Router {url}>
 	<nav>
 		<Link to='/'>Home</Link>
-		<Link to='/sampleScore'>sampleScores</Link>
 	</nav>
 	<div>
 		<Route path='/' component={Home}></Route>
@@ -33,7 +26,6 @@
 			<Profile id='{params.id}' ruleset='{params.ruleset}' active={active}/>
 		</Route>
 		<Route path='/error' component={Error}/>
-		<Route path='/sampleScore' component={SampleScore}/>
 	</div>
 </Router>
 
