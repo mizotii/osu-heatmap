@@ -73,7 +73,7 @@ def callback():
     token = sc.fetch_token(code)
     username = sc.handle_authorization(token)
     id = getattr(sc.get_object(User, 'username', username), 'id')
-    return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
+    return redirect(f'/profile/{id}')
 
 @app.route("/login", methods=['POST'])
 def login():
