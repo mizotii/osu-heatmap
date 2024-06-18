@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { createUsersIndex, searchUsersIndex } from "./search"
-
+    
     const apiEndpoint = process.env.BACKEND_API;
 
     let search: 'loading' | 'ready' = 'loading'
