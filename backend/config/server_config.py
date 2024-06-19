@@ -42,7 +42,7 @@ database = {
 endpoints = {
     'authorize': 'https://osu.ppy.sh/oauth/authorize',
     'api': 'https://osu.ppy.sh/api/v2',
-    'backend': 'http://localhost:5000/callback',
+    'backend': 'http://localhost:5000',
     'frontend': 'https://osu-heatm.app',
     'this_user': {
         'osu': '/me',
