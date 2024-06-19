@@ -10,6 +10,8 @@ from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
+scheduler = BackgroundScheduler()
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SESSION_PERMANENT'] = True
@@ -30,10 +32,6 @@ def icons(any, path):
 
 @app.route("/authorize")
 def auth_redirect():
-    if scheduler.running:
-        print('scheduler is running!')
-    else:
-        print('scheduler is not running!')
     return jsonify(sc.create_authorization_url())
 
 @app.route("/api/search")
@@ -134,7 +132,6 @@ def queue_users():
 
 if __name__ == "__main__":
     app.run(debug=True)
-    scheduler = BackgroundScheduler()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
