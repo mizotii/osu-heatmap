@@ -19,7 +19,7 @@
 
 {#if search === 'ready'}
     <div class='search'>
-        <input type="text" bind:value={searchTerm} placeholder="player..." autocomplete='off' spellcheck='false' class="input w-full max-w-xs" />
+        <input type="text" bind:value={searchTerm} placeholder="player..." autocomplete='off' spellcheck='false' class="input w-full max-w-2xl h-full max-h-400vh" />
 
         <div class='results'>
             {#if results}
