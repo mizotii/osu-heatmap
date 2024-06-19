@@ -127,7 +127,7 @@ user_attributes = {
 
 authorization_parameters = {
     'client_id': client_credentials['client_id'],
-    'redirect_uri': f'{endpoints['backend']}/callback',
+    'redirect_uri': f"{endpoints['backend']}/callback",
     'response_type': 'code',
     'scope': 'public identify',
     'state': 'randomval',
@@ -231,7 +231,7 @@ def create_token_parameters(code):
         'client_secret': client_credentials['client_secret'],
         'code': code,
         'grant_type': 'authorization_code',
-        'redirect_uri': f'{endpoints['backend']}/callback',
+        'redirect_uri': f"{endpoints['backend']}/callback",
     }
     return params
 
