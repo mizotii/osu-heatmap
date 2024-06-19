@@ -19,8 +19,6 @@ Session(app)
 init_db(app)
 migrate = Migrate(app, db)
 
-scheduler = BackgroundScheduler()
-
 @app.route("/")
 @app.route("/<path:path>")
 def base(path='index.html'):
@@ -126,8 +124,9 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
+    scheduler = BackgroundScheduler()
     app.run()
-    scheduler.start()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
+    scheduler.start()
