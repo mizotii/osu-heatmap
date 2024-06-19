@@ -19,8 +19,6 @@ Session(app)
 init_db(app)
 migrate = Migrate(app, db)
 
-scheduler = BackgroundScheduler()
-
 @app.route("/")
 @app.route("/<path:path>")
 def base(path='index.html'):
@@ -32,6 +30,10 @@ def icons(any, path):
 
 @app.route("/authorize")
 def auth_redirect():
+    if scheduler.running:
+        print('scheduler is running!')
+    else:
+        print('scheduler is not running!')
     return jsonify(sc.create_authorization_url())
 
 @app.route("/api/search")
@@ -43,14 +45,14 @@ def profile_default(id):
     ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
     token = sc.get_object(Token, 'user_id', id, as_dict=True)
     sc.direct_update_user(id, token, ruleset)
-    sc.update_user_scores(id)
+    sc.update_user_scores(id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
     token = sc.get_object(Token, 'user_id', id, as_dict=True)
     sc.direct_update_user(id, token, ruleset)
-    sc.update_user_scores(id)
+    sc.update_user_scores(id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
@@ -83,6 +85,11 @@ def login():
 @app.route("/logout")
 def logout():
     session.pop('username', None)
+    return redirect('/')
+
+@app.route("/queue_dailies")
+def manual_queue():
+    queue_dailies(datetime.now())
     return redirect('/')
 
 def queue_dailies(date):
@@ -126,8 +133,9 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
-    app.run()
-    scheduler.start()
+    app.run(debug=True)
+    scheduler = BackgroundScheduler()
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
+    scheduler.start()
