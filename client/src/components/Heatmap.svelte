@@ -6,8 +6,6 @@
     import Scores from "./scores/Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
-    const apiEndpoint = process.env.BACKEND_API;
-
     export let heatmapData;
     export let id;
     export let ruleset;
@@ -21,7 +19,7 @@
     });
 
     async function fetchScores(id, ruleset, timestamp) {
-        const response = await fetch(`${apiEndpoint}/api/scores/${id}/${ruleset}/${timestamp}`);
+        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`);
         const data = await response.json();
         scores = data;
     }
@@ -90,6 +88,7 @@
     }
 
     onMount (async () => {
+        console.log(heatmapData);
         await reloadHeatmap();
     })
 
