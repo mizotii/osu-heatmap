@@ -135,4 +135,4 @@ if __name__ == "__main__":
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
     scheduler.start()
-    app.run(debug=True)
+    app.run(debug=False)
