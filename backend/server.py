@@ -10,6 +10,8 @@ from flask_session import Session
 from models import init_db, db, Token, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
+scheduler = BackgroundScheduler()
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SESSION_PERMANENT'] = True
@@ -18,6 +20,8 @@ app.secret_key = sc.client_credentials['sessions_secret']
 Session(app)
 init_db(app)
 migrate = Migrate(app, db)
+
+scheduler = BackgroundScheduler()
 
 @app.route("/")
 @app.route("/<path:path>")
@@ -124,6 +128,7 @@ def queue_users():
             total_interval += interval
 
 if __name__ == "__main__":
+    app.run(debug=True)
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])

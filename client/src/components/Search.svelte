@@ -21,7 +21,7 @@
 
 {#if search === 'ready'}
     <div class='search'>
-        <input type="text" bind:value={searchTerm} placeholder="player..." autocomplete='off' spellcheck='false' class="input w-full max-w-xs" />
+        <input type="text" bind:value={searchTerm} placeholder="search for a player..." autocomplete='off' spellcheck='false' class="input input-bordered input-primary max-w-s" />
 
         <div class='results'>
             {#if results}

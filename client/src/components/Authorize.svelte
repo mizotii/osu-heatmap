@@ -15,7 +15,7 @@
 </script>
 
 <authorize>
-    <button on:click={authRedirect}>authorize</button>
+    <button class="btn" on:click={authRedirect}>authorize</button>
 </authorize>
 
 <style>
