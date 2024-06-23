@@ -73,6 +73,7 @@ def callback():
     token = sc.fetch_token(code)
     username = sc.handle_authorization(token)
     id = getattr(sc.get_object(User, 'username', username), 'id')
+    # todo: create a session
     return redirect(f'/profile/{id}')
 
 @app.route("/login", methods=['POST'])
@@ -82,7 +83,7 @@ def login():
 
 @app.route("/logout")
 def logout():
-    session.pop('username', None)
+    session.clear()
     return redirect('/')
 
 @app.route("/queue_dailies")
