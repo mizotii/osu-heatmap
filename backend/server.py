@@ -75,7 +75,7 @@ def callback():
     token = sc.fetch_token(code)
     username = sc.handle_authorization(token)
     id = getattr(sc.get_object(User, 'username', username), 'id')
-    return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
+    return redirect(f"{sc.endpoints['frontend']}/profile/{id}")
 
 @app.route("/login", methods=['POST'])
 def login():
@@ -132,4 +132,5 @@ if __name__ == "__main__":
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
     scheduler.start()
+    scheduler.print_jobs()
     app.run(debug=False)
