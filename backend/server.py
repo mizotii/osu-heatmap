@@ -132,8 +132,8 @@ def queue_users():
         for token in tokens:
             id = token['user_id']
             for ruleset in sc.rulesets:
-                scheduler.add_job(sc.update_user_scores, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[id, ruleset])
-                scheduler.add_job(sc.direct_update_user, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[id, token, ruleset])
+                scheduler.add_job(sc.update_user_scores, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[app, id, ruleset])
+                scheduler.add_job(sc.direct_update_user, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[app, id, token, ruleset])
                 total_interval += interval
 
 if __name__ == "__main__":
