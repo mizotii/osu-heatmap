@@ -133,11 +133,11 @@ authorization_parameters = {
     'state': 'randomval',
 }
 
-def create_authorization_url():
-    return urljoin(endpoints['authorize'], '?' + urlencode(authorization_parameters))
-
 def calculate_expiration(interval):
     return (datetime.now() + timedelta(seconds=interval))
+
+def create_authorization_url():
+    return urljoin(endpoints['authorize'], '?' + urlencode(authorization_parameters))
 
 def create_headers(token=None):
     headers = {
@@ -236,16 +236,17 @@ def create_token_parameters(code):
     return params
 
 # updates general user and osu ruleset for user by default (osu)
-def direct_update_user(id, token, ruleset):
-    if ruleset == 'osu':
-        table = User
+def direct_update_user(app, id, token, ruleset):
+    with app.app_context():
+        if ruleset == 'osu':
+            table = User
+            old_user = get_object(table, 'id', id)
+            new_user = fetch_user(token['access_token'])
+            update_user(table, old_user, new_user)
+        table = tables[ruleset]
         old_user = get_object(table, 'id', id)
-        new_user = fetch_user(token['access_token'])
+        new_user = fetch_user(token['access_token'], ruleset)
         update_user(table, old_user, new_user)
-    table = tables[ruleset]
-    old_user = get_object(table, 'id', id)
-    new_user = fetch_user(token['access_token'], ruleset)
-    update_user(table, old_user, new_user)
 
 def fetch_recent_scores(id, ruleset):
     token = get_object(Token, 'user_id', id)
@@ -319,9 +320,9 @@ def refresh_token(token):
     response = requests.get(
         endpoints['token'],
         headers=create_headers(),
-        data=create_refresh_parameters(token['refresh'])
+        data=create_refresh_parameters(token['refresh_token'])
     )
-    handle_token(response.json())
+    handle_token(get_object(Token, 'user_id', token['user_id']), response.json())
 
 def select_all(table, attribute=None, attribute_value=None, join_by_column_other=None, join_by_column_this=None, join_by_table=None, sort_by=None, as_dict=False):
     data = []
@@ -477,17 +478,22 @@ def update_user(table, old_user, new_user):
     setattr(old_user, 'last_updated', datetime.now())
     db.session.commit()
 
-def update_user_scores(id, ruleset):
-    scores = fetch_recent_scores(id, ruleset)
-    for score in scores:
-        beatmap = score['beatmap']
-        beatmapset = score['beatmapset']
-        if not get_object(BeatmapSet, 'id', _.get(beatmapset, beatmapset_attributes['id']), check_exists_only=True):
-            store_beatmapset(beatmapset)
-        if not get_object(Beatmap, 'id', _.get(beatmap, beatmap_attributes['id']), check_exists_only=True):
-            store_beatmap(beatmap)
-        if not get_object(Score, 'id', _.get(score, score_attributes['id']), check_exists_only=True):
-            store_score(score)
+def update_user_scores(app, id, ruleset):
+    with app.app_context():
+        scores = fetch_recent_scores(id, ruleset)
+        for score in scores:
+            if score == 'authentication':
+                token = get_object(Token, 'user_id', id, as_dict=True)
+                refresh_token(token)
+            else:
+                beatmap = score['beatmap']
+                beatmapset = score['beatmapset']
+                if not get_object(BeatmapSet, 'id', _.get(beatmapset, beatmapset_attributes['id']), check_exists_only=True):
+                    store_beatmapset(beatmapset)
+                if not get_object(Beatmap, 'id', _.get(beatmap, beatmap_attributes['id']), check_exists_only=True):
+                    store_beatmap(beatmap)
+                if not get_object(Score, 'id', _.get(score, score_attributes['id']), check_exists_only=True):
+                    store_score(score)
 
 def write_value_error(invalid, valid):
     valid_types = ', '.join(valid)
