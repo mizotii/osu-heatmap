@@ -299,13 +299,13 @@ def handle_authorization(token):
     if hyp_user:
         handle_token(hyp_user, token)
         for ruleset in rulesets:
-            update_user_scores(id, ruleset)
+            update_user_scores(None, id, ruleset)
             direct_update_user(id, token, ruleset)
     else:
         store_token(id, token)
         store_user(token)
         for ruleset in rulesets:
-            update_user_scores(id, ruleset)
+            update_user_scores(None, id, ruleset)
             store_user_ruleset(token, ruleset)
     return getattr(get_object(User, 'id', id), 'username')
 
