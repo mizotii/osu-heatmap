@@ -42,15 +42,15 @@ def search():
 def profile_default(id):
     ruleset = getattr(sc.get_object(User, 'id', id), 'playmode')
     token = sc.get_object(Token, 'user_id', id, as_dict=True)
-    sc.direct_update_user(id, token, ruleset)
-    sc.update_user_scores(id, ruleset)
+    sc.direct_update_user(app, id, token, ruleset)
+    sc.update_user_scores(app, id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
     token = sc.get_object(Token, 'user_id', id, as_dict=True)
-    sc.direct_update_user(id, token, ruleset)
-    sc.update_user_scores(id, ruleset)
+    sc.direct_update_user(app, id, token, ruleset)
+    sc.update_user_scores(app, id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
@@ -102,7 +102,7 @@ def queue_dailies(date):
             for ruleset in sc.rulesets:
                 if not db.session.query(exists().where(and_(UserDailyStatistics.id == id, UserDailyStatistics.ruleset == ruleset, UserDailyStatistics.start_date == date))).scalar():
                     previous_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
-                    sc.direct_update_user(id, token, ruleset)
+                    sc.direct_update_user(app, id, token, ruleset)
                     new_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
                     play_time = new_user_ruleset['play_time'] - previous_user_ruleset['play_time']
                     play_count = new_user_ruleset['play_count'] - previous_user_ruleset['play_count']
@@ -125,8 +125,6 @@ def queue_refresh():
 def queue_users():
     with app.app_context():
         tokens = sc.select_all(Token, join_by_table=User, join_by_column_other=User.id, join_by_column_this=Token.user_id, sort_by=User.last_updated, as_dict=True)
-        
-        # 
         interval = 0 if not tokens else ((sc.intervals['hours'] / int((sc.intervals['users']['interval']).strip("*/"))) * sc.intervals['hours_to_seconds']) / (len(tokens) * len(sc.rulesets))
         total_interval = 0
         for token in tokens:
@@ -139,7 +137,7 @@ def queue_users():
 if __name__ == "__main__":
     scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
-    scheduler.add_job(queue_users, 'interval', seconds=5)
+    scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
     scheduler.start()
     scheduler.print_jobs()
-    app.run(debug=False)
+    app.run(debug=True)
