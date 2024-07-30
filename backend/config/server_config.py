@@ -291,23 +291,24 @@ def get_object(table, attribute, value, check_exists_only=False, as_dict=False):
         else:
             return query.as_dict()
 
-def handle_authorization(token):
-    id = fetch_user(token['access_token'], attribute='id')
-    hyp_user = get_object(Token, 'user_id', id)
+def handle_authorization(app, token):
+    with app.app_context():
+        id = fetch_user(token['access_token'], attribute='id')
+        hyp_user = get_object(Token, 'user_id', id)
 
-    # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
-    if hyp_user:
-        handle_token(hyp_user, token)
-        for ruleset in rulesets:
-            update_user_scores(None, id, ruleset)
-            direct_update_user(id, token, ruleset)
-    else:
-        store_token(id, token)
-        store_user(token)
-        for ruleset in rulesets:
-            update_user_scores(None, id, ruleset)
-            store_user_ruleset(token, ruleset)
-    return getattr(get_object(User, 'id', id), 'username')
+        # schema draws Token as parent class, meaning if a Token exists, so does its User in all facets
+        if hyp_user:
+            handle_token(hyp_user, token)
+            for ruleset in rulesets:
+                update_user_scores(app, id, ruleset)
+                direct_update_user(app, id, token, ruleset)
+        else:
+            store_token(id, token)
+            store_user(token)
+            for ruleset in rulesets:
+                update_user_scores(None, id, ruleset)
+                store_user_ruleset(token, ruleset)
+        return getattr(get_object(User, 'id', id), 'username')
 
 def handle_token(user, token):
     for key in Token.__table__.columns.keys():

@@ -71,7 +71,7 @@ def fetch_scores(id, ruleset, timestamp):
 def callback():
     code = request.args.get('code')
     token = sc.fetch_token(code)
-    username = sc.handle_authorization(token)
+    username = sc.handle_authorization(app, token)
     id = getattr(sc.get_object(User, 'username', username), 'id')
     # todo: create a session
     return redirect(f'/profile/{id}')
@@ -94,13 +94,14 @@ def manual_queue():
 def queue_dailies(date):
     with app.app_context():
         previous_user_objects = sc.select_all(User, sort_by=User.last_updated, as_dict=True)
-        interval = (sc.intervals['dailies']['interval'] * sc.intervals['hours_to_seconds']) / len(previous_user_objects)
-        total_interval = 0
+        interval = 0 if not previous_user_objects else (sc.intervals['dailies']['interval'] * sc.intervals['hours_to_seconds']) / len(previous_user_objects)
         for previous_user in previous_user_objects:
             id = previous_user['id']
             token = sc.get_object(Token, 'user_id', id, as_dict=True)
             for ruleset in sc.rulesets:
-                if not db.session.query(exists().where(and_(UserDailyStatistics.id == id, UserDailyStatistics.ruleset == ruleset, UserDailyStatistics.start_date == date))).scalar():
+                if not db.session.query(exists().where(
+                    and_(UserDailyStatistics.id == id, UserDailyStatistics.ruleset == ruleset, UserDailyStatistics.start_date == date)
+                )).scalar():
                     previous_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
                     sc.direct_update_user(app, id, token, ruleset)
                     new_user_ruleset = sc.get_object(sc.tables[ruleset], 'id', id, as_dict=True)
@@ -111,12 +112,11 @@ def queue_dailies(date):
                     total_score = new_user_ruleset['total_score'] - new_user_ruleset['total_score']
                     scheduler.add_job(sc.store_daily_statistics, 'date', run_date=(datetime.now() + timedelta(seconds=10)), args=[id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score])
                     sc.store_daily_statistics(id, ruleset, date, play_time, play_count, note_count, ranked_score, total_score)
-                    total_interval += interval
 
 def queue_refresh():
     with app.app_context():
         tokens = sc.select_all(Token, sort_by=Token.expires_at)
-        interval = ((sc.intervals['hours'] / int(sc.intervals['refresh']['interval']).strip('*/')) * sc.intervals['hours_to_seconds']) / len(tokens)
+        interval = 0 if not tokens else ((sc.intervals['hours'] / int(sc.intervals['refresh']['interval']).strip('*/')) * sc.intervals['hours_to_seconds']) / len(tokens)
         total_interval = 0
         for token in tokens:
             scheduler.add_job(sc.refresh_token, 'date', run_date=(datetime.now() + timedelta(seconds=total_interval)), args=[token])
@@ -124,8 +124,18 @@ def queue_refresh():
 
 def queue_users():
     with app.app_context():
-        tokens = sc.select_all(Token, join_by_table=User, join_by_column_other=User.id, join_by_column_this=Token.user_id, sort_by=User.last_updated, as_dict=True)
-        interval = 0 if not tokens else ((sc.intervals['hours'] / int((sc.intervals['users']['interval']).strip("*/"))) * sc.intervals['hours_to_seconds']) / (len(tokens) * len(sc.rulesets))
+        tokens = sc.select_all(
+            Token,
+            join_by_table=User,
+            join_by_column_other=User.id,
+            join_by_column_this=Token.user_id,
+            sort_by=User.last_updated,
+            as_dict=True
+        )
+        interval = 0 if not tokens else (
+            (sc.intervals['hours'] / int((sc.intervals['users']['interval']).strip("*/"))) * sc.intervals['hours_to_seconds']) / (len(tokens) * len(sc.rulesets)
+        )
+        print(interval)
         total_interval = 0
         for token in tokens:
             id = token['user_id']
@@ -135,7 +145,8 @@ def queue_users():
                 total_interval += interval
 
 if __name__ == "__main__":
-    scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
+    # scheduler.add_job(queue_dailies, 'cron', hour=sc.intervals['dailies']['hour'], args=[(date.today() - timedelta(days=1))])
+    scheduler.add_job(queue_dailies, 'interval', seconds=3, args=[(date.today() - timedelta(days=1))])
     scheduler.add_job(queue_refresh, 'cron', hour=sc.intervals['refresh']['interval'])
     scheduler.add_job(queue_users, 'cron', hour=sc.intervals['users']['interval'])
     scheduler.start()
