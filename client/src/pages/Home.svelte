@@ -1,16 +1,15 @@
 <script>
-    import Authorize from "../components/Authorize.svelte";
+    import Login from "../components/Login.svelte";
     import QueueDailies from "../components/QueueDailies.svelte";
     import Search from "../components/Search.svelte";
 </script>
 
 <div class='login'>
-    <Authorize />
+    <Login />
 </div>
 <div class='search'>
     <Search />
 </div>
-<QueueDailies />
 
 <style>
     .login {
