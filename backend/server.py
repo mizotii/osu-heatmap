@@ -2,7 +2,8 @@
 import pydash as _
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
-from config import server_config as sc, authorization as au
+from backend.config.authentication import authorization as au
+from config import server_config as sc
 from datetime import date, datetime, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory, session
 from flask_migrate import Migrate
