@@ -1,4 +1,5 @@
-backend/db/
+backend/db/__pycache__
+backend/db/backups
 backend/flask_session/
 client/public/build/
 client/scripts/
