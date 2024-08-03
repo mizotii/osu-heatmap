@@ -15,7 +15,9 @@
 
 <Router {url}>
 	<nav>
-		<Link to='/'>Home</Link>
+		<Link to='/'>
+			<img src='images/logo.png' alt='osu-heatmap logo' width='64' height='64'>
+		</Link>
 	</nav>
 	<div>
 		<Route path='/' component={Home}></Route>
