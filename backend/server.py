@@ -12,10 +12,10 @@ from db import read as rd
 from config import server_config as sc
 from datetime import date, datetime, timedelta
 from flask import Flask, jsonify, redirect, request, send_from_directory, session
-from flask_login import LoginManager, current_user, login_user, logout_user
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
 from flask_session import Session
-from db.models import init_db, db, Token, User, UserDailyStatistics
+from db.models import init_db, db, User, UserDailyStatistics
 from sqlalchemy import and_, exists
 
 scheduler = BackgroundScheduler()
@@ -38,7 +38,7 @@ def home(path):
 
 @login_manager.user_loader
 def load_user(id):
-    return User.get(id)
+    return rd.read_user(id)
 
 @app.route('/authorize')
 def authorize():
@@ -59,19 +59,30 @@ def callback():
     token = cb.request_token(code)
 
     # search for user, if they don't exist, store them
-    id = ft.fetch_user(token['access'])
+    fetched_user = ft.fetch_user(token['access_token'])
+    id = fetched_user['id']
     user = rd.read_user(id)
     
     if not user:
-        up.store_token(token, id)
+        up.store_user(token, fetched_user)
+        user = rd.read_user(id)
 
+    # log them in
     login_user(user)
 
-    return redirect('/', authenticated=True)
+    return redirect('/')
 
-@app.route('api/get_session')
+@app.route('/api/get_session')
 def get_session():
-    return current_user.is_authenticated
+    if current_user.is_authenticated:
+        return jsonify({ 'login': True })
+    return jsonify({ 'login': False })
+
+@app.route('/api/get_user_data')
+@login_required
+def get_user_data():
+    user = (rd.read_user(current_user.id)).__dict__
+    return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url']})
 
 if __name__ == '__main__':
     app.run(debug=True)
