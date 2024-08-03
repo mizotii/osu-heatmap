@@ -1,6 +1,6 @@
 """for reading from the database"""
-from db.models import db, Token
+from db.models import db, User
 
 def read_user(id):
-    user = Token.query.filter_by(id=id).first()
+    user = User.query.filter_by(id=id).first()
     return user
