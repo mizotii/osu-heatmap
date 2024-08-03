@@ -1,4 +1,5 @@
 from db import db_config as dc
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Index
 from sqlalchemy.orm import relationship
@@ -23,7 +24,7 @@ class UserRuleset(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     last_updated = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
     # retroactive to first update (since {registration_date})
@@ -35,24 +36,10 @@ class UserRuleset(db.Model):
     total_hits = db.Column(db.BigInteger)
     total_score = db.Column(db.BigInteger)
 
-class User(Class):
-    __tablename__ = 'users'
-
-    avatar_url = db.Column(db.String(dc.constraints['long']))
-    country_code = db.Column(db.String(dc.constraints['short']))
-    cover_url = db.Column(db.String(dc.constraints['long']))
-    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
-    is_deleted = db.Column(db.Boolean)
-    is_restricted = db.Column(db.Boolean)
-    last_updated = db.Column(db.DateTime)
-    playmode = db.Column(db.String(dc.constraints['short']))
-    registration_date = db.Column(db.DateTime)
-    username = db.Column(db.String(dc.constraints['max_user_length']))
-
 class UserDailyStatistics(Class):
     __tablename__ = 'daily_statistics'
 
-    id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     ruleset = db.Column(db.String(dc.constraints['short']), primary_key=True)
     start_date = db.Column(db.DateTime, primary_key=True)
     play_time = db.Column(db.Integer)
@@ -77,14 +64,27 @@ class UserCatch(UserRuleset):
 class UserMania(UserRuleset):
     __tablename__ = 'users_mania'
 
-class Token(Class):
-    __tablename__ = 'tokens'
+class User(UserMixin, Class):
+    __tablename__ = 'users'
 
-    user_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     access_token = db.Column(db.String(dc.constraints['max_token_length']))
     expires_at = db.Column(db.DateTime)
     refresh_token = db.Column(db.String(dc.constraints['max_token_length']))
     token_type = db.Column(db.String(dc.constraints['veryshort']))
+
+    avatar_url = db.Column(db.String(dc.constraints['long']))
+    country_code = db.Column(db.String(dc.constraints['short']))
+    cover_url = db.Column(db.String(dc.constraints['long']))
+    is_deleted = db.Column(db.Boolean)
+    is_restricted = db.Column(db.Boolean)
+    last_updated = db.Column(db.DateTime)
+    playmode = db.Column(db.String(dc.constraints['short']))
+    registration_date = db.Column(db.DateTime)
+    username = db.Column(db.String(dc.constraints['max_user_length']))
+
+    def get_id(self):
+        return str(self.id)
 
 class BeatmapSet(Class):
     __tablename__ = 'beatmapsets'
@@ -123,7 +123,7 @@ class Score(Class):
     __tablename__ = 'scores'
 
     id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('tokens.user_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     timestamp = db.Column(db.DateTime)
     ruleset = db.Column(db.String(dc.constraints['veryshort']))
     count_300 = db.Column(db.Integer)
