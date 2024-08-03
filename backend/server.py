@@ -6,7 +6,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from config.authentication import authorization as au
 from config.authentication import callback as cb
 from config.authentication import refresh as rf
-from backend.config.authentication import refresh as lg
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
