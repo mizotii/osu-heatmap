@@ -5,7 +5,8 @@ import secrets
 from apscheduler.schedulers.background import BackgroundScheduler
 from config.authentication import authorization as au
 from config.authentication import callback as cb
-from config.authentication import login as lg
+from config.authentication import refresh as rf
+from backend.config.authentication import refresh as lg
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
@@ -84,5 +85,14 @@ def get_user_data():
     user = (rd.read_user(current_user.id)).__dict__
     return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url']})
 
+def refresh_tokens():
+    users = rd.all_users()
+    for user in users:
+        if user.__dict__['expires_at'] < datetime.now():
+            rf.refresh_token(user)
+
 if __name__ == '__main__':
+    scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
+    scheduler.start()
+    scheduler.print_jobs()
     app.run(debug=True)
