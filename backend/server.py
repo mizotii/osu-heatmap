@@ -42,8 +42,8 @@ def load_user(id):
 
 @app.route('/authorize')
 def authorize():
-    session['state'] = secrets.token_urlsafe(16)
-    return jsonify(au.build_url(session['state']))
+    state = secrets.token_urlsafe(16)
+    return jsonify(au.build_url(state))
 
 @app.route('/logout')
 def logout():
@@ -74,24 +74,33 @@ def callback():
 
 @app.route('/api/get_session')
 def get_session():
-    if current_user.is_authenticated:
-        return jsonify({ 'login': True })
-    return jsonify({ 'login': False })
+    return jsonify({ 'login': current_user.is_authenticated })
 
 @app.route('/api/get_user_data')
 @login_required
 def get_user_data():
     user = (rd.read_user(current_user.id)).__dict__
-    return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url']})
+    return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url'] })
 
 def refresh_tokens():
-    users = rd.all_users()
+    users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(user)
+            rf.refresh_token(app, user)
+
+rulesets = [
+    'osu', 'taiko', 'fruits', 'mania',
+]
+
+def update_rulesets():
+    users = rd.all_users(app)
+    for user in users:
+        for ruleset in rulesets:
+            up.update_user_ruleset(app, user, ruleset)
 
 if __name__ == '__main__':
     scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
+    scheduler.add_job(update_rulesets, 'cron', hour='*')
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)
