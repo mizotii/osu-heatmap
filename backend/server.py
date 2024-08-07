@@ -67,6 +67,10 @@ def callback():
         up.store_user(token, fetched_user)
         user = rd.read_user(id)
 
+    # todo: initialize the rest of their data
+    for ruleset in rulesets:
+        up.update_user_statistics(app, user, ruleset)
+
     # log them in
     login_user(user)
 
@@ -92,15 +96,15 @@ rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
 ]
 
-def update_rulesets():
+def midnight_update():
     users = rd.all_users(app)
     for user in users:
         for ruleset in rulesets:
-            up.update_user_ruleset(app, user, ruleset)
+            up.update_user_statistics(app, user, ruleset)
 
 if __name__ == '__main__':
+    scheduler.add_job(midnight_update, 'cron', hour='*')
     scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
-    scheduler.add_job(update_rulesets, 'cron', hour='*')
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)
