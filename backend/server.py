@@ -1,4 +1,5 @@
 """backend"""
+import os
 import pydash as _
 import requests
 import secrets
@@ -48,7 +49,7 @@ def authorize():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect('/', authenticated=False)
+    return redirect('/')
 
 @app.route('/callback')
 def callback():
@@ -57,9 +58,10 @@ def callback():
 
     # get access token
     token = cb.request_token(code)
+    access = token['access_token']
 
     # search for user, if they don't exist, store them
-    fetched_user = ft.fetch_user(token['access_token'])
+    fetched_user = ft.fetch_user(access)
     id = fetched_user['id']
     user = rd.read_user(id)
     
@@ -68,8 +70,10 @@ def callback():
         user = rd.read_user(id)
 
     # todo: initialize the rest of their data
+    up.update_user_statistics(app, user)
+
     for ruleset in rulesets:
-        up.update_user_statistics(app, user, ruleset)
+        up.store_scores(app, access, id, ruleset)
 
     # log them in
     login_user(user)
@@ -99,8 +103,7 @@ rulesets = [
 def midnight_update():
     users = rd.all_users(app)
     for user in users:
-        for ruleset in rulesets:
-            up.update_user_statistics(app, user, ruleset)
+        up.update_user_statistics(app, user)
 
 if __name__ == '__main__':
     scheduler.add_job(midnight_update, 'cron', hour='*')
