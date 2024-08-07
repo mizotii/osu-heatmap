@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
-    let isAuthenticated = false;
+    $: isAuthenticated = false;
     let username;
     let avatar_url;
 
@@ -21,6 +21,17 @@
         } catch (error) {
             console.error('error:', error);
         }
+    }
+
+    async function logout() {
+        try {
+            const response = await fetch(`/logout`);
+            // don't think i need this?
+            const data = await response.json();
+        } catch (error) {
+            console.error('error:', error);
+        }
+        isAuthenticated = false;
     }
 
     onMount(() => {
@@ -47,15 +58,22 @@
 </script>
 
 <login>
-    <button class="btn btn-outline" on:click={authRedirect}>
-        {#if isAuthenticated}
-            <img class="default" src="{avatar_url}" alt="default avatar">
-            {username}
-        {:else}
+    {#if isAuthenticated}
+        <details class="dropdown">
+            <summary class="btn btn-outline">
+                <img class="default" src="{avatar_url}" alt="default avatar">
+                {username}
+            </summary>
+            <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                <button class="btn btn-outline" on:click={logout}>log out</button>
+            </ul>
+        </details>
+    {:else}
+        <button class="btn btn-outline" on:click={authRedirect}>
             <img class="default" src="https://s.ppy.sh/a/-1" alt="default avatar">
-            login with osu!
-        {/if}
-    </button>
+            log in with osu!
+        </button>
+    {/if}
 </login>
 
 <style>
