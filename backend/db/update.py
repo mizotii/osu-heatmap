@@ -4,6 +4,7 @@ from datetime import date, datetime, timedelta
 from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics, Score, Beatmap, BeatmapSet
 from config.osu_api import fetch as ft
 from config import server_config as sc
+import dateutil.parser
 import db.read as rd
 
 user_ruleset_attributes = [
@@ -74,7 +75,6 @@ def store_scores(app, access, id, ruleset):
                 store_beatmap(beatmap)
             if not potential_score:
                 store_score(score)
-            break
 
 def store_beatmap(beatmap):
     db.session.add(Beatmap(
@@ -104,28 +104,31 @@ def store_beatmapset(beatmapset):
     db.session.commit()
 
 def store_score(score):
-    print(score)
     db.session.add(Score(
         id=score['current_user_attributes']['pin']['score_id'],
         user_id=score['user_id'],
-        timestamp=score['created_at'],
-        ruleset=
-        count_300=
-        count_100=
-        count_50=
-        count_geki=
-        count_katu=
-        count_miss=
-        accuracy=
-        beatmap_id=
-        beatmapset_id=
-        max_combo=
-        mods=
-        passed=
-        rank=
-        score=
+        timestamp=dateutil.parser.isoparse(score['created_at']),
+        ruleset=score['mode'],
+        count_300=score['statistics']['count_300'],
+        count_100=score['statistics']['count_100'],
+        count_50=score['statistics']['count_50'],
+        count_geki=score['statistics']['count_geki'],
+        count_katu=score['statistics']['count_katu'],
+        count_miss=score['statistics']['count_miss'],
+        notes=total_notes(score),
+        accuracy=round(score['accuracy'], 4) * 100.00,
+        beatmap_id=score['beatmap']['id'],
+        beatmapset_id=score['beatmap']['beatmapset_id'],
+        max_combo=score['max_combo'],
+        mods=' '.join(score['mods']),
+        passed=score['passed'],
+        rank=score['rank'],
+        score=score['score'],
     ))
-    return
+    db.session.commit()
+
+def total_notes(score):
+    return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
 
 def update_user_statistics(app, user):
     with app.app_context():
