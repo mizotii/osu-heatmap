@@ -80,6 +80,22 @@ def callback():
 
     return redirect('/')
 
+@app.route('/api/search')
+def search():
+    return jsonify(rd.all_users().__dict__)
+
+@app.route("/profile/<int:id>")
+def profile_default(id):
+    user = rd.read_user(id)
+    access = user.__dict__['access_token']
+
+    up.update_user_statistics(app, user)
+
+    for ruleset in rulesets:
+        up.store_scores(app, access, id, ruleset)
+        
+    return send_from_directory('../client/public', 'index.html')
+
 @app.route('/api/get_session')
 def get_session():
     return jsonify({ 'login': current_user.is_authenticated })
