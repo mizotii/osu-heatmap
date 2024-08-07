@@ -1,5 +1,6 @@
 from config.server_config import credentials, endpoints, headers
 from datetime import datetime, timedelta
+from db.models import db
 import requests
 
 def refresh_token(app, user):
@@ -15,4 +16,4 @@ def refresh_token(app, user):
         setattr(user, 'access_token', r['access_token'])
         setattr(user, 'expires_at', timedelta(seconds = r['expires_in']) + datetime.now())
         setattr(user, 'refresh_token', r['refresh_token'])
-        return
+        db.session.commit()
