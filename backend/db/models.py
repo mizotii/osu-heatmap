@@ -30,11 +30,11 @@ class UserRuleset(db.Model):
     # retroactive to first update (since {registration_date})
     play_count = db.Column(db.Integer)
     play_time = db.Column(db.Integer)
+    total_hits = db.Column(db.BigInteger)
     ranked_score = db.Column(db.BigInteger)
+    total_score = db.Column(db.BigInteger)
     streak_current = db.Column(db.Integer)
     streak_longest = db.Column(db.Integer)
-    total_hits = db.Column(db.BigInteger)
-    total_score = db.Column(db.BigInteger)
 
 class UserDailyStatistics(Class):
     __tablename__ = 'daily_statistics'
@@ -44,7 +44,7 @@ class UserDailyStatistics(Class):
     start_date = db.Column(db.DateTime, primary_key=True)
     play_time = db.Column(db.Integer)
     play_count = db.Column(db.Integer)
-    note_count = db.Column(db.Integer)
+    total_hits = db.Column(db.Integer)
     ranked_score = db.Column(db.Integer)
     total_score = db.Column(db.Integer)
 
