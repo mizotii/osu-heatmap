@@ -1,19 +1,13 @@
 """for reading from the database"""
 from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics
-
-ruleset_tables = {
-    'osu': UserOsu,
-    'taiko': UserTaiko,
-    'catch': UserCatch,
-    'mania': UserMania,
-}
+from config import server_config as sc
 
 def read_user(id):
     user = User.query.filter_by(id=id).first()
     return user
 
 def read_ruleset(id, ruleset):
-    user = ruleset_tables[ruleset].query.filter_by(id=id).first()
+    user = sc.ruleset_tables[ruleset].query.filter_by(id=id).first()
     return user
 
 def read_cell(id, ruleset, date):

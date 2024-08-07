@@ -34,7 +34,7 @@ endpoints = {
     # rulesets
     'osu': '/me/osu',
     'taiko': '/me/taiko',
-    'catch': '/me/fruits',
+    'fruits': '/me/fruits',
     'mania': '/me/mania',
 }
 
@@ -46,6 +46,6 @@ headers = {
 ruleset_tables = {
     'osu': UserOsu,
     'taiko': UserTaiko,
-    'catch': UserCatch,
+    'fruits': UserCatch,
     'mania': UserMania,
 }

@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics
 from config.osu_api import fetch as ft
 from config import server_config as sc
-import read as rd
+import db.read as rd
 
 user_ruleset_attributes = [
     'last_updated',
@@ -32,17 +32,19 @@ def store_user(token, user):
     db.session.commit()
 
 def store_user_ruleset(data, ruleset, id):
+    print(data)
+    print(ruleset)
     db.session.add(sc.ruleset_tables[ruleset](
         id=id,
         last_updated=datetime.now(),
         username=data['username'],
-        play_count=data['play_count'],
-        play_time=data['play_time'],
-        ranked_score=data['ranked_score'],
+        play_count=data['statistics_rulesets'][ruleset]['play_count'],
+        play_time=data['statistics_rulesets'][ruleset]['play_time'],
+        ranked_score=data['statistics_rulesets'][ruleset]['ranked_score'],
         streak_current=0,
         streak_longest=0,
-        total_hits=data['total_hits'],
-        total_score=data['total_score'],
+        total_hits=data['statistics_rulesets'][ruleset]['total_hits'],
+        total_score=data['statistics_rulesets'][ruleset]['total_score'],
     ))
     db.session.commit()
 
@@ -50,7 +52,7 @@ def store_user_daily(ruleset, id):
     db.session.add(UserDailyStatistics(
         id=id,
         ruleset=ruleset,
-        start_date=datetime.date.today(),
+        start_date=date.today(),
         play_time=0,
         play_count=0,
         note_count=0,
@@ -62,7 +64,7 @@ def store_user_daily(ruleset, id):
 def update_user_statistics(app, user, ruleset):
     with app.app_context():
 
-        updated_ruleset = ft.fetch_user(user.__dict__['access_token'], ruleset).__dict__
+        updated_ruleset = ft.fetch_user(user.__dict__['access_token'], ruleset)
         id = updated_ruleset['id']
         old_ruleset = rd.read_ruleset(id, ruleset)
 
