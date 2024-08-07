@@ -29,10 +29,23 @@ endpoints = {
     'v2': 'https://osu.ppy.sh/api/v2',
 
     # osu api endpoints
-    'user': '/me'
+    'user': '/me',
+
+    # rulesets
+    'osu': '/me/osu',
+    'taiko': '/me/taiko',
+    'catch': '/me/fruits',
+    'mania': '/me/mania',
 }
 
 headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/x-www-form-urlencoded',
+}
+
+ruleset_tables = {
+    'osu': UserOsu,
+    'taiko': UserTaiko,
+    'catch': UserCatch,
+    'mania': UserMania,
 }
