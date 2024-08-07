@@ -43,6 +43,10 @@ headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
 }
 
+rulesets = [
+    'osu', 'taiko', 'fruits', 'mania',
+]
+
 ruleset_tables = {
     'osu': UserOsu,
     'taiko': UserTaiko,
