@@ -6,7 +6,7 @@
     let avatar_url;
 
     async function fetchUser() {
-        const response = await fetch(`api/get_user_data`);
+        const response = await fetch(`/api/get_user_data`);
         const data = await response.json();
         console.log(data);
         username = data['username'];
