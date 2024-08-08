@@ -20,7 +20,7 @@ database = {
 endpoints = {
     # auth
     'oauth': 'https://osu.ppy.sh/oauth/authorize',
-    'callback': 'http://localhost:5000/callback',
+    'callback': 'https://mizotii-api.xyz/callback',
 
     # callback
     'token': 'https://osu.ppy.sh/oauth/token',
