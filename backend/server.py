@@ -114,6 +114,20 @@ def profile_ruleset(id, ruleset):
     up.store_scores(app, access, id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
+@app.route("/api/profile/<int:id>/<string:ruleset>")
+@app.route("/api/profile/<int:id>")
+def fetch_profile(id, ruleset=None):
+    # want profile to route to catch, same as osu!web
+    if ruleset == 'catch':
+        ruleset = 'fruits'
+    if not ruleset:
+        ruleset = rd.read_user(id).__dict__['playmode']
+    return jsonify(cr.create_profile(id, ruleset))
+
+@app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
+def fetch_scores(id, ruleset, timestamp):
+    return jsonify(cr.create_score_list(id, ruleset, timestamp))
+
 @app.route('/api/get_session')
 def get_session():
     return jsonify({ 'login': current_user.is_authenticated })
