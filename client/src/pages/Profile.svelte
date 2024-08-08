@@ -1,9 +1,8 @@
 <script>
-    import { onMount, onDestroy, afterUpdate } from "svelte";
-    import { dataType, isUserValid } from "../stores/profile";
-    import { navigate } from "svelte-routing";
+    import { onMount } from "svelte";
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
+    import Login from "../components/Login.svelte";
 
     export let id;
     export let ruleset;
@@ -24,6 +23,7 @@
             }
             const response = await fetch(endpoint);
             const data = await response.json();
+            console.log(data);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
@@ -31,11 +31,15 @@
     }
 
     onMount(async () => {
-        console.log(userHeatmapData);
         await fetchProfile();
+        console.log(userHeatmapData);
         username = user.username;
     })
 </script>
+
+<div class='login'>
+    <Login />
+</div>
 
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
