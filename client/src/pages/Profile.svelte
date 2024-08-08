@@ -9,7 +9,7 @@
 
     export let id;
     export let ruleset;
-    
+
     let username;
     let userRuleset;
     let userHeatmapData;
