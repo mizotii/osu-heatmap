@@ -9,8 +9,7 @@
 
     export let id;
     export let ruleset;
-
-    let user;
+    
     let username;
     let userRuleset;
     let userHeatmapData;
@@ -26,16 +25,14 @@
             }
             const response = await fetch(endpoint);
             const data = await response.json();
-            user = data.user;
+            username = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
         }
     }
 
     onMount(async () => {
-        console.log(userHeatmapData);
         await fetchProfile();
-        username = user.username;
     })
 </script>
 
