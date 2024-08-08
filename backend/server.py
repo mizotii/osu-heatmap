@@ -23,7 +23,6 @@ scheduler = BackgroundScheduler()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.secret_key = sc.credentials['sessions_key']
-CORS(app, supports_credentials=True)
 init_db(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager()
