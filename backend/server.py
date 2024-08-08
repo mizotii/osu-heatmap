@@ -82,7 +82,11 @@ def callback():
 
 @app.route('/api/search')
 def search():
-    return jsonify(rd.all_users().__dict__)
+    all_users_query = rd.all_users(app)
+    users = []
+    for user in all_users_query:
+        users.append(user.as_dict())
+    return jsonify(users)
 
 @app.route("/profile/<int:id>")
 def profile_default(id):
@@ -94,6 +98,16 @@ def profile_default(id):
     for ruleset in rulesets:
         up.store_scores(app, access, id, ruleset)
         
+    return send_from_directory('../client/public', 'index.html')
+
+@app.route("/profile/<int:id>/<string:ruleset>")
+def profile_ruleset(id, ruleset):
+    user = rd.read_ruleset(id, ruleset)
+    access = user.__dict__['access_token']
+
+    up.update_user_statistics(app, user)
+
+    up.store_scores(app, access, id, ruleset)
     return send_from_directory('../client/public', 'index.html')
 
 @app.route('/api/get_session')
