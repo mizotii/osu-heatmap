@@ -1,8 +1,7 @@
 """backend"""
-import os
 import pydash as _
-import requests
 import secrets
+from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler
 from api import create as cr
 from config.authentication import authorization as au
@@ -12,13 +11,11 @@ from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
 from config import server_config as sc
-from datetime import date, datetime, timedelta
-from flask import Flask, jsonify, redirect, request, send_from_directory, session
+from datetime import datetime
+from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
-from flask_session import Session
-from db.models import init_db, db, User, UserDailyStatistics
-from sqlalchemy import and_, exists
+from db.models import init_db, db
 
 scheduler = BackgroundScheduler()
 
@@ -107,7 +104,7 @@ def profile_default(id):
 
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
-    user = rd.read_ruleset(id, ruleset)
+    user = rd.read_user(id)
     access = user.__dict__['access_token']
 
     up.update_user_statistics(app, user)
