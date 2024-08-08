@@ -37,6 +37,10 @@ def base():
 def home(path):
     return send_from_directory('../client/public', path)
 
+@app.route("/<path:any>/static/<path:path>")
+def icons(any, path):
+    return send_from_directory('../client/public/static', path)
+
 @login_manager.user_loader
 def load_user(id):
     return rd.read_user(id)
