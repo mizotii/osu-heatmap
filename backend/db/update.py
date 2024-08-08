@@ -68,7 +68,7 @@ def store_scores(app, access, id, ruleset):
             beatmapset = score['beatmapset']
             map = rd.read_beatmap(beatmap['id'], beatmapset['id'])
             set = rd.read_beatmapset(beatmapset['id'])
-            potential_score = rd.read_score(score['id'])
+            potential_score = rd.read_score(score['current_user_attributes']['pin']['score_id'])
             if not set:
                 store_beatmapset(beatmapset)
             if not map:
