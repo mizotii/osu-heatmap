@@ -155,4 +155,4 @@ if __name__ == '__main__':
     scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
     scheduler.start()
     scheduler.print_jobs()
-    app.run(debug=True)
+    app.run(debug=False)
