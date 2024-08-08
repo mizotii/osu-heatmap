@@ -36,6 +36,9 @@ endpoints = {
     'taiko': '/me/taiko',
     'fruits': '/me/fruits',
     'mania': '/me/mania',
+
+    # client
+    'frontend': 'https://osu-heatm.app',
 }
 
 headers = {
