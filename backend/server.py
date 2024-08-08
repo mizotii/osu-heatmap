@@ -49,7 +49,7 @@ def authorize():
 @app.route('/logout')
 def logout():
     logout_user()
-    return redirect('/')
+    return send_from_directory('../client/public', 'index.html')
 
 @app.route('/callback')
 def callback():
@@ -78,7 +78,7 @@ def callback():
     # log them in
     login_user(user)
 
-    return redirect('/')
+    return redirect(f'/profile/{id}')
 
 @app.route('/api/search')
 def search():
