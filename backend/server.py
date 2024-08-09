@@ -132,7 +132,7 @@ def get_session():
     return jsonify({ 'login': current_user.is_authenticated })
 
 @app.route('/api/get_user_data')
-@login_required
+@login_required 
 def get_user_data():
     user = (rd.read_user(current_user.id)).__dict__
     return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url'] })
