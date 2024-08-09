@@ -115,7 +115,6 @@ def profile_ruleset(id, ruleset):
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
 @app.route("/api/profile/<int:id>")
-@login_required
 def fetch_profile(id, ruleset=None):
     # want profile to route to catch, same as osu!web
     if ruleset == 'catch':
@@ -125,17 +124,14 @@ def fetch_profile(id, ruleset=None):
     return jsonify(cr.create_profile(id, ruleset))
 
 @app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
-@login_required
 def fetch_scores(id, ruleset, timestamp):
     return jsonify(cr.create_score_list(id, ruleset, timestamp))
 
 @app.route('/api/get_session')
-@login_required
 def get_session():
     return jsonify({ 'login': current_user.is_authenticated })
 
 @app.route('/api/get_user_data')
-@login_required
 def get_user_data():
     user = (rd.read_user(current_user.id)).__dict__
     return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url'] })
