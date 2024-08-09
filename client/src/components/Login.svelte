@@ -38,7 +38,6 @@
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {
-            credentials: 'include',
         })
         .then((response) => response.json())
         .then((data) => {
