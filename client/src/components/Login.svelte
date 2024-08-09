@@ -15,7 +15,7 @@
 
     async function authRedirect() {
         try {
-            const response = await fetch(`${apiEndpoint}/authorize`);
+            const response = await fetch(`/authorize`);
             const data = await response.json();
             window.location.href = data;
         } catch (error) {
@@ -25,7 +25,7 @@
 
     async function logout() {
         try {
-            const response = await fetch(`${apiEndpoint}/logout`);
+            const response = await fetch(`/logout`);
             // don't think i need this?
             const data = await response.json();
         } catch (error) {
