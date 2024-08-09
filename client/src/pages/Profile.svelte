@@ -24,7 +24,6 @@
             }
             const response = await fetch(endpoint);
             const data = await response.json();
-            console.log(data);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
@@ -33,7 +32,6 @@
 
     onMount(async () => {
         await fetchProfile();
-        console.log(userHeatmapData);
         username = user.username;
     })
 </script>
