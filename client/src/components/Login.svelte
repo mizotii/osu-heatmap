@@ -1,12 +1,14 @@
 <script>
     import { onMount } from "svelte";
 
+    const apiEndpoint = process.env.BACKEND_API;
+
     $: isAuthenticated = false;
     let username;
     let avatar_url;
 
     async function fetchUser() {
-        const response = await fetch(`/api/get_user_data`);
+        const response = await fetch(`${apiEndpoint}/api/get_user_data`);
         const data = await response.json();
         console.log(data);
         username = data['username'];
@@ -15,7 +17,7 @@
 
     async function authRedirect() {
         try {
-            const response = await fetch(`/authorize`);
+            const response = await fetch(`${apiEndpoint}/authorize`);
             const data = await response.json();
             window.location.href = data;
         } catch (error) {
@@ -25,7 +27,7 @@
 
     async function logout() {
         try {
-            const response = await fetch(`/logout`);
+            const response = await fetch(`${apiEndpoint}/logout`);
             // don't think i need this?
             const data = await response.json();
         } catch (error) {
@@ -35,7 +37,7 @@
     }
 
     onMount(() => {
-        fetch(`/api/get_session`, {
+        fetch(`${apiEndpoint}/api/get_session`, {
             credentials: 'include',
         })
         .then((response) => response.json())
