@@ -40,9 +40,9 @@
                 range: 1,
                 scale: {
                     color: {
-                        type: 'linear',
-                        scheme: 'PRGn',
-                        domain: [0, 40]
+                        type: 'threshold',
+                        range: ['#14432a', '#166b34', '#37a446', '#4dd05a'],
+                        domain: [0, 10, 20, 30],
                     }
                 },
                 domain: {
@@ -54,6 +54,7 @@
                     radius: 2
                 },
                 itemSelector: '#osu-heatmap',
+                theme: 'dark',
             },
             [
                 [
@@ -69,7 +70,7 @@
                                     heatmapCells[$dataType]['minutes'] +
                                     dayjsDate.format('YYYY-MM-DD HH:mm:ss')
                                 )
-                            } else if ($dataType === 'note_count') {
+                            } else if ($dataType === 'total_hits') {
                                 return (
                                     (value ? value : 'No') +
                                     heatmapCells[$dataType][ruleset] +
@@ -99,7 +100,7 @@
 
 <heatmap>
     <select class="select select-bordered w-full max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
-        <option value='note_count'>note count</option>
+        <option value='total_hits'>total hits</option>
         <option value='play_count'>play count</option>
         <option value='play_time'>play time</option>
         <option value='ranked_score'>ranked score</option>
@@ -113,7 +114,7 @@
 
 <style>
     #osu-heatmap {
-        border: solid 10px white;
+        border: solid 1px white;
     }
 
     heatmap {
