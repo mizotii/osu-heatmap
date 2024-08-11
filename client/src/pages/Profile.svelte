@@ -27,12 +27,12 @@
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
+            username = user.username;
         }
     }
 
     onMount(async () => {
         await fetchProfile();
-        username = user.username;
     })
 </script>
 
