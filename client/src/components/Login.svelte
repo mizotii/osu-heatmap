@@ -10,7 +10,6 @@
     async function fetchUser() {
         const response = await fetch(`${apiEndpoint}/api/get_user_data`);
         const data = await response.json();
-        console.log(data);
         username = data['username'];
         avatar_url = data['avatar_url'];
     }
@@ -41,14 +40,12 @@
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
             if (data.login == true) {
                 isAuthenticated = true;
                 fetchUser();
             } else {
                 isAuthenticated = false;
             }
-            console.log(isAuthenticated);
         })
         .catch((err) => {
             console.log(err);
