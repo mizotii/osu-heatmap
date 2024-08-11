@@ -35,6 +35,7 @@ def base():
     return send_from_directory('../client/public', 'index.html')
 
 @app.route('/<path:path>')
+@app.route('/<path:path>/<path:path>')
 def home(path):
     return send_from_directory('../client/public', path)
 
