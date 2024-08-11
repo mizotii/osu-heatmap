@@ -110,6 +110,8 @@ def profile_default(id):
 def profile_ruleset(id, ruleset):
     user = rd.read_user(id)
     access = user.__dict__['access_token']
+    if ruleset == 'catch':
+        ruleset = 'fruits'
 
     up.update_user_statistics(app, user)
 
