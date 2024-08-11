@@ -131,7 +131,6 @@ def fetch_scores(id, ruleset, timestamp):
 def get_session():
     return jsonify({ 
         'login': current_user.is_authenticated,
-        'current_user': current_user,
     })
 
 @app.route('/api/get_user_data')
