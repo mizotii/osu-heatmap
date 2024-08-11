@@ -16,7 +16,7 @@
 <Router {url}>
 	<nav>
 		<Link to='/'>
-			<img src='../static/logo.png' alt='osu-heatmap logo' width='64' height='64'>
+			<img src='/static/logo.png' alt='osu-heatmap logo' width='64' height='64'>
 		</Link>
 	</nav>
 	<div>
