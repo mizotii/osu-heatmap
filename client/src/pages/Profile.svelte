@@ -33,6 +33,7 @@
 
     onMount(async () => {
         await fetchProfile();
+        console.log(username);
     })
 </script>
 
