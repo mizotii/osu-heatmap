@@ -3,7 +3,6 @@ import pydash as _
 import secrets
 from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler
-from api import create as cr
 from config.authentication import authorization as au
 from config.authentication import callback as cb
 from config.authentication import refresh as rf
@@ -13,7 +12,6 @@ from db import read as rd
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
-from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
 from db.models import init_db, db
