@@ -11,7 +11,12 @@ def create_profile(id, ruleset):
         for cell in user_cells:
             data.append(cell.as_dict())
     return {
-        'user': user,
+        'user': {
+            'avatar_url': user['avatar_url'],
+            'country_code': user['country_code'],
+            'playmode': user['playmode'],
+            'username': user['username'],
+        },
         'user_ruleset': user_ruleset,
         'user_heatmap_data': data,
     }
