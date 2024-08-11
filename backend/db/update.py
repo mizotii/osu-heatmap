@@ -6,6 +6,7 @@ from config.osu_api import fetch as ft
 from config import server_config as sc
 import dateutil.parser
 import db.read as rd
+from config.authentication import refresh as rf
 
 user_ruleset_attributes = [
     'last_updated',
@@ -133,8 +134,12 @@ def total_notes(score):
 def update_user_statistics(app, user):
     with app.app_context():
 
+        # edge case, should really only occur in testing
+        if user.__dict__['expires_at'] < datetime.now():
+            rf.refresh_token(app, user)
+
         updated_statistics = ft.fetch_user(user.__dict__['access_token'])
-        id = updated_statistics['id']
+        id = user.__dict__['id']
 
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
