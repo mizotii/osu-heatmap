@@ -24,11 +24,11 @@
             }
             const response = await fetch(endpoint);
             const data = await response.json();
+            console.log(user);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
             username = user.username;
-            console.log(username);
         }
     }
 
