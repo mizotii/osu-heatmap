@@ -20,7 +20,9 @@ from db.models import init_db, db
 
 scheduler = BackgroundScheduler()
 
-app = Flask(__name__)
+app = Flask(__name__,
+    static_folder='../client/public/',
+)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.secret_key = sc.credentials['sessions_key']
 init_db(app)
