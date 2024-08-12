@@ -41,8 +41,7 @@
                 scale: {
                     color: {
                         type: 'threshold',
-                        range: ['#14432a', '#166b34', '#37a446', '#4dd05a'],
-                        domain: [0, 10, 20, 30],
+                        range: ['fde4f2', '#f9cee7', '#f4b8da', '#eea1cd', '#e68bbe'],
                     }
                 },
                 domain: {
