@@ -38,8 +38,8 @@
                 range: 1,
                 scale: {
                     color: {
-                        type: 'threshold',
-                        range: ['fde4f2', '#f9cee7', '#f4b8da', '#eea1cd', '#e68bbe'],
+                        type: 'linear',
+                        range: ['fde4f2', '#e68bbe'],
                     }
                 },
                 domain: {
