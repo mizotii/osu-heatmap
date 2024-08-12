@@ -1,8 +1,8 @@
 """for reading from the database"""
-from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics, Score, Beatmap, BeatmapSet
+from db.models import db, User, UserDailyStatistics, Score, Beatmap, BeatmapSet
 from config import server_config as sc
 from datetime import timedelta
-from sqlalchemy import and_, between, desc, exists
+from sqlalchemy import and_, between, desc, func
 
 def read_user(id):
     user = User.query.filter_by(id=id).first()
@@ -27,6 +27,9 @@ def read_beatmapset(id):
 def read_score(id):
     score = Score.query.filter_by(id=id).first()
     return score
+
+def read_user_count():
+    return db.session.query(func.count(User.id)).scalar()
 
 def all_scores_on_day(id, ruleset, timestamp):
     scores = db.session.query(Score, Beatmap, BeatmapSet).\

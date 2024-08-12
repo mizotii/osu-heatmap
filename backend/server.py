@@ -137,6 +137,11 @@ def get_user_data():
     user = (rd.read_user(current_user.id)).__dict__
     return jsonify({ 'username': user['username'], 'avatar_url': user['avatar_url'] })
 
+@app.route('/api/get_user_count')
+def get_user_count():
+    count = rd.read_user_count()
+    return jsonify({ 'count': count })
+
 def refresh_tokens():
     users = rd.all_users(app)
     for user in users:
