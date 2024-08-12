@@ -170,7 +170,7 @@ def midnight_update():
 
 if __name__ == '__main__':
     scheduler.add_job(midnight_update, 'cron', hour='*')
-    scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
+    scheduler.add_job(refresh_tokens, 'cron', hour='*/24')
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)
