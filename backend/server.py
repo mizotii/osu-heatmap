@@ -67,6 +67,12 @@ def callback():
     if not user:
         up.store_user(token, fetched_user)
         user = rd.read_user(id)
+    
+    # if they do exist, since we've already gotten their access token,
+    # we can't refresh their old one
+    else:
+        up.update_user(token, user)
+        user = rd.read_user(id)
 
     # todo: initialize the rest of their data
     up.update_user_statistics(app, user)
@@ -91,6 +97,8 @@ def search():
 def profile_default(id):
     user = rd.read_user(id)
     access = user.__dict__['access_token']
+    if user.__dict__['expires_at'] < datetime.now():
+        access = rf.refresh_token(app, user)
 
     up.update_user_statistics(app, user)
 
@@ -103,12 +111,15 @@ def profile_default(id):
 def profile_ruleset(id, ruleset):
     user = rd.read_user(id)
     access = user.__dict__['access_token']
+    if user.__dict__['expires_at'] < datetime.now():
+        access = rf.refresh_token(app, user)
+    
     if ruleset == 'catch':
         ruleset = 'fruits'
 
     up.update_user_statistics(app, user)
-
     up.store_scores(app, access, id, ruleset)
+
     return send_from_directory('../client/public', 'index.html')
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")

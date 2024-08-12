@@ -133,13 +133,11 @@ def total_notes(score):
 
 def update_user_statistics(app, user):
     with app.app_context():
-
-        # edge case, should really only occur in testing
-        if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(app, user)
-
         updated_statistics = ft.fetch_user(user.__dict__['access_token'])
         id = user.__dict__['id']
+
+        setattr(user, 'last_updated', datetime.now())
+        db.session.commit()
 
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
@@ -150,20 +148,17 @@ def update_user_statistics(app, user):
             else:
 
                 # heatmap cell
-                
+
                 old_cell = rd.read_cell(id, ruleset, date.today())
                 if not old_cell:
                     store_user_daily(ruleset, id)
                 else:
-                    setattr(old_cell, 'play_time', (updated_statistics['statistics_rulesets'][ruleset]['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))
-                    
-                    setattr(old_cell, 'play_count', (updated_statistics['statistics_rulesets'][ruleset]['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))
-                    
-                    setattr(old_cell, 'total_hits', (updated_statistics['statistics_rulesets'][ruleset]['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))
-                    
-                    setattr(old_cell, 'ranked_score', (updated_statistics['statistics_rulesets'][ruleset]['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))
-                    
+                    setattr(old_cell, 'play_time', (updated_statistics['statistics_rulesets'][ruleset]['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))                    
+                    setattr(old_cell, 'play_count', (updated_statistics['statistics_rulesets'][ruleset]['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))                    
+                    setattr(old_cell, 'total_hits', (updated_statistics['statistics_rulesets'][ruleset]['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))                    
+                    setattr(old_cell, 'ranked_score', (updated_statistics['statistics_rulesets'][ruleset]['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                
                     setattr(old_cell, 'total_score', (updated_statistics['statistics_rulesets'][ruleset]['total_score'] - old_ruleset.__dict__['total_score']) + getattr(old_cell, 'total_score'))
+                    db.session.commit()
                     
 
                 # todo: update ruleset attributes for everything except streaks using collection above
@@ -177,5 +172,11 @@ def update_user_statistics(app, user):
                 setattr(old_ruleset, 'ranked_score', updated_statistics['statistics_rulesets'][ruleset]['ranked_score'])
                 setattr(old_ruleset, 'total_hits', updated_statistics['statistics_rulesets'][ruleset]['total_hits'])
                 setattr(old_ruleset, 'total_score', updated_statistics['statistics_rulesets'][ruleset]['total_score'])
-
                 db.session.commit()
+
+def update_user(token, user):
+    setattr(user, 'access_token', token['access_token'])
+    setattr(user, 'expires_at', timedelta(seconds = token['expires_in']) + datetime.now())
+    setattr(user, 'refresh_token', token['refresh_token'])
+    setattr(user, 'token_type', token['token_type'])
+    db.session.commit()

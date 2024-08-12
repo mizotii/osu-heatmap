@@ -19,3 +19,4 @@ def refresh_token(app, user):
         setattr(user, 'expires_at', timedelta(seconds = r['expires_in']) + datetime.now())
         setattr(user, 'refresh_token', r['refresh_token'])
         db.session.commit()
+        return r['access_token']
