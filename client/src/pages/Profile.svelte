@@ -2,7 +2,6 @@
     import { onMount } from "svelte";
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
-    import Login from "../components/Login.svelte";
 
     const apiEndpoint = process.env.BACKEND_API;
 
@@ -36,10 +35,6 @@
         await fetchProfile();
     })
 </script>
-
-<div class='login'>
-    <Login />
-</div>
 
 <profile>
     <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>

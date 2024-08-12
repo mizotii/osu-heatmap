@@ -2,10 +2,13 @@
 	import { Route, Router, Link } from 'svelte-routing';
 	import { onMount } from 'svelte';
 
-	//pages
-	import Error from './pages/Error.svelte';
+	// pages
   	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
+
+	// components
+	import Login from './components/Login.svelte';
+	import UserCounter from './components/UserCounter.svelte';
 
 	export let url = '';
 
@@ -32,6 +35,13 @@
 </Router>
 
 <main>
+	<div class='usercounter'>
+		<UserCounter />
+	</div>
+
+	<div class='login'>
+		<Login />
+	</div>
 </main>
 
 <style>
@@ -46,5 +56,17 @@
 		main {
 			max-width: none;
 		}
+	}
+
+	.usercounter {
+        position: absolute;
+        bottom: 2.5%;
+        right: 2.5%;
+	}
+
+	.login {
+		position: absolute;
+		top: 2.5%;
+		right: 2.5%;
 	}
 </style>
