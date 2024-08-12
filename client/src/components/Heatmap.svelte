@@ -63,10 +63,12 @@
                         // terrible, will refactor
                         text: function (date, value, dayjsDate) {
                             if ($dataType === 'play_time') {
+                                let hours = value / 3600;
+                                let minutes = (value / 60) - (hours * 60);
                                 return (
-                                    Math.floor((value / 3600)).toString() +
+                                    Math.floor(hours).toString() +
                                     heatmapCells[$dataType]['hours'] +
-                                    Math.floor((value / 60)).toString() +
+                                    Math.floor(minutes).toString() +
                                     heatmapCells[$dataType]['minutes'] +
                                     dayjsDate.format('YYYY-MM-DD HH:mm:ss')
                                 )
