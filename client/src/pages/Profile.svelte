@@ -10,6 +10,7 @@
     let username;
     let userRuleset;
     let userHeatmapData;
+    let userHeatmapMax;
 
     async function fetchProfile() {
         if (id) {
@@ -22,16 +23,15 @@
             }
             const response = await fetch(endpoint);
             const data = await response.json();
-            console.log(data);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
+            userHeatmapMax = data.user_heatmap_max;
         }
     }
 
     onMount(async () => {
         await fetchProfile();
-        console.log(userHeatmapData);
         username = user.username;
     })
 </script>
@@ -43,7 +43,7 @@
         <RulesetMenu id={id}/>
     </div>
     <div class='heatmap'>
-        <Heatmap heatmapData={userHeatmapData} id={id} ruleset={ruleset}/>
+        <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
     </div>
 </profile>
 

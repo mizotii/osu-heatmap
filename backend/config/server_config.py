@@ -13,6 +13,14 @@ credentials = {
     'sessions_key': os.environ.get('SESSIONS_SECRET'),
 }
 
+daily_statistics = {
+    'play_count': UserDailyStatistics.play_count,
+    'play_time': UserDailyStatistics.play_time,
+    'ranked_score': UserDailyStatistics.ranked_score,
+    'total_hits': UserDailyStatistics.total_hits,
+    'total_score': UserDailyStatistics.total_score,
+}
+
 database = {
     'db_uri': os.environ.get('DB_URI'),
 }
