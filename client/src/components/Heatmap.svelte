@@ -9,6 +9,7 @@
     const apiEndpoint = process.env.BACKEND_API;
 
     export let heatmapData;
+    export let heatmapMax;
     export let id;
     export let ruleset;
 
@@ -41,7 +42,8 @@
                 scale: {
                     color: {
                         type: 'linear',
-                        range: ['fde4f2', '#e68bbe'],
+                        range: ['#fde4f2', '#79305a'],
+                        domain: [0, heatmapMax[$dataType]],
                     }
                 },
                 domain: {
@@ -92,7 +94,6 @@
     }
 
     onMount (async () => {
-        console.log(heatmapData);
         await reloadHeatmap();
     })
 

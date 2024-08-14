@@ -12,6 +12,7 @@
     let username;
     let userRuleset;
     let userHeatmapData;
+    let userHeatmapMax;
 
     async function fetchProfile() {
         if (id) {
@@ -27,6 +28,7 @@
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
+            userHeatmapMax = data.user_heatmap_max;
             username = user.username;
         }
     }
@@ -43,7 +45,7 @@
         <RulesetMenu id={id}/>
     </div>
     <div class='heatmap'>
-        <Heatmap heatmapData={userHeatmapData} id={id} ruleset={ruleset}/>
+        <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
     </div>
 </profile>
 

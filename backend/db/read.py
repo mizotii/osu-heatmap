@@ -1,4 +1,5 @@
 """for reading from the database"""
+from config.server_config import daily_statistics
 from db.models import db, User, UserDailyStatistics, Score, Beatmap, BeatmapSet
 from config import server_config as sc
 from datetime import timedelta
@@ -15,6 +16,20 @@ def read_ruleset(id, ruleset):
 def read_cell(id, ruleset, date):
     cell = UserDailyStatistics.query.filter_by(id=id, ruleset=ruleset, start_date=date).first()
     return cell
+
+def read_max_statistic(id, ruleset):
+    data = {}
+    for statistic in daily_statistics:
+        max = db.session.query(func.max(daily_statistics[statistic])).\
+            filter(
+                and_(
+                    UserDailyStatistics.id == id,
+                    UserDailyStatistics.ruleset == ruleset,
+                )
+            ).scalar()
+        print(max)
+        data[statistic] = max
+    return data
 
 def read_beatmap(id, set_id):
     beatmap = Beatmap.query.filter_by(id=id, beatmapset_id=set_id).first()
