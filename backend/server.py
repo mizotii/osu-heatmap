@@ -82,7 +82,7 @@ def callback():
         up.store_scores(app, access, id, ruleset)
 
     # log them in
-    login_user(user)
+    login_user(user, remember=True)
 
     return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
 
