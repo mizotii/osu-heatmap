@@ -83,7 +83,8 @@ def callback():
     # log them in
     login_user(user)
 
-    return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
+    # return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
+    return redirect('/')
 
 @app.route('/api/search')
 def search():
