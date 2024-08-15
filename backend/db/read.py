@@ -27,7 +27,6 @@ def read_max_statistic(id, ruleset):
                     UserDailyStatistics.ruleset == ruleset,
                 )
             ).scalar()
-        print(max)
         data[statistic] = max
     return data
 

@@ -15,8 +15,12 @@ def refresh_token(app, user):
             'scope': 'public identify',
         }
         r = requests.post(url=url, headers=headers, data=payload).json()
+        if 'error' in r:
+            e = r['error']
+            return KeyError(e)
         setattr(user, 'access_token', r['access_token'])
         setattr(user, 'expires_at', timedelta(seconds = r['expires_in']) + datetime.now())
         setattr(user, 'refresh_token', r['refresh_token'])
         db.session.commit()
         return r['access_token']
+    
