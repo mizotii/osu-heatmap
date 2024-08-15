@@ -170,7 +170,7 @@ rulesets = [
 ]
 
 def midnight_update():
-    print('hi')
+    print('hi', flush=True)
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
