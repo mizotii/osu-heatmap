@@ -1,4 +1,5 @@
 """backend"""
+import logging
 import pydash as _
 import secrets
 from api import create as cr
@@ -173,6 +174,7 @@ def midnight_update():
         up.update_user_statistics(app, user)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     scheduler.add_job(midnight_update, 'cron', hour='*/24')
     scheduler.add_job(refresh_tokens, 'cron', hour='*/24')
     scheduler.start()
