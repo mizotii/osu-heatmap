@@ -177,10 +177,11 @@ def midnight_update():
             rf.refresh_token(app, user)
         up.update_user_statistics(app, user)
 
+logging.basicConfig(level=logging.INFO)
+scheduler.add_job(midnight_update, 'interval', minutes=1)
+scheduler.add_job(refresh_tokens, 'interval', minutes=1)
+scheduler.start()
+scheduler.print_jobs()
+
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    scheduler.add_job(midnight_update, 'interval', minutes=1)
-    scheduler.add_job(refresh_tokens, 'interval', minutes=1)
-    scheduler.start()
-    scheduler.print_jobs()
     app.run(debug=True)
