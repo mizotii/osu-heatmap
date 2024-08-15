@@ -42,7 +42,7 @@
                 scale: {
                     color: {
                         type: 'linear',
-                        range: ['#fde4f2', '#79305a'],
+                        range: ['#ffefef', '#ff547e'],
                         domain: [0, heatmapMax[$dataType]],
                     }
                 },

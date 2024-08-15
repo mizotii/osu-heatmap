@@ -1,15 +1,18 @@
 <script>
+	import { Route, Router, Link } from 'svelte-routing';
     import { onMount } from "svelte";
 
     const apiEndpoint = process.env.BACKEND_API;
 
     $: isAuthenticated = false;
+    let id;
     let username;
     let avatar_url;
 
     async function fetchUser() {
         const response = await fetch(`${apiEndpoint}/api/get_user_data`);
         const data = await response.json();
+        id = data['id'];
         username = data['username'];
         avatar_url = data['avatar_url'];
     }
@@ -22,6 +25,10 @@
         } catch (error) {
             console.error('error:', error);
         }
+    }
+
+    async function profileRedirect() {
+        window.location.href = `/profile/${id}`;
     }
 
     async function logout() {
@@ -63,6 +70,7 @@
                 {username}
             </summary>
             <ul class="menu dropdown-content bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                <button class="btn btn-outline" on:click={profileRedirect}>profile</button>
                 <button class="btn btn-outline" on:click={logout}>log out</button>
             </ul>
         </details>
