@@ -2,6 +2,7 @@
 import logging
 import pydash as _
 import secrets
+import sys
 from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler
 from config.authentication import authorization as au
@@ -24,6 +25,8 @@ app = Flask(__name__,
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.secret_key = sc.credentials['sessions_key']
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.setLevel(logging.DEBUG)
 init_db(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager()
