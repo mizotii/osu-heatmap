@@ -167,6 +167,7 @@ rulesets = [
 ]
 
 def midnight_update():
+    print('hi')
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
@@ -175,8 +176,8 @@ def midnight_update():
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
-    scheduler.add_job(midnight_update, 'cron', hour='*/24')
-    scheduler.add_job(refresh_tokens, 'cron', hour='*/24')
+    scheduler.add_job(midnight_update, 'interval', minutes=1)
+    scheduler.add_job(refresh_tokens, 'interval', minutes=1)
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)
