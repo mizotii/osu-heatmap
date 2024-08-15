@@ -10,7 +10,8 @@ def create_profile(id, ruleset):
     heatmap_data = []
     if user_cells:
         for cell in user_cells:
-            heatmap_data.append(cell.as_dict())
+            if cell.__dict__['play_count'] != 0:
+                heatmap_data.append(cell.as_dict())
     return {
         'user': {
             'avatar_url': user['avatar_url'],
