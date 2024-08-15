@@ -46,6 +46,7 @@ def authorize():
     return jsonify(au.build_url(state))
 
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return send_from_directory('../client/public', 'index.html')
