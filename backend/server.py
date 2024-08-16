@@ -24,7 +24,8 @@ app = Flask(__name__,
     static_folder='../client/public/',
 )
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
-app.secret_key = sc.credentials['sessions_key']
+# app.secret_key = sc.credentials['sessions_key']
+app.config['SECRET_KEY'] = sc.credentials['sessions_key']
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 init_db(app)
@@ -178,8 +179,6 @@ def midnight_update():
         up.update_user_statistics(app, user)
 
 logging.basicConfig(level=logging.INFO)
-print(sc.credentials['client_id'], flush=True)
-print(sc.credentials['sessions_key'], flush=True)
 scheduler.add_job(midnight_update, 'interval', minutes=1)
 scheduler.add_job(refresh_tokens, 'interval', minutes=1)
 scheduler.start()
