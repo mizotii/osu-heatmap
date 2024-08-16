@@ -1,5 +1,4 @@
 <script>
-	import { Route, Router, Link } from 'svelte-routing';
     import { onMount } from "svelte";
 
     const apiEndpoint = process.env.BACKEND_API;
@@ -10,7 +9,9 @@
     let avatar_url;
 
     async function fetchUser() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_data`);
+        const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
+            credentials: 'include',
+        });
         const data = await response.json();
         id = data['id'];
         username = data['username'];
@@ -52,7 +53,6 @@
         })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
             if (data.login == true) {
                 isAuthenticated = true;
                 fetchUser();
