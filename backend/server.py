@@ -178,6 +178,7 @@ def midnight_update():
         up.update_user_statistics(app, user)
 
 logging.basicConfig(level=logging.INFO)
+print(sc.credentials['session_key'], flush=True)
 scheduler.add_job(midnight_update, 'interval', minutes=1)
 scheduler.add_job(refresh_tokens, 'interval', minutes=1)
 scheduler.start()
