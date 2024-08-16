@@ -14,6 +14,7 @@ from db import read as rd
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
+from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
 from db.models import init_db, db
@@ -32,6 +33,11 @@ init_db(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
+CORS(app, supports_credentials=True, origins=sc.endpoints['frontend'])
+app.config.update(
+    SESSION_COOKIE_SAMESITE="None",
+    SESSION_COOKIE_SECURE=True
+)
 
 @app.route('/')
 def base():
