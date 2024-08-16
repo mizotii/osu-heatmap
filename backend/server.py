@@ -89,7 +89,7 @@ def callback():
     # log them in
     login_user(user, remember=True)
 
-    return redirect(sc.endpoints['frontend'])
+    return redirect(url_for('index'))
 
 @app.route('/api/search')
 def search():
