@@ -10,9 +10,7 @@
     let avatar_url;
 
     async function fetchUser() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
-            credentials: 'include',
-        });
+        const response = await fetch(`${apiEndpoint}/api/get_user_data`);
         const data = await response.json();
         id = data['id'];
         username = data['username'];
