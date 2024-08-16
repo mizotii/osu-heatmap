@@ -60,7 +60,7 @@ def authorize():
 @login_required
 def logout():
     logout_user()
-    return send_from_directory('../client/public', 'index.html')
+    return redirect(sc.endpoints['frontend'])
 
 @app.route('/callback')
 def callback():
