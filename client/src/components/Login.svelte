@@ -37,7 +37,7 @@
 
     const logout = () => {
         fetch(`${apiEndpoint}/api/logout`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         })
         .then(() => {
             isAuthenticated = false;
