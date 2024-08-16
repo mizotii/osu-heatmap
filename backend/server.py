@@ -36,8 +36,7 @@ login_manager.init_app(app)
 CORS(app, supports_credentials=True, origins=sc.endpoints['frontend'])
 app.config.update(
     SESSION_COOKIE_SAMESITE="None",
-    SESSION_COOKIE_SECURE=True,
-    SESSION_COOKIE_DOMAIN=sc.endpoints['frontend']
+    SESSION_COOKIE_SECURE=True
 )
 
 @app.route('/')
