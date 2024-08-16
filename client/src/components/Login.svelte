@@ -1,5 +1,6 @@
 <script>
     import { onMount } from "svelte";
+  import { construct_svelte_component } from "svelte/internal";
 
     const apiEndpoint = process.env.BACKEND_API;
 
@@ -34,18 +35,17 @@
         window.location.href = `/profile/${id}`;
     }
 
-    async function logout() {
-        try {
-            const response = await fetch(`${apiEndpoint}/logout`, {
-                credentials: 'include',
-            });
-            // don't think i need this?
-            const data = await response.json();
-        } catch (error) {
-            console.error('error:', error);
-        }
-        isAuthenticated = false;
-    }
+    const logout = () => {
+        fetch(`${apiEndpoint}/api/logout`, {
+            credentials: 'include',
+        })
+        .then(() => {
+            isAuthenticated = false;
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    };
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {

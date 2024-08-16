@@ -56,7 +56,7 @@ def authorize():
     state = secrets.token_urlsafe(16)
     return jsonify(au.build_url(state))
 
-@app.route('/logout')
+@app.route('/api/logout')
 @login_required
 def logout():
     logout_user()
