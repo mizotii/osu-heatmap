@@ -23,7 +23,9 @@
                 // TODO: get default playmode
                 ruleset = 'osu';
             }
-            const response = await fetch(endpoint);
+            const response = await fetch(endpoint, {
+                credentials: 'same-origin',
+            });
             const data = await response.json();
             user = data.user;
             userRuleset = data.user_ruleset;

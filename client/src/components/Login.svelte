@@ -10,7 +10,9 @@
     let avatar_url;
 
     async function fetchUser() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_data`);
+        const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
+            credentials: 'same-origin',
+        });
         const data = await response.json();
         id = data['id'];
         username = data['username'];
@@ -19,7 +21,9 @@
 
     async function authRedirect() {
         try {
-            const response = await fetch(`${apiEndpoint}/authorize`);
+            const response = await fetch(`${apiEndpoint}/authorize`, {
+                credentials: 'same-origin',
+            });
             const data = await response.json();
             window.location.href = data;
         } catch (error) {
@@ -33,7 +37,9 @@
 
     async function logout() {
         try {
-            const response = await fetch(`${apiEndpoint}/logout`);
+            const response = await fetch(`${apiEndpoint}/logout`, {
+                credentials: 'same-origin',
+            });
             // don't think i need this?
             const data = await response.json();
         } catch (error) {
@@ -44,6 +50,7 @@
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {
+            credentials: 'same-origin',
         })
         .then((response) => response.json())
         .then((data) => {

@@ -9,7 +9,9 @@
     let results = []
 
     onMount(async() => {
-        const users = await fetch(`${apiEndpoint}/api/search`).then((res) => res.json())
+        const users = await fetch(`${apiEndpoint}/api/search`, {
+            credentials: 'same-origin',
+        }).then((res) => res.json())
         createUsersIndex(users)
         search = 'ready'
     })

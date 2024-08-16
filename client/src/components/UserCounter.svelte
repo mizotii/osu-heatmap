@@ -6,7 +6,9 @@
     let users;
 
     async function getUserCount() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_count`);
+        const response = await fetch(`${apiEndpoint}/api/get_user_count`, {
+            credentials: 'same-origin',
+        });
         const data = await response.json();
         userCountString(data.count);
     }
