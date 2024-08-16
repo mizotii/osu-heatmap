@@ -11,7 +11,7 @@
 
     async function fetchUser() {
         const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         });
         const data = await response.json();
         id = data['id'];
@@ -22,7 +22,7 @@
     async function authRedirect() {
         try {
             const response = await fetch(`${apiEndpoint}/authorize`, {
-                credentials: 'same-origin',
+                credentials: 'include',
             });
             const data = await response.json();
             window.location.href = data;
@@ -38,7 +38,7 @@
     async function logout() {
         try {
             const response = await fetch(`${apiEndpoint}/logout`, {
-                credentials: 'same-origin',
+                credentials: 'include',
             });
             // don't think i need this?
             const data = await response.json();
@@ -50,7 +50,7 @@
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         })
         .then((response) => response.json())
         .then((data) => {

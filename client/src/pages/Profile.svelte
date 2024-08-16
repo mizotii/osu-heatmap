@@ -24,7 +24,7 @@
                 ruleset = 'osu';
             }
             const response = await fetch(endpoint, {
-                credentials: 'same-origin',
+                credentials: 'include',
             });
             const data = await response.json();
             user = data.user;

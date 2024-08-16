@@ -10,7 +10,7 @@
 
     onMount(async() => {
         const users = await fetch(`${apiEndpoint}/api/search`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         }).then((res) => res.json())
         createUsersIndex(users)
         search = 'ready'

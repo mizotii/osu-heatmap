@@ -23,7 +23,7 @@
 
     async function fetchScores(id, ruleset, timestamp) {
         const response = await fetch(`${apiEndpoint}/api/scores/${id}/${ruleset}/${timestamp}`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         });
         const data = await response.json();
         scores = data;
