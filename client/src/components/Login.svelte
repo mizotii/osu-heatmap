@@ -37,7 +37,7 @@
 
     const logout = () => {
         fetch(`${apiEndpoint}/api/logout`, {
-            credentials: 'include',
+            credentials: 'same-origin',
         })
         .then(() => {
             isAuthenticated = false;
@@ -49,7 +49,7 @@
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {
-            credentials: 'same-origin',
+            credentials: 'include',
         })
         .then((response) => response.json())
         .then((data) => {
