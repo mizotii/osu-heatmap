@@ -49,7 +49,7 @@
 
     onMount(() => {
         fetch(`${apiEndpoint}/api/get_session`, {
-            credentials: 'include',
+            credentials: 'same-origin',
         })
         .then((response) => response.json())
         .then((data) => {
