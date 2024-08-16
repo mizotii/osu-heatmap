@@ -91,7 +91,7 @@ def callback():
     print(jsonify({ 
         'login': current_user.is_authenticated,
         'id': current_user.get_id(),
-    }))
+    }), flush=True)
 
     return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
 
