@@ -179,7 +179,7 @@ def midnight_update():
 
 logging.basicConfig(level=logging.INFO)
 print(sc.credentials['client_id'], flush=True)
-print(sc.credentials['session_key'], flush=True)
+print(sc.credentials['sessions_key'], flush=True)
 scheduler.add_job(midnight_update, 'interval', minutes=1)
 scheduler.add_job(refresh_tokens, 'interval', minutes=1)
 scheduler.start()
