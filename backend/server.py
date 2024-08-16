@@ -13,7 +13,7 @@ from db import update as up
 from db import read as rd
 from config import server_config as sc
 from datetime import datetime
-from flask import Flask, jsonify, redirect, request, send_from_directory
+from flask import Flask, jsonify, redirect, request, send_from_directory, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
 from db.models import init_db, db
@@ -89,7 +89,7 @@ def callback():
     # log them in
     login_user(user, remember=True)
 
-    return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
+    return redirect(url_for(sc.endpoints['frontend']))
 
 @app.route('/api/search')
 def search():
