@@ -88,6 +88,10 @@ def callback():
 
     # log them in
     login_user(user, remember=True)
+    print(jsonify({ 
+        'login': current_user.is_authenticated,
+        'id': current_user.get_id(),
+    }))
 
     return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
 
