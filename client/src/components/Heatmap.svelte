@@ -131,4 +131,8 @@
     select {
         margin: 12px;
     }
+
+    .ch-subdomain-bg {
+        fill: #ffefef;
+    }
 </style>

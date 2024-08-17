@@ -3,12 +3,12 @@
 	import { onMount } from 'svelte';
 
 	// pages
-  	import Home from './pages/Home.svelte';
+	import Home from './pages/Home.svelte';
 	import Profile from './pages/Profile.svelte';
 
 	// components
-	import Login from './components/Login.svelte';
 	import UserCounter from './components/UserCounter.svelte';
+	import Banner from './components/Banner.svelte';
 
 	export let url = '';
 
@@ -17,11 +17,9 @@
 </script>
 
 <Router {url}>
-	<nav>
-		<Link to='/'>
-			<img src='/static/logo.png' alt='osu-heatmap logo' width='64' height='64'>
-		</Link>
-	</nav>
+	<div class='banner'>
+		<Banner />
+	</div>	
 	<div>
 		<Route path='/' component={Home}></Route>
 		<Route path='/profile/:id/' component={Profile} let:params let:active>
@@ -37,10 +35,6 @@
 <main>
 	<div class='usercounter'>
 		<UserCounter />
-	</div>
-
-	<div class='login'>
-		<Login />
 	</div>
 </main>
 
@@ -62,11 +56,5 @@
         position: absolute;
         bottom: 2.5%;
         right: 2.5%;
-	}
-
-	.login {
-		position: absolute;
-		top: 2.5%;
-		right: 2.5%;
 	}
 </style>
