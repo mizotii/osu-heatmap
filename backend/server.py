@@ -171,8 +171,8 @@ def midnight_update():
         up.update_user_statistics(app, user)
 
 if __name__ == '__main__':
-    scheduler.add_job(midnight_update, 'interval', seconds=5)
-    scheduler.add_job(refresh_tokens, 'cron', hour='*/2')
+    scheduler.add_job(midnight_update, 'cron', hour='*/12')
+    scheduler.add_job(refresh_tokens, 'cron', hour='*/12')
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)
