@@ -106,6 +106,7 @@ def search():
         users.append(user.as_dict())
     return jsonify(users)
 
+"""
 @app.route("/profile/<int:id>")
 def profile_default(id):
     user = rd.read_user(id)
@@ -134,6 +135,7 @@ def profile_ruleset(id, ruleset):
     up.store_scores(app, access, id, ruleset)
 
     return send_from_directory('../client/public', 'index.html')
+"""
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
 @app.route("/api/profile/<int:id>")
