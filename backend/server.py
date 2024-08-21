@@ -145,6 +145,17 @@ def fetch_profile(id, ruleset=None):
         ruleset = 'fruits'
     if not ruleset:
         ruleset = rd.read_user(id).__dict__['playmode']
+    
+    user = rd.read_user(id)
+    access = user.__dict__['access_token']
+    if user.__dict__['expires_at'] < datetime.now():
+        access = rf.refresh_token(app, user)
+
+    up.update_user_statistics(app, user)
+
+    for ruleset in rulesets:
+        up.store_scores(app, access, id, ruleset)
+        
     return jsonify(cr.create_profile(id, ruleset))
 
 @app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
