@@ -106,37 +106,6 @@ def search():
         users.append(user.as_dict())
     return jsonify(users)
 
-"""
-@app.route("/profile/<int:id>")
-def profile_default(id):
-    user = rd.read_user(id)
-    access = user.__dict__['access_token']
-    if user.__dict__['expires_at'] < datetime.now():
-        access = rf.refresh_token(app, user)
-
-    up.update_user_statistics(app, user)
-
-    for ruleset in rulesets:
-        up.store_scores(app, access, id, ruleset)
-        
-    return send_from_directory('../client/public', 'index.html')
-
-@app.route("/profile/<int:id>/<string:ruleset>")
-def profile_ruleset(id, ruleset):
-    user = rd.read_user(id)
-    access = user.__dict__['access_token']
-    if user.__dict__['expires_at'] < datetime.now():
-        access = rf.refresh_token(app, user)
-    
-    if ruleset == 'catch':
-        ruleset = 'fruits'
-
-    up.update_user_statistics(app, user)
-    up.store_scores(app, access, id, ruleset)
-
-    return send_from_directory('../client/public', 'index.html')
-"""
-
 @app.route("/api/profile/<int:id>/<string:ruleset>")
 @app.route("/api/profile/<int:id>")
 def fetch_profile(id, ruleset=None):
@@ -155,7 +124,7 @@ def fetch_profile(id, ruleset=None):
 
     for ruleset in rulesets:
         up.store_scores(app, access, id, ruleset)
-        
+
     return jsonify(cr.create_profile(id, ruleset))
 
 @app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
@@ -180,13 +149,6 @@ def get_user_count():
     count = rd.read_user_count()
     return jsonify({ 'count': count })
 
-""" def refresh_tokens():
-    users = rd.all_users(app)
-    for user in users:
-        if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(app, user)
-"""
-
 rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
 ]
@@ -197,11 +159,13 @@ def midnight_update():
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
             rf.refresh_token(app, user)
+            
+        print(f'{id} in server, last updated: {user.__dict__['last_updated']}')
         up.update_user_statistics(app, user)
+        print(f'{id} in server, last updated: {user.__dict__['last_updated']}')
 
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(midnight_update, 'interval', seconds=30)
-# scheduler.add_job(refresh_tokens, 'interval', seconds=30)
 scheduler.start()
 scheduler.print_jobs()
 
