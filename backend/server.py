@@ -167,11 +167,12 @@ def get_user_count():
     count = rd.read_user_count()
     return jsonify({ 'count': count })
 
-def refresh_tokens():
+""" def refresh_tokens():
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
             rf.refresh_token(app, user)
+"""
 
 rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
@@ -182,15 +183,12 @@ def midnight_update():
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
-            print(user.__dict__['expires_at'])
-            print(datetime.now())
-            print(user.__dict__['expires_at'] < datetime.now())
             rf.refresh_token(app, user)
         up.update_user_statistics(app, user)
 
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(midnight_update, 'interval', seconds=30)
-scheduler.add_job(refresh_tokens, 'interval', seconds=30)
+# scheduler.add_job(refresh_tokens, 'interval', seconds=30)
 scheduler.start()
 scheduler.print_jobs()
 
