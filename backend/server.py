@@ -182,6 +182,7 @@ def midnight_update():
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
+            print('expires triggered')
             rf.refresh_token(app, user)
         up.update_user_statistics(app, user)
 
