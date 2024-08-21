@@ -160,9 +160,9 @@ def midnight_update():
         if user.__dict__['expires_at'] < datetime.now():
             rf.refresh_token(app, user)
             
-        print(f'{id} in server, last updated: {user.__dict__['last_updated']}')
+        print(f'{user.__dict__['id']} in server, last updated: {user.__dict__['last_updated']}')
         up.update_user_statistics(app, user)
-        print(f'{id} in server, last updated: {user.__dict__['last_updated']}')
+        print(f'{user.__dict__['id']} in server, last updated: {user.__dict__['last_updated']}')
 
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(midnight_update, 'interval', seconds=30)
