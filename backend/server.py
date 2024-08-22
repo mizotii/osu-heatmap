@@ -83,7 +83,7 @@ def callback():
     # if they do exist, since we've already gotten their access token,
     # we can't refresh their old one
     else:
-        up.update_user(token, user)
+        up.update_user_token(token, user)
         user = rd.read_user(id)
 
     # todo: initialize the rest of their data
