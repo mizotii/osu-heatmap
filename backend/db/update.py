@@ -89,7 +89,7 @@ def store_beatmap(beatmap):
     db.session.commit()
 
 def store_beatmapset(beatmapset):
-    db.session.add(new_beatmapset = BeatmapSet(
+    db.session.add(BeatmapSet(
         artist=beatmapset['artist'],
         artist_unicode=beatmapset['artist_unicode'],
         id=beatmapset['id'],
