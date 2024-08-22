@@ -180,10 +180,6 @@ def update_user_statistics(app, user):
                 db.session.commit()
                 db.session.refresh(old_ruleset)
 
-        setattr(user, 'last_updated', datetime.now())
-        db.session.commit()
-        db.session.refresh(user)
-
 def update_user(token, user):
     setattr(user, 'access_token', token['access_token'])
     setattr(user, 'expires_at', timedelta(seconds = token['expires_in']) + datetime.now())
