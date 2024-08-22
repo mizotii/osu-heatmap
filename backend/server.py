@@ -147,7 +147,7 @@ rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
 ]
 
-def midnight_update():
+def auto_update():
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
@@ -155,7 +155,7 @@ def midnight_update():
         up.update_user_statistics(app, user)
 
 logging.basicConfig(level=logging.INFO)
-scheduler.add_job(midnight_update, 'interval', seconds=30)
+scheduler.add_job(auto_update, 'interval', seconds=30)
 scheduler.start()
 scheduler.print_jobs()
 
