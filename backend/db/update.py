@@ -14,7 +14,7 @@ user_ruleset_attributes = [
 ]
 
 def store_user(token, user):
-    db.session.add(User(
+    new_user = User(
         id=user['id'],
         access_token=token['access_token'],
         expires_at=timedelta(seconds=token['expires_in'])+datetime.now(),
@@ -30,12 +30,13 @@ def store_user(token, user):
         playmode=user['playmode'],
         registration_date=datetime.now(),
         username=user['username'],
-    ))
+    )
+    db.session.add(new_user)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_user)
 
 def store_user_ruleset(data, ruleset, id):
-    db.session.add(sc.ruleset_tables[ruleset](
+    new_ruleset = sc.ruleset_tables[ruleset](
         id=id,
         last_updated=datetime.now(),
         username=data['username'],
@@ -46,12 +47,13 @@ def store_user_ruleset(data, ruleset, id):
         streak_longest=0,
         total_hits=data['statistics_rulesets'][ruleset]['total_hits'],
         total_score=data['statistics_rulesets'][ruleset]['total_score'],
-    ))
+    )
+    db.session.add(new_ruleset)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_ruleset)
 
 def store_user_daily(ruleset, id):
-    db.session.add(UserDailyStatistics(
+    new_daily = UserDailyStatistics(
         id=id,
         ruleset=ruleset,
         start_date=date.today(),
@@ -60,9 +62,10 @@ def store_user_daily(ruleset, id):
         total_hits=0,
         ranked_score=0,
         total_score=0,
-    ))
+    )
+    db.session.add(new_daily)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_daily)
 
 def store_scores(app, access, id, ruleset):
     with app.app_context():
@@ -81,19 +84,20 @@ def store_scores(app, access, id, ruleset):
                 store_score(score)
 
 def store_beatmap(beatmap):
-    db.session.add(Beatmap(
+    new_beatmap = Beatmap(
         beatmapset_id=beatmap['beatmapset_id'],
         difficulty_rating=beatmap['difficulty_rating'],
         id=beatmap['id'],
         ruleset=beatmap['mode'],
         total_length=beatmap['hit_length'],
         version=beatmap['version'],
-    ))
+    )
+    db.session.add(new_beatmap)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_beatmap)
 
 def store_beatmapset(beatmapset):
-    db.session.add(BeatmapSet(
+    new_beatmapset = BeatmapSet(
         artist=beatmapset['artist'],
         artist_unicode=beatmapset['artist_unicode'],
         id=beatmapset['id'],
@@ -104,13 +108,13 @@ def store_beatmapset(beatmapset):
         status=beatmapset['status'],
         title=beatmapset['title'],
         title_unicode=beatmapset['title_unicode'],
-
-    ))
+    )
+    db.session.add(new_beatmapset)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_beatmapset)
 
 def store_score(score):
-    db.session.add(Score(
+    new_score = Score(
         id=score['current_user_attributes']['pin']['score_id'],
         user_id=score['user_id'],
         timestamp=dateutil.parser.isoparse(score['created_at']),
@@ -130,9 +134,10 @@ def store_score(score):
         passed=score['passed'],
         rank=score['rank'],
         score=score['score'],
-    ))
+    )
+    db.session.add(new_score)
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(new_score)
 
 def total_notes(score):
     return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
@@ -141,8 +146,10 @@ def update_user_statistics(app, user):
     with app.app_context():
         updated_statistics = ft.fetch_user(user.__dict__['access_token'])
         id = user.__dict__['id']
+
+        setattr(user, 'last_updated', datetime.now())
         db.session.commit()
-        db.session.refresh()
+        db.session.refresh(user)
 
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
@@ -164,7 +171,7 @@ def update_user_statistics(app, user):
                     setattr(old_cell, 'ranked_score', (updated_statistics['statistics_rulesets'][ruleset]['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                
                     setattr(old_cell, 'total_score', (updated_statistics['statistics_rulesets'][ruleset]['total_score'] - old_ruleset.__dict__['total_score']) + getattr(old_cell, 'total_score'))
                     db.session.commit()
-                    db.session.refresh()
+                    db.session.refresh(old_cell)
                     
 
                 # todo: update ruleset attributes for everything except streaks using collection above
@@ -179,7 +186,7 @@ def update_user_statistics(app, user):
                 setattr(old_ruleset, 'total_hits', updated_statistics['statistics_rulesets'][ruleset]['total_hits'])
                 setattr(old_ruleset, 'total_score', updated_statistics['statistics_rulesets'][ruleset]['total_score'])
                 db.session.commit()
-                db.session.refresh()
+                db.session.refresh(old_ruleset)
 
 def update_user(token, user):
     setattr(user, 'access_token', token['access_token'])
@@ -187,4 +194,4 @@ def update_user(token, user):
     setattr(user, 'refresh_token', token['refresh_token'])
     setattr(user, 'token_type', token['token_type'])
     db.session.commit()
-    db.session.refresh()
+    db.session.refresh(user)
