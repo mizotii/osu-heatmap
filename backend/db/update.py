@@ -78,7 +78,7 @@ def store_scores(app, access, id, ruleset):
                 store_score(score)
 
 def store_beatmap(beatmap):
-    db.sesssion.add(Beatmap(
+    db.session.add(Beatmap(
         beatmapset_id=beatmap['beatmapset_id'],
         difficulty_rating=beatmap['difficulty_rating'],
         id=beatmap['id'],
