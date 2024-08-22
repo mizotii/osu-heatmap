@@ -135,6 +135,9 @@ def update_user_statistics(app, user):
         updated_statistics = ft.fetch_user(user.__dict__['access_token'])
         id = user.__dict__['id']
 
+        setattr(user, 'last_updated', datetime.now())
+        db.session.commit()
+
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
 
@@ -171,6 +174,8 @@ def update_user_statistics(app, user):
                 setattr(old_ruleset, 'total_score', updated_statistics['statistics_rulesets'][ruleset]['total_score'])
                 db.session.commit()
                 db.session.refresh(old_ruleset)
+
+        db.session.refresh(user)
 
 def update_user(token, user):
     setattr(user, 'access_token', token['access_token'])
