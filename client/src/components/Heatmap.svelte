@@ -99,7 +99,7 @@
 </script>
 
 <heatmap>
-    <select class="select select-bordered w-full max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
+    <select class="select select-bordered w-32 max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
         <option value='total_hits'>total hits</option>
         <option value='play_count'>play count</option>
         <option value='play_time'>play time</option>
@@ -117,6 +117,10 @@
         border: solid 1px white;
     }
 
+    #osu-heatmap > .ch-subdomain-bg {
+        fill: #333333;
+    }
+
     heatmap {
         display: flex;
         flex-direction: column;
@@ -126,9 +130,5 @@
 
     select {
         margin: 12px;
-    }
-
-    .ch-subdomain-bg {
-        fill: #ffefef;
     }
 </style>
