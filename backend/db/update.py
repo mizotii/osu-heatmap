@@ -142,6 +142,8 @@ def update_user_statistics(app, user):
         setattr(user, 'is_restricted', updated_statistics['is_restricted'])
         setattr(user, 'last_updated', datetime.now())
         setattr(user, 'playmode', updated_statistics['playmode'])
+        db.session.commit()
+        db.session.refresh(user)
 
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
@@ -165,7 +167,6 @@ def update_user_statistics(app, user):
                     db.session.commit()
                     db.session.refresh(old_cell)
                     
-
                 # todo: update ruleset attributes for everything except streaks using collection above
                 
                 # ruleset
