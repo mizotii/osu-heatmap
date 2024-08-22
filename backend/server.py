@@ -94,7 +94,6 @@ def callback():
 
     # log them in
     login_user(user, remember=True)
-    print(f'{current_user.is_authenticated}, {current_user.get_id()}', flush=True)
 
     return redirect(f'{sc.endpoints['frontend']}/profile/{id}')
 
@@ -154,15 +153,11 @@ rulesets = [
 ]
 
 def midnight_update():
-    print('hi', flush=True)
     users = rd.all_users(app)
     for user in users:
         if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(app, user)
-            
-        print(f'{user.__dict__['id']} in server, last updated: {user.__dict__['last_updated']}')
+            rf.refresh_token(app, user)            
         up.update_user_statistics(app, user)
-        print(f'{user.__dict__['id']} in server, last updated: {user.__dict__['last_updated']}')
 
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(midnight_update, 'interval', seconds=30)
