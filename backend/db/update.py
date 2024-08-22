@@ -14,7 +14,7 @@ user_ruleset_attributes = [
 ]
 
 def store_user(token, user):
-    new_user = User(
+    db.session.add(User(
         id=user['id'],
         access_token=token['access_token'],
         expires_at=timedelta(seconds=token['expires_in'])+datetime.now(),
@@ -30,13 +30,11 @@ def store_user(token, user):
         playmode=user['playmode'],
         registration_date=datetime.now(),
         username=user['username'],
-    )
-    db.session.add(new_user)
+    ))
     db.session.commit()
-    db.session.refresh(new_user)
 
 def store_user_ruleset(data, ruleset, id):
-    new_ruleset = sc.ruleset_tables[ruleset](
+    db.session.add(sc.ruleset_tables[ruleset](
         id=id,
         last_updated=datetime.now(),
         username=data['username'],
@@ -47,13 +45,11 @@ def store_user_ruleset(data, ruleset, id):
         streak_longest=0,
         total_hits=data['statistics_rulesets'][ruleset]['total_hits'],
         total_score=data['statistics_rulesets'][ruleset]['total_score'],
-    )
-    db.session.add(new_ruleset)
+    ))
     db.session.commit()
-    db.session.refresh(new_ruleset)
 
 def store_user_daily(ruleset, id):
-    new_daily = UserDailyStatistics(
+    db.session.add(new_daily = UserDailyStatistics(
         id=id,
         ruleset=ruleset,
         start_date=date.today(),
@@ -62,10 +58,8 @@ def store_user_daily(ruleset, id):
         total_hits=0,
         ranked_score=0,
         total_score=0,
-    )
-    db.session.add(new_daily)
+    ))
     db.session.commit()
-    db.session.refresh(new_daily)
 
 def store_scores(app, access, id, ruleset):
     with app.app_context():
@@ -84,20 +78,18 @@ def store_scores(app, access, id, ruleset):
                 store_score(score)
 
 def store_beatmap(beatmap):
-    new_beatmap = Beatmap(
+    db.sesssion.add(Beatmap(
         beatmapset_id=beatmap['beatmapset_id'],
         difficulty_rating=beatmap['difficulty_rating'],
         id=beatmap['id'],
         ruleset=beatmap['mode'],
         total_length=beatmap['hit_length'],
         version=beatmap['version'],
-    )
-    db.session.add(new_beatmap)
+    ))
     db.session.commit()
-    db.session.refresh(new_beatmap)
 
 def store_beatmapset(beatmapset):
-    new_beatmapset = BeatmapSet(
+    db.session.add(new_beatmapset = BeatmapSet(
         artist=beatmapset['artist'],
         artist_unicode=beatmapset['artist_unicode'],
         id=beatmapset['id'],
@@ -108,13 +100,11 @@ def store_beatmapset(beatmapset):
         status=beatmapset['status'],
         title=beatmapset['title'],
         title_unicode=beatmapset['title_unicode'],
-    )
-    db.session.add(new_beatmapset)
+    ))
     db.session.commit()
-    db.session.refresh(new_beatmapset)
 
 def store_score(score):
-    new_score = Score(
+    db.session.add(Score(
         id=score['current_user_attributes']['pin']['score_id'],
         user_id=score['user_id'],
         timestamp=dateutil.parser.isoparse(score['created_at']),
@@ -134,10 +124,8 @@ def store_score(score):
         passed=score['passed'],
         rank=score['rank'],
         score=score['score'],
-    )
-    db.session.add(new_score)
+    ))
     db.session.commit()
-    db.session.refresh(new_score)
 
 def total_notes(score):
     return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
