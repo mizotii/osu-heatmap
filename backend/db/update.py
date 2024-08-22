@@ -135,6 +135,14 @@ def update_user_statistics(app, user):
         updated_statistics = ft.fetch_user(user.__dict__['access_token'])
         id = user.__dict__['id']
 
+        setattr(user, 'avatar_url', updated_statistics['avatar_url'])
+        setattr(user, 'country_code', updated_statistics['country_code'])
+        setattr(user, 'cover_url', updated_statistics['cover']['url'])
+        setattr(user, 'is_deleted', updated_statistics['is_deleted'])
+        setattr(user, 'is_restricted', updated_statistics['is_restricted'])
+        setattr(user, 'last_updated', datetime.now())
+        setattr(user, 'playmode', updated_statistics['playmode'])
+
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
 
