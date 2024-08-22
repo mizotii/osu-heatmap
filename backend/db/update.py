@@ -49,7 +49,7 @@ def store_user_ruleset(data, ruleset, id):
     db.session.commit()
 
 def store_user_daily(ruleset, id):
-    db.session.add(new_daily = UserDailyStatistics(
+    db.session.add(UserDailyStatistics(
         id=id,
         ruleset=ruleset,
         start_date=date.today(),
