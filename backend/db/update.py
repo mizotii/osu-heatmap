@@ -132,21 +132,15 @@ def total_notes(score):
 
 def update_user_statistics(app, user):
     with app.app_context():
-        updated_statistics = ft.fetch_user(user.__dict__['access_token'])
+        access = user.__dict__['access_token']
+        updated_statistics = ft.fetch_user(access)
         id = user.__dict__['id']
 
-        setattr(user, 'avatar_url', updated_statistics['avatar_url'])
-        setattr(user, 'country_code', updated_statistics['country_code'])
-        setattr(user, 'cover_url', updated_statistics['cover']['url'])
-        setattr(user, 'is_deleted', updated_statistics['is_deleted'])
-        setattr(user, 'is_restricted', updated_statistics['is_restricted'])
-        setattr(user, 'last_updated', datetime.now())
-        setattr(user, 'playmode', updated_statistics['playmode'])
-        db.session.commit()
-        db.session.refresh(user)
+        update_user(app, access, id)
 
         for ruleset in sc.rulesets:
             old_ruleset = rd.read_ruleset(id, ruleset)
+            store_scores(app, access, id, ruleset)
 
             if not old_ruleset:
                 store_user_ruleset(updated_statistics, ruleset, id)
@@ -181,7 +175,21 @@ def update_user_statistics(app, user):
                 db.session.commit()
                 db.session.refresh(old_ruleset)
 
-def update_user(token, user):
+def update_user(app, access, id):
+    with app.app_context():
+        old_user = rd.read_user(id)
+        new_user = ft.fetch_user(access)
+        setattr(old_user, 'avatar_url', new_user['avatar_url'])
+        setattr(old_user, 'country_code', new_user['country_code'])
+        setattr(old_user, 'cover_url', new_user['cover']['url'])
+        setattr(old_user, 'is_deleted', new_user['is_deleted'])
+        setattr(old_user, 'is_restricted', new_user['is_restricted'])
+        setattr(old_user, 'last_updated', datetime.now())
+        setattr(old_user, 'playmode', new_user['playmode'])
+        db.session.commit()
+        db.session.refresh(old_user)
+
+def update_user_token(token, user):
     setattr(user, 'access_token', token['access_token'])
     setattr(user, 'expires_at', timedelta(seconds = token['expires_in']) + datetime.now())
     setattr(user, 'refresh_token', token['refresh_token'])
