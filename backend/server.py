@@ -1,6 +1,7 @@
 """backend"""
 import logging
 import pydash as _
+import redis
 import secrets
 import sys
 from api import create as cr
@@ -17,9 +18,11 @@ from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_migrate import Migrate
+from flask_session import Session
 from db.models import init_db, db
 
 scheduler = BackgroundScheduler()
+session = Session()
 
 app = Flask(__name__,
     static_folder='../client/public/',
@@ -27,6 +30,8 @@ app = Flask(__name__,
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 # app.secret_key = sc.credentials['sessions_key']
 app.config['SECRET_KEY'] = sc.credentials['sessions_key']
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 init_db(app)
@@ -38,6 +43,7 @@ app.config.update(
     SESSION_COOKIE_SAMESITE="None",
     SESSION_COOKIE_SECURE=True
 )
+session.init_app(app)
 
 @app.route('/')
 def base():
