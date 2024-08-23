@@ -9,6 +9,8 @@
     let username;
     let avatar_url;
 
+    let loaded;
+
     async function fetchUser() {
         const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
             credentials: 'include',
@@ -64,42 +66,47 @@
         .catch((err) => {
             console.log(err);
         });
+        setTimeout(() => {
+            loaded = true;
+        }, 1000);
     });
 
 
 </script>
 
-<login>
-    {#if isAuthenticated}
-        <div class="dropdown">
-            <div tabindex="0" role="button" class="btn m-1 btn-outline btn-primary min-w-16 w-64">
+{#if loaded}
+    <login>
+        {#if isAuthenticated}
+            <div class="dropdown">
+                <div tabindex="0" role="button" class="btn m-1 btn-outline btn-primary min-w-16 w-64">
+                    <div class="avatar">
+                        <div class="w-8 ring-primary ring-offset-2 ring-offset-base-100 rounded-full">
+                            <img src="{avatar_url}" alt="{username}'s avatar" />
+                        </div>
+                    </div>
+                    {username}
+                </div>
+                <ul tabindex="0" class="menu dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow">
+                    <li>
+                        <button class="btn btn-outline" on:click={profileRedirect}>profile</button>
+                    </li>
+                    <li>
+                        <button class="btn btn-outline" on:click={logout}>log out</button>
+                    </li>
+                </ul>
+            </div>
+        {:else}
+            <button class="btn m-1 btn-outline btn-primary min-w-16 w-64" on:click={authRedirect}>
                 <div class="avatar">
-                    <div class="w-8 ring-primary ring-offset-2 ring-offset-base-100 rounded-full">
-                        <img src="{avatar_url}" alt="{username}'s avatar" />
+                    <div class="w-8 ring-white ring-offset-2 ring-offset-base-100 rounded-full">
+                        <img src="https://s.ppy.sh/a/-1" alt="default avatar" />
                     </div>
                 </div>
-                {username}
-            </div>
-            <ul tabindex="0" class="menu dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow">
-                <li>
-                    <button class="btn btn-outline" on:click={profileRedirect}>profile</button>
-                </li>
-                <li>
-                    <button class="btn btn-outline" on:click={logout}>log out</button>
-                </li>
-            </ul>
-        </div>
-    {:else}
-        <button class="btn m-1 btn-outline btn-primary min-w-16 w-64" on:click={authRedirect}>
-            <div class="avatar">
-                <div class="w-8 ring-white ring-offset-2 ring-offset-base-100 rounded-full">
-                    <img src="https://s.ppy.sh/a/-1" alt="default avatar" />
-                </div>
-            </div>
-            log in with osu!
-        </button>
-    {/if}
-</login>
+                log in with osu!
+            </button>
+        {/if}
+    </login>
+{/if}
 
 <style>
 </style>
