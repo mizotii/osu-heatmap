@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
+    import Content from "../components/Content.svelte";
 
     export let id;
     export let ruleset;
@@ -11,6 +12,8 @@
     let userRuleset;
     let userHeatmapData;
     let userHeatmapMax;
+
+    let loaded = false;
 
     async function fetchProfile() {
         if (id) {
@@ -33,19 +36,26 @@
     onMount(async () => {
         await fetchProfile();
         username = user.username;
+        setTimeout(() => {
+            loaded = true;
+        }, 1000);
     })
 </script>
 
-<profile>
-    <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
-    <div class='username'>{username}</div>
-    <div class='rulesets'>
-        <RulesetMenu id={id}/>
-    </div>
-    <div class='heatmap'>
-        <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
-    </div>
-</profile>
+<Content>
+    {#if loaded}
+        <profile>
+            <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
+            <div class='username'>{username}</div>
+            <div class='rulesets'>
+                <RulesetMenu id={id}/>
+            </div>
+            <div class='heatmap'>
+                <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
+            </div>
+        </profile>
+    {/if}
+</Content>
 
 <style>
     profile {
