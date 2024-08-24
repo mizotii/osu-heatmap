@@ -4,9 +4,7 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [
-    require("daisyui")
-  ],
+  plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
     themes: [
       {
@@ -18,9 +16,9 @@ module.exports = {
           "accent": "#ffc0d3",
           "accent-content": "#fff",
           "neutral-content": "#fff",
-          "base-100": "#333333",
-          "base-200": "#222222",
-          "base-300": "#111111",
+          "base-100": "#121212",
+          "base-200": "#121212",
+          "base-300": "#121212",
           "base-content": "#fff",
         },
       },

@@ -9,6 +9,7 @@
 	// components
 	import UserCounter from './components/UserCounter.svelte';
 	import Banner from './components/Banner.svelte';
+	import Footer from './components/Footer.svelte';
 
 	export let url = '';
 
@@ -36,6 +37,7 @@
 	<div class='usercounter'>
 		<UserCounter />
 	</div>
+	<Footer />
 </main>
 
 <style>

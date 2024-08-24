@@ -16,6 +16,7 @@
     "@rollup/plugin-replace": "^5.0.5",
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
+    "@tailwindcss/typography": "^0.5.14",
     "@tsconfig/svelte": "^3.0.0",
     "daisyui": "^4.10.5",
     "rollup": "^3.29.4",
@@ -40,6 +41,6 @@
     "sirv-cli": "^2.0.0",
     "svelte-heatmap": "^1.0.2",
     "tsconfig": "^7.0.0",
-    "watch": "^1.0.2"
+    "watch": "^0.13.0"
   }
 }
