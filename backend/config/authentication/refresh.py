@@ -15,6 +15,7 @@ def refresh_token(app, user):
             'scope': 'public identify',
         }
         r = requests.post(url=url, headers=headers, data=payload).json()
+        print(f'refresh: {r}')
         if not 'error' in r:
             setattr(user, 'access_token', r['access_token'])
             setattr(user, 'expires_at', timedelta(seconds = r['expires_in']) + datetime.now())
