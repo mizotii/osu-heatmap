@@ -119,7 +119,9 @@ def fetch_profile(id, ruleset=None):
     
     user = rd.read_user(id)
     if user.__dict__['expires_at'] < datetime.now():
+        print(user.__dict__['expires_at'])
         rf.refresh_token(app, user)
+        print(user.__dict__['expires_at'])
         user = rd.read_user(id)
 
     up.update_user_statistics(app, user)
