@@ -1,7 +1,5 @@
 [![wakatime](https://wakatime.com/badge/github/mizotii/osu-heatmap.svg)](https://wakatime.com/badge/github/mizotii/osu-heatmap)
 
-Svelte frontend, Flask backend, Tailwind CSS with daisyUI components
+client: npm run install && npm run build && npm run dev
 
-working on: deployment!
-
-this is my first ever web project -- meaning it probably won't be open source once deployed (it's not great!)
+backend: python server.py
