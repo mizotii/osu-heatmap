@@ -78,13 +78,12 @@
     <login>
         {#if isAuthenticated}
             <div class="dropdown">
-                <div tabindex="0" role="button" class="btn m-1 btn-outline btn-primary min-w-16 w-64">
+                <div tabindex="0" role="button" class="btn btn-lg btn-circle m-1 btn-outline btn-primary h-8">
                     <div class="avatar">
-                        <div class="w-8 ring-primary ring-offset-2 ring-offset-base-100 rounded-full">
+                        <div class="w-12 ring-primary ring-offset-2 ring-offset-base-100 rounded-full">
                             <img src="{avatar_url}" alt="{username}'s avatar" />
                         </div>
                     </div>
-                    {username}
                 </div>
                 <ul tabindex="0" class="menu dropdown-content bg-base-300 rounded-box z-[1] w-52 p-2 shadow">
                     <li>
@@ -96,13 +95,12 @@
                 </ul>
             </div>
         {:else}
-            <button class="btn m-1 btn-outline btn-primary min-w-16 w-64" on:click={authRedirect}>
+            <button class="btn btn-lg m-1 btn-circle btn-outline outline-4 btn-primary" on:click={authRedirect}>
                 <div class="avatar">
-                    <div class="w-8 ring-white ring-offset-2 ring-offset-base-100 rounded-full">
+                    <div class="w-12 ring-white ring-offset-2 ring-offset-base-100 rounded-full">
                         <img src="https://s.ppy.sh/a/-1" alt="default avatar" />
                     </div>
                 </div>
-                log in with osu!
             </button>
         {/if}
     </login>

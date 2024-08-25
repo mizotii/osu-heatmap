@@ -5,7 +5,7 @@
 </script>
 
 <banner>
-    <div class="navbar bg-base-300">
+    <div class="navbar shadow-lg bg-base-300">
         <div class="flex-1">
             <Link to='/'>
                 <img src='/static/logo.png' alt='osu-heatmap logo' width='64' height='64'>
