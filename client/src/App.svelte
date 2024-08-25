@@ -1,5 +1,5 @@
 <script>
-	import { Route, Router, Link } from 'svelte-routing';
+	import { Route, Router } from 'svelte-routing';
 	import { onMount } from 'svelte';
 
 	// pages
@@ -7,7 +7,6 @@
 	import Profile from './pages/Profile.svelte';
 
 	// components
-	import UserCounter from './components/UserCounter.svelte';
 	import Banner from './components/Banner.svelte';
 	import Footer from './components/Footer.svelte';
 
@@ -34,9 +33,6 @@
 </Router>
 
 <main>
-	<div class='usercounter'>
-		<UserCounter />
-	</div>
 	<Footer />
 </main>
 
@@ -52,11 +48,5 @@
 		main {
 			max-width: none;
 		}
-	}
-
-	.usercounter {
-        position: absolute;
-        bottom: 2.5%;
-        right: 2.5%;
 	}
 </style>
