@@ -84,7 +84,6 @@ class User(UserMixin, Class):
     country_code = db.Column(db.String(dc.constraints['short']))
     cover_url = db.Column(db.String(dc.constraints['long']))
     is_deleted = db.Column(db.Boolean)
-    is_restricted = db.Column(db.Boolean)
     last_updated = db.Column(db.DateTime)
     playmode = db.Column(db.String(dc.constraints['short']))
     registration_date = db.Column(db.DateTime)
