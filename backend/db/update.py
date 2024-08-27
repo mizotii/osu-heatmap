@@ -179,7 +179,6 @@ def update_user(app, access, id):
     with app.app_context():
         old_user = rd.read_user(id)
         new_user = ft.fetch_user(access)
-        print(new_user, flush=True)
         setattr(old_user, 'avatar_url', new_user['avatar_url'])
         setattr(old_user, 'country_code', new_user['country_code'])
         setattr(old_user, 'cover_url', new_user['cover']['url'])
