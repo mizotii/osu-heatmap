@@ -204,7 +204,6 @@ def update_user(app, id):
         setattr(old_user, 'country_code', new_user['country_code'])
         setattr(old_user, 'cover_url', new_user['cover']['url'])
         setattr(old_user, 'is_deleted', new_user['is_deleted'])
-        setattr(old_user, 'is_restricted', new_user['is_restricted'])
         setattr(old_user, 'last_updated', datetime.now())
         setattr(old_user, 'playmode', new_user['playmode'])
         db.session.commit()
