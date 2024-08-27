@@ -8,7 +8,6 @@ from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler
 from config.authentication import authorization as au
 from config.authentication import callback as cb
-from config.authentication import refresh as rf
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
@@ -118,11 +117,6 @@ def fetch_profile(id, ruleset=None):
         ruleset = rd.read_user(id).__dict__['playmode']
     
     user = rd.read_user(id)
-    if user.__dict__['expires_at'] < datetime.now():
-        print(user.__dict__['expires_at'])
-        rf.refresh_token(app, user)
-        print(user.__dict__['expires_at'])
-        user = rd.read_user(id)
 
     up.update_user_statistics(app, user)
 
@@ -158,10 +152,7 @@ rulesets = [
 
 def auto_update():
     users = rd.all_users(app)
-    for user in users:
-        if user.__dict__['expires_at'] < datetime.now():
-            print('refresh triggered', flush=True)
-            rf.refresh_token(app, user)            
+    for user in users:        
         up.update_user_statistics(app, user)
 
 logging.basicConfig(level=logging.INFO)
