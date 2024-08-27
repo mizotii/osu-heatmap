@@ -40,7 +40,6 @@ def store_user(token, user):
         country_code=user['country_code'],
         cover_url=user['cover']['url'],
         is_deleted=user['is_deleted'],
-        is_restricted=user['is_restricted'],
         last_updated=datetime.now(),
         playmode=user['playmode'],
         registration_date=datetime.now(),
