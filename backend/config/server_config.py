@@ -37,7 +37,7 @@ endpoints = {
     'v2': 'https://osu.ppy.sh/api/v2',
 
     # osu api endpoints
-    'user': '/me',
+    'self': '/me',
 
     # rulesets
     'osu': '/me/osu',

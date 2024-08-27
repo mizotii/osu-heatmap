@@ -1,18 +1,29 @@
 from config.server_config import endpoints, headers
+from db import read as rd
 from urllib.parse import urlencode, urljoin
 import requests
 
-# get User data
-def fetch_user(access, ruleset=None):
+# get own data
+def fetch_self(access, ruleset=None):
     auth = 'Bearer {}'
     headers['Authorization'] = auth.format(access)
     if ruleset:
         r = requests.get(endpoints['v2'] + endpoints[ruleset], headers=headers)
     else:
-        r = requests.get(endpoints['v2'] + endpoints['user'], headers=headers)
+        r = requests.get(endpoints['v2'] + endpoints['self'], headers=headers)
     return r.json()
 
-def fetch_scores(access, id, ruleset):
+# get user data
+def fetch_user(id, ruleset):
+    access = rd.read_client_credentials().__dict__['access_token']
+    auth = 'Bearer {}'
+    headers['Authorization'] = auth.format(access)
+    endpoint = f'/users/{id}/{ruleset}'
+    r = requests.get(endpoints['v2'] + endpoint, headers=headers)
+    return r.json()
+
+def fetch_scores(id, ruleset):
+    access = rd.read_client_credentials().__dict__['access_token']
     auth = 'Bearer {}'
     headers['Authorization'] = auth.format(access)
     endpoint = f'/users/{id}/scores/recent'

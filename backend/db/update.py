@@ -1,17 +1,32 @@
 """for writing to the database"""
 
 from datetime import date, datetime, timedelta
-from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics, Score, Beatmap, BeatmapSet
+from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics, Score, Beatmap, BeatmapSet, ClientCredentialsKey
 from config.osu_api import fetch as ft
 from config import server_config as sc
+from sqlalchemy import delete
 import dateutil.parser
 import db.read as rd
-from config.authentication import refresh as rf
+import requests
 
 user_ruleset_attributes = [
     'last_updated',
     'username',
 ]
+
+def refresh_client_credentials():
+    key = ClientCredentialsKey.query.first()
+    if key:
+        db.session.execute(delete(ClientCredentialsKey))
+    url = sc.endpoints['token']
+    payload = {
+        'client_id': sc.credentials['client_id'],
+        'client_secret': sc.credentials['client_secret'],
+        'grant_type': 'client_credentials',
+        'scope': 'public',
+    }
+    r = requests.post(url=url, headers=sc.headers, data=payload).json()
+    store_client_key(r)
 
 def store_user(token, user):
     db.session.add(User(
@@ -38,13 +53,13 @@ def store_user_ruleset(data, ruleset, id):
         id=id,
         last_updated=datetime.now(),
         username=data['username'],
-        play_count=data['statistics_rulesets'][ruleset]['play_count'],
-        play_time=data['statistics_rulesets'][ruleset]['play_time'],
-        ranked_score=data['statistics_rulesets'][ruleset]['ranked_score'],
+        play_count=data['statistics']['play_count'],
+        play_time=data['statistics']['play_time'],
+        ranked_score=data['statistics']['ranked_score'],
         streak_current=0,
         streak_longest=0,
-        total_hits=data['statistics_rulesets'][ruleset]['total_hits'],
-        total_score=data['statistics_rulesets'][ruleset]['total_score'],
+        total_hits=data['statistics']['total_hits'],
+        total_score=data['statistics']['total_score'],
     ))
     db.session.commit()
 
@@ -61,9 +76,9 @@ def store_user_daily(ruleset, id):
     ))
     db.session.commit()
 
-def store_scores(app, access, id, ruleset):
+def store_scores(app, id, ruleset):
     with app.app_context():
-        scores = ft.fetch_scores(access, id, ruleset)
+        scores = ft.fetch_scores(id, ruleset)
         for score in scores:
             beatmap = score['beatmap']
             beatmapset = score['beatmapset']
@@ -128,18 +143,26 @@ def store_score(score):
     ))
     db.session.commit()
 
+def store_client_key(token):
+    db.session.add(ClientCredentialsKey(
+        access_token=token['access_token'],
+        expires_at=timedelta(seconds=token['expires_in'])+datetime.now(),
+        token_type=token['token_type'],
+    ))
+    db.session.commit()
+
 def total_notes(score):
     return sum((score['statistics'][key] or 0) for key in score['statistics'] if key != 'count_miss')
 
 def update_user_statistics(app, user):
     with app.app_context():
-        updated_statistics = ft.fetch_user(user.__dict__['access_token'])
         id = user.__dict__['id']
 
         setattr(user, 'last_updated', datetime.now())
         db.session.commit()
 
         for ruleset in sc.rulesets:
+            updated_statistics = ft.fetch_user(id, ruleset)
             old_ruleset = rd.read_ruleset(id, ruleset)
 
             if not old_ruleset:
@@ -153,11 +176,11 @@ def update_user_statistics(app, user):
                 if not old_cell:
                     store_user_daily(ruleset, id)
                 else:
-                    setattr(old_cell, 'play_time', (updated_statistics['statistics_rulesets'][ruleset]['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))                    
-                    setattr(old_cell, 'play_count', (updated_statistics['statistics_rulesets'][ruleset]['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))                    
-                    setattr(old_cell, 'total_hits', (updated_statistics['statistics_rulesets'][ruleset]['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))                    
-                    setattr(old_cell, 'ranked_score', (updated_statistics['statistics_rulesets'][ruleset]['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                
-                    setattr(old_cell, 'total_score', (updated_statistics['statistics_rulesets'][ruleset]['total_score'] - old_ruleset.__dict__['total_score']) + getattr(old_cell, 'total_score'))
+                    setattr(old_cell, 'play_time', (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))                    
+                    setattr(old_cell, 'play_count', (updated_statistics['statistics']['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))                    
+                    setattr(old_cell, 'total_hits', (updated_statistics['statistics']['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))                    
+                    setattr(old_cell, 'ranked_score', (updated_statistics['statistics']['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                
+                    setattr(old_cell, 'total_score', (updated_statistics['statistics']['total_score'] - old_ruleset.__dict__['total_score']) + getattr(old_cell, 'total_score'))
                     db.session.commit()
                     
 
@@ -167,11 +190,11 @@ def update_user_statistics(app, user):
 
                 setattr(old_ruleset, 'last_updated', datetime.now())
                 setattr(old_ruleset, 'username', updated_statistics['username'])
-                setattr(old_ruleset, 'play_count', updated_statistics['statistics_rulesets'][ruleset]['play_count'])
-                setattr(old_ruleset, 'play_time', updated_statistics['statistics_rulesets'][ruleset]['play_time'])
-                setattr(old_ruleset, 'ranked_score', updated_statistics['statistics_rulesets'][ruleset]['ranked_score'])
-                setattr(old_ruleset, 'total_hits', updated_statistics['statistics_rulesets'][ruleset]['total_hits'])
-                setattr(old_ruleset, 'total_score', updated_statistics['statistics_rulesets'][ruleset]['total_score'])
+                setattr(old_ruleset, 'play_count', updated_statistics['statistics']['play_count'])
+                setattr(old_ruleset, 'play_time', updated_statistics['statistics']['play_time'])
+                setattr(old_ruleset, 'ranked_score', updated_statistics['statistics']['ranked_score'])
+                setattr(old_ruleset, 'total_hits', updated_statistics['statistics']['total_hits'])
+                setattr(old_ruleset, 'total_score', updated_statistics['statistics']['total_score'])
                 db.session.commit()
 
 def update_user(token, user):

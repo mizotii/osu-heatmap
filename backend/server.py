@@ -1,14 +1,15 @@
 """backend"""
 import pydash as _
+import requests
 import secrets
 from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler
 from config.authentication import authorization as au
 from config.authentication import callback as cb
-from config.authentication import refresh as rf
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
+from db.models import ClientCredentialsKey
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
@@ -62,25 +63,21 @@ def callback():
     access = token['access_token']
 
     # search for user, if they don't exist, store them
-    fetched_user = ft.fetch_user(access)
+    fetched_user = ft.fetch_self(access)
     id = fetched_user['id']
     user = rd.read_user(id)
     
     if not user:
         up.store_user(token, fetched_user)
-        user = rd.read_user(id)
-    
-    # if they do exist, since we've already gotten their access token,
-    # we can't refresh their old one
     else:
         up.update_user(token, user)
-        user = rd.read_user(id)
+    
+    user = rd.read_user(id)
 
-    # todo: initialize the rest of their data
     up.update_user_statistics(app, user)
 
     for ruleset in rulesets:
-        up.store_scores(app, access, id, ruleset)
+        up.store_scores(app, id, ruleset)
 
     # log them in
     login_user(user)
@@ -99,8 +96,6 @@ def search():
 def profile_default(id):
     user = rd.read_user(id)
     access = user.__dict__['access_token']
-    if user.__dict__['expires_at'] < datetime.now():
-        access = rf.refresh_token(app, user)
 
     up.update_user_statistics(app, user)
 
@@ -113,8 +108,6 @@ def profile_default(id):
 def profile_ruleset(id, ruleset):
     user = rd.read_user(id)
     access = user.__dict__['access_token']
-    if user.__dict__['expires_at'] < datetime.now():
-        access = rf.refresh_token(app, user)
     
     if ruleset == 'catch':
         ruleset = 'fruits'
@@ -153,26 +146,25 @@ def get_user_count():
     count = rd.read_user_count()
     return jsonify({ 'count': count })
 
-def refresh_tokens():
-    users = rd.all_users(app)
-    for user in users:
-        if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(app, user)
-
 rulesets = [
     'osu', 'taiko', 'fruits', 'mania',
 ]
 
-def midnight_update():
+def auto_update():
     users = rd.all_users(app)
     for user in users:
-        if user.__dict__['expires_at'] < datetime.now():
-            rf.refresh_token(app, user)
         up.update_user_statistics(app, user)
 
+def auto_refresh_client_key():
+    with app.app_context():
+        up.refresh_client_credentials()
+
+with app.app_context():
+    up.refresh_client_credentials()
+
 if __name__ == '__main__':
-    scheduler.add_job(midnight_update, 'cron', hour='*/12')
-    scheduler.add_job(refresh_tokens, 'cron', hour='*/12')
+    scheduler.add_job(auto_update, 'interval', seconds=15)
+    scheduler.add_job(auto_refresh_client_key, 'interval', seconds=5)
     scheduler.start()
     scheduler.print_jobs()
     app.run(debug=True)

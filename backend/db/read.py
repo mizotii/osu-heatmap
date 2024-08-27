@@ -1,6 +1,6 @@
 """for reading from the database"""
 from config.server_config import daily_statistics
-from db.models import db, User, UserDailyStatistics, Score, Beatmap, BeatmapSet
+from db.models import db, ClientCredentialsKey, User, UserDailyStatistics, Score, Beatmap, BeatmapSet
 from config import server_config as sc
 from datetime import timedelta
 from sqlalchemy import and_, between, desc, func
@@ -44,6 +44,9 @@ def read_score(id):
 
 def read_user_count():
     return db.session.query(func.count(User.id)).scalar()
+
+def read_client_credentials():
+    return ClientCredentialsKey.query.first()
 
 def all_scores_on_day(id, ruleset, timestamp):
     scores = db.session.query(Score, Beatmap, BeatmapSet).\
