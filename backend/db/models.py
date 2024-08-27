@@ -17,6 +17,13 @@ class Class(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
+class ClientCredentialsKey(Class):
+    __tablename__ = 'client_key'
+
+    access_token = db.Column(db.String(dc.constraints['max_token_length']))
+    expires_at = db.Column(db.DateTime)
+    token_type = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
+    
 # for each ruleset of every user
 class UserRuleset(db.Model):
     __abstract__ = True

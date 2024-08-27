@@ -1,6 +1,7 @@
 """backend"""
 import logging
 import pydash as _
+import requests
 import redis
 import secrets
 import sys
@@ -11,6 +12,7 @@ from config.authentication import callback as cb
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
+from db.models import ClientCredentialsKey
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
@@ -77,22 +79,21 @@ def callback():
     access = token['access_token']
 
     # search for user, if they don't exist, store them
-    fetched_user = ft.fetch_user(access)
+    fetched_user = ft.fetch_self(access)
     id = fetched_user['id']
     user = rd.read_user(id)
     
     if not user:
         up.store_user(token, fetched_user)
-        user = rd.read_user(id)
-    
-    # if they do exist, since we've already gotten their access token,
-    # we can't refresh their old one
     else:
-        up.update_user_token(token, user)
-        user = rd.read_user(id)
+        up.update_user(token, user)
 
-    # todo: initialize the rest of their data
+    user = rd.read_user(id)
+
     up.update_user_statistics(app, user)
+
+    for ruleset in rulesets:
+        up.store_scores(app, id, ruleset)
 
     # log them in
     login_user(user, remember=True)
@@ -152,8 +153,15 @@ rulesets = [
 
 def auto_update():
     users = rd.all_users(app)
-    for user in users:        
+    for user in users:
         up.update_user_statistics(app, user)
+
+def auto_refresh_client_key():
+    with app.app_context():
+        up.refresh_client_credentials()
+
+with app.app_context():
+    up.refresh_client_credentials()
 
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(auto_update, 'interval', seconds=15)
