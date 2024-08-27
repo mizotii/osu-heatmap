@@ -159,6 +159,9 @@ def auto_refresh_client_key():
     with app.app_context():
         up.refresh_client_credentials()
 
+with app.app_context():
+    up.refresh_client_credentials()
+
 logging.basicConfig(level=logging.INFO)
 scheduler.add_job(auto_update, 'interval', seconds=15)
 scheduler.add_job(auto_refresh_client_key, 'interval', hours=6)
