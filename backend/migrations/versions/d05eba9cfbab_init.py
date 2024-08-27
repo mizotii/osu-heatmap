@@ -1,8 +1,8 @@
 """init
 
-Revision ID: dd6546f67e90
+Revision ID: d05eba9cfbab
 Revises: 
-Create Date: 2024-08-02 19:34:19.030951
+Create Date: 2024-08-26 21:21:17.828166
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'dd6546f67e90'
+revision = 'd05eba9cfbab'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -30,6 +30,12 @@ def upgrade():
     sa.Column('title', sa.String(length=255), nullable=True),
     sa.Column('title_unicode', sa.String(length=255), nullable=True),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('client_key',
+    sa.Column('access_token', sa.String(length=2000), nullable=True),
+    sa.Column('expires_at', sa.DateTime(), nullable=True),
+    sa.Column('token_type', sa.String(length=16), nullable=False),
+    sa.PrimaryKeyConstraint('token_type')
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -67,7 +73,7 @@ def upgrade():
     sa.Column('start_date', sa.DateTime(), nullable=False),
     sa.Column('play_time', sa.Integer(), nullable=True),
     sa.Column('play_count', sa.Integer(), nullable=True),
-    sa.Column('note_count', sa.Integer(), nullable=True),
+    sa.Column('total_hits', sa.Integer(), nullable=True),
     sa.Column('ranked_score', sa.Integer(), nullable=True),
     sa.Column('total_score', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
@@ -79,11 +85,11 @@ def upgrade():
     sa.Column('username', sa.String(length=18), nullable=True),
     sa.Column('play_count', sa.Integer(), nullable=True),
     sa.Column('play_time', sa.Integer(), nullable=True),
+    sa.Column('total_hits', sa.BigInteger(), nullable=True),
     sa.Column('ranked_score', sa.BigInteger(), nullable=True),
+    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.Column('streak_current', sa.Integer(), nullable=True),
     sa.Column('streak_longest', sa.Integer(), nullable=True),
-    sa.Column('total_hits', sa.BigInteger(), nullable=True),
-    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -93,11 +99,11 @@ def upgrade():
     sa.Column('username', sa.String(length=18), nullable=True),
     sa.Column('play_count', sa.Integer(), nullable=True),
     sa.Column('play_time', sa.Integer(), nullable=True),
+    sa.Column('total_hits', sa.BigInteger(), nullable=True),
     sa.Column('ranked_score', sa.BigInteger(), nullable=True),
+    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.Column('streak_current', sa.Integer(), nullable=True),
     sa.Column('streak_longest', sa.Integer(), nullable=True),
-    sa.Column('total_hits', sa.BigInteger(), nullable=True),
-    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -107,11 +113,11 @@ def upgrade():
     sa.Column('username', sa.String(length=18), nullable=True),
     sa.Column('play_count', sa.Integer(), nullable=True),
     sa.Column('play_time', sa.Integer(), nullable=True),
+    sa.Column('total_hits', sa.BigInteger(), nullable=True),
     sa.Column('ranked_score', sa.BigInteger(), nullable=True),
+    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.Column('streak_current', sa.Integer(), nullable=True),
     sa.Column('streak_longest', sa.Integer(), nullable=True),
-    sa.Column('total_hits', sa.BigInteger(), nullable=True),
-    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -121,11 +127,11 @@ def upgrade():
     sa.Column('username', sa.String(length=18), nullable=True),
     sa.Column('play_count', sa.Integer(), nullable=True),
     sa.Column('play_time', sa.Integer(), nullable=True),
+    sa.Column('total_hits', sa.BigInteger(), nullable=True),
     sa.Column('ranked_score', sa.BigInteger(), nullable=True),
+    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.Column('streak_current', sa.Integer(), nullable=True),
     sa.Column('streak_longest', sa.Integer(), nullable=True),
-    sa.Column('total_hits', sa.BigInteger(), nullable=True),
-    sa.Column('total_score', sa.BigInteger(), nullable=True),
     sa.ForeignKeyConstraint(['id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -170,5 +176,6 @@ def downgrade():
 
     op.drop_table('beatmaps')
     op.drop_table('users')
+    op.drop_table('client_key')
     op.drop_table('beatmapsets')
     # ### end Alembic commands ###
