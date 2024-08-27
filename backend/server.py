@@ -9,7 +9,6 @@ from config.authentication import callback as cb
 from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
-from db.models import ClientCredentialsKey
 from config import server_config as sc
 from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
@@ -158,7 +157,7 @@ def auto_update():
 def auto_refresh_client_key():
     with app.app_context():
         up.refresh_client_credentials()
-
+        
 with app.app_context():
     up.refresh_client_credentials()
 
