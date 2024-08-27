@@ -32,8 +32,6 @@ def store_user(token, user):
     db.session.add(User(
         id=user['id'],
         access_token=token['access_token'],
-        expires_at=timedelta(seconds=token['expires_in'])+datetime.now(),
-        refresh_token=token['refresh_token'],
         token_type=token['token_type'],
 
         avatar_url=user['avatar_url'],
@@ -198,7 +196,5 @@ def update_user_statistics(app, user):
 
 def update_user(token, user):
     setattr(user, 'access_token', token['access_token'])
-    setattr(user, 'expires_at', timedelta(seconds = token['expires_in']) + datetime.now())
-    setattr(user, 'refresh_token', token['refresh_token'])
     setattr(user, 'token_type', token['token_type'])
     db.session.commit()

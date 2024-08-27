@@ -76,8 +76,6 @@ class User(UserMixin, Class):
 
     id = db.Column(db.Integer, primary_key=True)
     access_token = db.Column(db.String(dc.constraints['max_token_length']))
-    expires_at = db.Column(db.DateTime)
-    refresh_token = db.Column(db.String(dc.constraints['max_token_length']))
     token_type = db.Column(db.String(dc.constraints['veryshort']))
 
     avatar_url = db.Column(db.String(dc.constraints['long']))
