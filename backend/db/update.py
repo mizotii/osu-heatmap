@@ -157,6 +157,8 @@ def update_user_statistics(app, user):
     with app.app_context():
         id = user.__dict__['id']
 
+        update_user(app, id)
+
         for ruleset in sc.rulesets:
             updated_statistics = ft.fetch_user(id, ruleset)
             old_ruleset = rd.read_ruleset(id, ruleset)
@@ -195,10 +197,10 @@ def update_user_statistics(app, user):
                 db.session.commit()
                 db.session.refresh(old_ruleset)
 
-def update_user(app, access, id):
+def update_user(app, id):
     with app.app_context():
         old_user = rd.read_user(id)
-        new_user = ft.fetch_user(access)
+        new_user = ft.fetch_user(id)
         setattr(old_user, 'avatar_url', new_user['avatar_url'])
         setattr(old_user, 'country_code', new_user['country_code'])
         setattr(old_user, 'cover_url', new_user['cover']['url'])
