@@ -94,12 +94,11 @@ def search():
 @app.route("/profile/<int:id>")
 def profile_default(id):
     user = rd.read_user(id)
-    access = user.__dict__['access_token']
 
     up.update_user_statistics(app, user)
 
     for ruleset in rulesets:
-        up.store_scores(app, access, id, ruleset)
+        up.store_scores(app, id, ruleset)
         
     return send_from_directory('../client/public', 'index.html')
 
