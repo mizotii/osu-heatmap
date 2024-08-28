@@ -62,12 +62,10 @@
             loaded = true;
         }, 1000);
     });
-
-
 </script>
 
-{#if loaded}
-    <login>
+<login>
+    {#if loaded}
         {#if isAuthenticated}
             <div class="dropdown">
                 <div tabindex="0" role="button" class="btn btn-lg btn-circle m-1 btn-outline btn-primary h-8">
@@ -95,8 +93,10 @@
                 </div>
             </button>
         {/if}
-    </login>
-{/if}
+    {:else}
+        <span class="loading loading-ring loading-lg"></span>
+    {/if}
+</login>
 
 <style>
 </style>
