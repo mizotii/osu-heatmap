@@ -39,7 +39,7 @@ def read_beatmapset(id):
     return beatmapset
 
 def read_score(user_id, timestamp):
-    score = Score.query.filter_by(id=user_id, timestamp=timestamp).first()
+    score = Score.query.filter_by(user_id=user_id, timestamp=timestamp).first()
     return score
 
 def read_user_count():
