@@ -1,5 +1,14 @@
 <script>
     import Content from "../components/Content.svelte";
+    import { onMount } from "svelte";
+
+    let loaded;
+
+    onMount(() => {
+        setTimeout(() => {
+            loaded = true;
+        }, 1000);
+    })
 </script>
 
 <Content>

@@ -70,14 +70,12 @@
             loaded = true;
         }, 1000);
     });
-
-
 </script>
 
-{#if loaded}
-    <login>
+<login>
+    {#if loaded}
         {#if isAuthenticated}
-            <div class="dropdown">
+            <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-lg btn-circle m-1 btn-outline btn-primary h-8">
                     <div class="avatar">
                         <div class="w-12 ring-primary ring-offset-2 ring-offset-base-100 rounded-full">
@@ -103,8 +101,16 @@
                 </div>
             </button>
         {/if}
-    </login>
-{/if}
+    {:else}
+        <button class="btn btn-lg m-1 btn-circle btn-outline outline-4 btn-primary" disabled='disabled'>
+            <div class="avatar">
+                <div class="w-12 ring-white ring-offset-2 ring-offset-base-100 rounded-full">
+                    <span class="loading loading-spinner loading-lg"></span>
+                </div>
+            </div>
+        </button>
+    {/if}
+</login>
 
 <style>
 </style>

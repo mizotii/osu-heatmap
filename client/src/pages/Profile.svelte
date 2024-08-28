@@ -15,7 +15,7 @@
     let userHeatmapData;
     let userHeatmapMax;
 
-    let loaded = false;
+    let loaded;
 
     async function fetchProfile() {
         if (id) {
@@ -48,9 +48,9 @@
 </script>
 
 <Content>
-    {#if loaded}
-        <profile>
-            <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar"/>
+    <profile>
+        {#if loaded}
+            <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" width='200' height='200'/>
             <div class='username'>{username}</div>
             <div class='rulesets'>
                 <RulesetMenu id={id}/>
@@ -58,8 +58,25 @@
             <div class='heatmap'>
                 <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
             </div>
-        </profile>
-    {/if}
+        {:else}
+            <img src="https://s.ppy.sh/a/-1" alt="default avatar" width='200' height='200'/>
+            <div class='username'>
+                loading...
+            </div>
+            <div class='rulesets'>
+                <span class="loading loading-spinner loading-md"></span>
+                <span class="loading loading-spinner loading-md"></span>
+                <span class="loading loading-spinner loading-md"></span>
+                <span class="loading loading-spinner loading-md"></span>
+            </div>
+            <select class="select select-bordered w-32 max-w-xs" disabled>
+                <option>loading...</option>
+            </select>
+            <div class='heatmap'>
+                <div class="skeleton h-32 w-full"></div>
+            </div>
+        {/if}
+    </profile>
 </Content>
 
 <style>
