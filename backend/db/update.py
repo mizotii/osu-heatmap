@@ -76,6 +76,7 @@ def store_user_daily(ruleset, id):
 def store_scores(app, id, ruleset):
     with app.app_context():
         scores = ft.fetch_scores(id, ruleset)
+        print(scores)
         for score in scores:
             beatmap = score['beatmap']
             beatmapset = score['beatmapset']
