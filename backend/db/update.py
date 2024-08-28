@@ -82,7 +82,7 @@ def store_scores(app, id, ruleset):
             beatmapset = score['beatmapset']
             map = rd.read_beatmap(beatmap['id'], beatmapset['id'])
             set = rd.read_beatmapset(beatmapset['id'])
-            potential_score = rd.read_score(score['user_id'], score['ended_at'])
+            potential_score = rd.read_score(score['user_id'], score['created_at'])
             if not set:
                 store_beatmapset(beatmapset)
             if not map:
