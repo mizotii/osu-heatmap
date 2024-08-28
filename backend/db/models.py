@@ -126,9 +126,8 @@ class Beatmap(Class):
 class Score(Class):
     __tablename__ = 'scores'
 
-    id = db.Column(db.String(dc.constraints['veryshort']), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, primary_key=True)
     ruleset = db.Column(db.String(dc.constraints['veryshort']))
     count_300 = db.Column(db.Integer)
     count_100 = db.Column(db.Integer)
@@ -146,3 +145,7 @@ class Score(Class):
     passed = db.Column(db.Boolean)
     rank = db.Column(db.String(dc.constraints['veryshort']))
     score = db.Column(db.Integer)
+
+    __table_args__ = (
+        PrimaryKeyConstraint('user_id', 'timestamp', name='scores_pk'),
+    )
