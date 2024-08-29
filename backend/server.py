@@ -85,7 +85,7 @@ def callback():
     if not user:
         up.store_user(token, fetched_user)
     else:
-        up.update_user(token, user)
+        up.update_user_token(token, user)
 
     user = rd.read_user(id)
 
