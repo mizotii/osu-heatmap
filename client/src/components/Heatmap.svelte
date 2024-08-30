@@ -47,9 +47,6 @@
                         range: ['#ffefef', '#ff547e'],
                         domain: [0, heatmapMax[$dataType]],
                     },
-                    opacity: {
-                        baseColor: '#333333',
-                    },
                 },
                 domain: {
                     type: 'year',
