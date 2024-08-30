@@ -46,18 +46,21 @@
                         type: 'linear',
                         range: ['#ffefef', '#ff547e'],
                         domain: [0, heatmapMax[$dataType]],
-                    }
+                    },
+                    opacity: {
+                        baseColor: '#333333',
+                    },
                 },
                 domain: {
                     type: 'year',
-                    label: { text: null },
+                    label: { position: 'bottom' },
                 },
                 subDomain: { 
                     type: 'day',
                     radius: 2
                 },
                 itemSelector: '#osu-heatmap',
-                theme: 'dark',
+                theme: 'light',
             },
             [
                 [
@@ -103,13 +106,23 @@
 </script>
 
 <heatmap>
-    <select class="select select-bordered w-32 max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
+    <select class="select select-bordered select-primary w-32 max-w-xs" bind:value={$dataType} on:change={reloadHeatmap($dataType)}>
         <option value='total_hits'>total hits</option>
         <option value='play_count'>play count</option>
         <option value='play_time'>play time</option>
         <option value='ranked_score'>ranked score</option>
         <option value='total_score'>total score</option>
     </select>
+    <div id='cal-nav'>
+        <button class="btn btn-xs btn-outline btn-primary" on:click={e => {
+            e.preventDefault();
+            cal.previous();
+        }}>◄</button>
+        <button class="btn btn-xs btn-outline btn-primary" on:click={e => {
+            e.preventDefault();
+            cal.next();
+        }}>►</button>
+    </div>
     <div id="osu-heatmap"></div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
@@ -118,11 +131,11 @@
 
 <style>
     #osu-heatmap {
-        border: solid 1px white;
+        border: solid 10px #111111;
     }
 
-    #osu-heatmap > .ch-subdomain-bg {
-        fill: #333333;
+    #cal-nav {
+        margin-bottom: 12px;
     }
 
     heatmap {
@@ -133,6 +146,6 @@
     }
 
     select {
-        margin: 12px;
+        margin-bottom: 12px;
     }
 </style>
