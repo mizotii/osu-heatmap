@@ -111,7 +111,7 @@ def profile_ruleset(id, ruleset):
         ruleset = 'fruits'
 
     up.update_user_statistics(app, user)
-    up.store_scores(app, access, id, ruleset)
+    up.store_scores(app, id, ruleset)
 
     return send_from_directory('../client/public', 'index.html')
 
@@ -156,6 +156,9 @@ def auto_update():
 def auto_refresh_client_key():
     with app.app_context():
         up.refresh_client_credentials()
+
+with app.app_context():
+    up.refresh_client_credentials()
 
 if __name__ == '__main__':
     scheduler.add_job(auto_update, 'interval', seconds=15)
