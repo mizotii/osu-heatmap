@@ -57,7 +57,7 @@
                     radius: 2
                 },
                 itemSelector: '#osu-heatmap',
-                theme: 'light',
+                theme: 'dark',
             },
             [
                 [
