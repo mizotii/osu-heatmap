@@ -5,13 +5,30 @@
     import Mania from "./rulesets/Mania.svelte";
 
     export let id;
+    export let ruleset;
 </script>
 
 <rulesets>
-    <Osu id={id}/>
-    <Taiko id={id}/>
-    <Catch id={id}/>
-    <Mania id={id}/>
+    {#if ruleset == 'osu'}
+        <Osu id={id} selected={true}/>
+    {:else}
+        <Osu id={id} selected={false}/>
+    {/if}
+    {#if ruleset == 'taiko'}
+        <Taiko id={id} selected={true}/>
+    {:else}
+        <Taiko id={id} selected={false}/>
+    {/if}
+    {#if ruleset == 'fruits'}
+        <Catch id={id} selected={true}/>
+    {:else}
+        <Catch id={id} selected={false}/>
+    {/if}
+    {#if ruleset == 'mania'}
+        <Mania id={id} selected={true}/>
+    {:else}
+        <Mania id={id} selected={false}/>
+    {/if}
 </rulesets>
 
 <style>

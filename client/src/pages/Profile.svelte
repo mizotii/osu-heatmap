@@ -15,14 +15,15 @@
 
     let loaded;
 
+    let isDefault = false;
+
     async function fetchProfile() {
         if (id) {
             let endpoint = `/api/profile/${id}`;
             if (ruleset) {
                 endpoint += `/${ruleset}`;
             } else {
-                // TODO: get default playmode
-                ruleset = 'osu';
+                isDefault = true;
             }
             const response = await fetch(endpoint);
             const data = await response.json();
@@ -30,6 +31,9 @@
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
             userHeatmapMax = data.user_heatmap_max;
+            if (isDefault) {
+                ruleset = user.playmode;
+            }
         }
     }
 
@@ -48,7 +52,7 @@
             <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" width='200' height='200'/>
             <div class='username'>{username}</div>
             <div class='rulesets'>
-                <RulesetMenu id={id}/>
+                <RulesetMenu id={id} ruleset={ruleset}/>
             </div>
             <div class='heatmap'>
                 <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
