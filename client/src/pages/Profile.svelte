@@ -92,7 +92,6 @@
     }
 
     .heatmap {
-        width: 634px;
         margin: 12px;
     }
 
