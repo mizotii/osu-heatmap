@@ -3,6 +3,8 @@
 
     let users;
 
+    let loaded = false;
+
     async function getUserCount() {
         const response = await fetch(`/api/get_user_count`);
         const data = await response.json();
@@ -15,11 +17,14 @@
 
     onMount(async () => {
         await getUserCount();
+        loaded = true;
     })
 </script>
 
 <usercounter>
-    {users}
+    {#if loaded}
+        {users}
+    {/if}
 </usercounter>
 
 <style>
