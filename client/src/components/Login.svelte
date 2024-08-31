@@ -9,7 +9,7 @@
     let username;
     let avatar_url;
 
-    let loaded;
+    let loaded = false;
 
     async function fetchUser() {
         const response = await fetch(`${apiEndpoint}/api/get_user_data`, {

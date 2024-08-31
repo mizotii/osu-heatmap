@@ -15,7 +15,7 @@
     let userHeatmapData;
     let userHeatmapMax;
 
-    let loaded;
+    let loaded = false;
 
     let isDefault = false;
 
@@ -44,9 +44,8 @@
 
     onMount(async () => {
         await fetchProfile();
-        setTimeout(() => {
-            loaded = true;
-        }, 1000);
+        username = user.username;
+        loaded = true;
     })
 </script>
 
