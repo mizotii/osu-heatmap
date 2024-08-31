@@ -8,7 +8,10 @@
     <div class="navbar shadow-lg bg-base-300">
         <div class="flex-1">
             <Link to='/'>
-                <img src='../public/static/logo.png' alt='osu-heatmap logo' width='296.5' height='64'>
+                <picture>
+                    <source media='(max-width: 640px)' srcset='../public/static/logo.png' width='64' height='64'>
+                </picture>
+                <img src='../public/static/logo-desktop.png' alt='osu-heatmap logo' width='296.5' height='64'>
             </Link>
         </div>
         <div class="flex-none gap-2">
