@@ -9,8 +9,8 @@
         <div class="flex-1">
             <Link to='/'>
                 <picture>
-                    <source media="(min-width: 640px)" srcset="/static/logo.png" width="64" height="64">
-                    <img src='/static/logo-desktop.png' alt='osu-heatmap logo' width='296.5' height='64'>
+                    <source media="(min-width: 640px)" srcset="/static/logo.png" width="64" height="64" />
+                    <img src='/static/logo-desktop.png' alt='osu-heatmap logo' width='296.5' height='64' />
                 </picture>
             </Link>
         </div>
