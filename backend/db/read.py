@@ -17,6 +17,7 @@ def read_cell(id, ruleset, date):
     cell = UserDailyStatistics.query.filter_by(id=id, ruleset=ruleset, start_date=date).first()
     return cell
 
+# optimizable: query all statistics at once
 def read_max_statistic(id, ruleset):
     data = {}
     for statistic in daily_statistics:
@@ -47,6 +48,17 @@ def read_user_count():
 
 def read_client_credentials():
     return ClientCredentialsKey.query.first()
+
+# optimizable: query all statistics at once
+def read_summed_statistic(id, date, statistic):
+    sum = db.session.query(func.sum(daily_statistics[statistic])).\
+        filter(
+            and_(
+                UserDailyStatistics.id == id,
+                UserDailyStatistics.start_date == date,
+            )
+        ).scalar()
+    return sum
 
 def all_scores_on_day(id, ruleset, timestamp):
     scores = db.session.query(Score, Beatmap, BeatmapSet).\
