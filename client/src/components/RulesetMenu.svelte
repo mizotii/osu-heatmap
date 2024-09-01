@@ -1,4 +1,5 @@
 <script>
+    import Overall from "./rulesets/Overall.svelte";
     import Osu from "./rulesets/Osu.svelte";
     import Taiko from "./rulesets/Taiko.svelte";
     import Catch from "./rulesets/Catch.svelte";
@@ -9,6 +10,12 @@
 </script>
 
 <rulesets>
+    {#if ruleset == 'overall'}
+        <Overall id={id} selected={true}/>
+    {:else}
+        <Overall id={id} selected={false}/>
+    {/if}
+    ||
     {#if ruleset == 'osu'}
         <Osu id={id} selected={true}/>
     {:else}

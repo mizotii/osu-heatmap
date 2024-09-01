@@ -41,6 +41,7 @@
         await fetchProfile();
         username = user.username;
         loaded = true;
+        console.log(userHeatmapData);
     })
 </script>
 

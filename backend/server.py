@@ -111,7 +111,9 @@ def profile_ruleset(id, ruleset):
         ruleset = 'fruits'
 
     up.update_user_statistics(app, user)
-    up.store_scores(app, id, ruleset)
+
+    if ruleset != 'overall':
+        up.store_scores(app, id, ruleset)
 
     return send_from_directory('../client/public', 'index.html')
 
@@ -121,9 +123,11 @@ def fetch_profile(id, ruleset=None):
     # want profile to route to catch, same as osu!web
     if ruleset == 'catch':
         ruleset = 'fruits'
+    if ruleset == 'overall':
+        return jsonify(cr.create_profile(id, ruleset, True))
     if not ruleset:
         ruleset = rd.read_user(id).__dict__['playmode']
-    return jsonify(cr.create_profile(id, ruleset))
+    return jsonify(cr.create_profile(id, ruleset, False))
 
 @app.route("/api/scores/<int:id>/<string:ruleset>/<int:timestamp>")
 def fetch_scores(id, ruleset, timestamp):
