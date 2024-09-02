@@ -54,7 +54,7 @@ def create_score_list(id, ruleset, timestamp):
 
 def create_overall_data(user):
     id = user['id']
-    reg = user['registration_date'].replace(hour=0, minute=0, second=0)
+    reg = user['registration_date'].replace(hour=0, minute=0, second=0, microsecond=0)
 
     overall = []
     overall_max = {
