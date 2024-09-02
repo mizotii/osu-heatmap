@@ -230,7 +230,21 @@ def update_user_statistics(app, user):
                 db.session.commit()
                 db.session.refresh(user)
 
-def update_user(token, user):
+def update_user(app, id):
+    with app.app_context():
+        old_user = rd.read_user(id)
+        new_user = ft.fetch_user(id)
+        setattr(old_user, 'avatar_url', new_user['avatar_url'])
+        setattr(old_user, 'country_code', new_user['country_code'])
+        setattr(old_user, 'cover_url', new_user['cover']['url'])
+        setattr(old_user, 'is_deleted', new_user['is_deleted'])
+        setattr(old_user, 'last_updated', datetime.now())
+        setattr(old_user, 'playmode', new_user['playmode'])
+        db.session.commit()
+        db.session.refresh(old_user)
+
+def update_user_token(token, user):
     setattr(user, 'access_token', token['access_token'])
     setattr(user, 'token_type', token['token_type'])
     db.session.commit()
+    db.session.refresh(user)
