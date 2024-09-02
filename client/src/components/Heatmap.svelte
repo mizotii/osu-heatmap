@@ -6,6 +6,8 @@
     import Scores from "./scores/Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
+    const apiEndpoint = process.env.BACKEND_API;
+
     export let heatmapData;
     export let heatmapMax;
     export let id;
@@ -20,7 +22,9 @@
     });
 
     async function fetchScores(id, ruleset, timestamp) {
-        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`);
+        const response = await fetch(`${apiEndpoint}/api/scores/${id}/${ruleset}/${timestamp}`, {
+            credentials: 'include',
+        });
         const data = await response.json();
         scores = data;
     }
@@ -43,9 +47,6 @@
                         range: ['#ffefef', '#ff547e'],
                         domain: [0, heatmapMax[$dataType]],
                     },
-                    opacity: {
-                        baseColor: '#333333',
-                    },
                 },
                 domain: {
                     type: 'year',
@@ -59,7 +60,7 @@
                     gutter: 4,
                 },
                 itemSelector: '#osu-heatmap',
-                theme: 'light',
+                theme: 'dark',
             },
             [
                 [
@@ -122,7 +123,9 @@
             cal.next();
         }}>►</button>
     </div>
-    <div id="osu-heatmap" class='container container-xl m-4 mx-auto overflow-auto'></div>
+    <div class='container container-lg m-4 mx-auto overflow-x-scroll'>
+        <div id="osu-heatmap"></div>
+    </div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
