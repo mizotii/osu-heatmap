@@ -42,6 +42,9 @@ def store_user(token, user):
         playmode=user['playmode'],
         registration_date=datetime.now(),
         username=user['username'],
+
+        streak_current=0,
+        streak_longest=0,
     ))
     db.session.commit()
 
@@ -176,7 +179,7 @@ def update_user_statistics(app, user):
                 else:
                     play_time_diff = (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time'])
 
-                    if date.today() > old_ruleset['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+                    if datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) > old_ruleset.__dict__['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
                         if play_time_diff > 0:
                             new_streak = getattr(old_ruleset, 'streak_current') + 1
 
@@ -215,7 +218,7 @@ def update_user_statistics(app, user):
                 db.session.commit()
                 db.session.refresh(old_ruleset)
         
-        if date.today() > user['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+        if datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) > user.__dict__['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
             if was_active:
                 new_streak = getattr(user, 'streak_current') + 1
 
