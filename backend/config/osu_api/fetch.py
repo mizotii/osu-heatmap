@@ -14,11 +14,13 @@ def fetch_self(access, ruleset=None):
     return r.json()
 
 # get user data
-def fetch_user(id, ruleset):
+def fetch_user(id, ruleset=None):
     access = rd.read_client_credentials().__dict__['access_token']
     auth = 'Bearer {}'
     headers['Authorization'] = auth.format(access)
-    endpoint = f'/users/{id}/{ruleset}'
+    endpoint = f'/users/{id}'
+    if ruleset:
+        endpoint += f'/{ruleset}'
     r = requests.get(endpoints['v2'] + endpoint, headers=headers)
     return r.json()
 
