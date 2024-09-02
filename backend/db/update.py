@@ -154,12 +154,14 @@ def update_user_statistics(app, user):
     with app.app_context():
         id = user.__dict__['id']
 
-        setattr(user, 'last_updated', datetime.now())
-        db.session.commit()
+        update_user(app, id)
+
+        was_active = False
 
         for ruleset in sc.rulesets:
             updated_statistics = ft.fetch_user(id, ruleset)
             old_ruleset = rd.read_ruleset(id, ruleset)
+            store_scores(app, id, ruleset)
 
             if not old_ruleset:
                 store_user_ruleset(updated_statistics, ruleset, id)
@@ -172,14 +174,33 @@ def update_user_statistics(app, user):
                 if not old_cell:
                     store_user_daily(ruleset, id)
                 else:
-                    setattr(old_cell, 'play_time', (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))                    
+                    play_time_diff = (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time'])
+
+                    if date.today() > old_ruleset['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+                        if play_time_diff > 0:
+                            new_streak = getattr(old_ruleset, 'streak_current') + 1
+
+                            if new_streak > getattr(old_ruleset, 'streak_longest'):
+                                setattr(old_ruleset, 'streak_longest', new_streak)
+
+                            setattr(old_ruleset, 'streak_current', new_streak)
+                            db.session.commit()
+                            db.session.refresh(old_ruleset)
+
+                            was_active = True
+                        else:
+                            setattr(old_ruleset, 'streak_current', 0)
+                            db.session.commit()
+                            db.session.refresh(old_ruleset)
+
+                    setattr(old_cell, 'play_time', play_time_diff + getattr(old_cell, 'play_time'))                    
                     setattr(old_cell, 'play_count', (updated_statistics['statistics']['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))                    
                     setattr(old_cell, 'total_hits', (updated_statistics['statistics']['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))                    
                     setattr(old_cell, 'ranked_score', (updated_statistics['statistics']['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                
                     setattr(old_cell, 'total_score', (updated_statistics['statistics']['total_score'] - old_ruleset.__dict__['total_score']) + getattr(old_cell, 'total_score'))
                     db.session.commit()
+                    db.session.refresh(old_cell)
                     
-
                 # todo: update ruleset attributes for everything except streaks using collection above
                 
                 # ruleset
@@ -192,6 +213,22 @@ def update_user_statistics(app, user):
                 setattr(old_ruleset, 'total_hits', updated_statistics['statistics']['total_hits'])
                 setattr(old_ruleset, 'total_score', updated_statistics['statistics']['total_score'])
                 db.session.commit()
+                db.session.refresh(old_ruleset)
+        
+        if date.today() > user['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+            if was_active:
+                new_streak = getattr(user, 'streak_current') + 1
+
+                if new_streak > getattr(user, 'streak_longest'):
+                    setattr(user, 'streak_longest', new_streak)
+
+                setattr(user, 'streak_current', new_streak)
+                db.session.commit()
+                db.session.refresh(user)
+            else:
+                setattr(user, 'streak_current', 0)
+                db.session.commit()
+                db.session.refresh(user)
 
 def update_user(token, user):
     setattr(user, 'access_token', token['access_token'])
