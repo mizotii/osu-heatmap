@@ -87,6 +87,9 @@ class User(UserMixin, Class):
     registration_date = db.Column(db.DateTime)
     username = db.Column(db.String(dc.constraints['max_user_length']))
 
+    streak_current = db.Column(db.Integer)
+    streak_longest = db.Column(db.Integer)
+
     def get_id(self):
         return str(self.id)
 
