@@ -2,7 +2,13 @@
 module.exports = {
   content: ['./**/*.{svelte,js,ts}'],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        '3xs': '150px',
+        '2xs': '320px',
+        'xs': '480px',
+      }
+    },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {

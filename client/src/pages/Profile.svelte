@@ -51,19 +51,29 @@
 </script>
 
 <Content>
-    <profile>
+    <profile class='w-full'>
         {#if loaded}
-            <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" width='200' height='200'/>
-            <div class='username'>{username}</div>
+            <div class='box-border border-b container flex flex-row items-center'>
+                <div class='basis-1/3 p-4'>
+                    <div class="avatar">
+                        <div class="w-9/10 rounded flex-initial justify-center align-center">
+                          <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" />
+                        </div>
+                    </div>
+                    <div class='flex-initial pb-4' id='username'>{username}</div>
+                </div>
+                <div class='basis-2/3'>
+                </div>
+            </div>
             <div class='rulesets'>
                 <RulesetMenu id={id} ruleset={ruleset}/>
             </div>
-            <div class='heatmap'>
+            <div id='heatmap'>
                 <Heatmap heatmapData={userHeatmapData} heatmapMax={userHeatmapMax} id={id} ruleset={ruleset}/>
             </div>
         {:else}
             <img src="https://s.ppy.sh/a/-1" alt="default avatar" width='200' height='200'/>
-            <div class='username'>
+            <div id='username'>
                 loading...
             </div>
             <div class='rulesets'>
@@ -90,12 +100,7 @@
         text-align: center;
     }
 
-    img {
-        height: 200px;
-        border: solid 1px white;
-    }
-
-    .heatmap {
+    #heatmap {
         margin: 12px;
     }
 
@@ -103,9 +108,9 @@
         margin: 12px;
     }
 
-    .username {
+    #username {
         color: white;
         font-weight: 500;
-        font-size: 48px;
+        font-size: 32px;
     }
 </style>
