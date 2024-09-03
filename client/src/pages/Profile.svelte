@@ -48,14 +48,14 @@
 <Content>
     <profile class='w-full'>
         {#if loaded}
-            <div id='user-info' class='box-border container flex flex-row items-center'>
+            <div class='box-border border-b container flex flex-row items-center'>
                 <div class='basis-1/3 border-r border-white'>
                     <div class="avatar">
                         <div class="w-32 rounded flex-initial justify-center align-center">
                           <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" />
                         </div>
                     </div>
-                    <div class='flex-initial' id='username'>{username}</div>
+                    <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
                 <div class='basis-2/3'>
                 </div>
