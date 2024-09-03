@@ -57,7 +57,7 @@
                     radius: 2,
                     width: 15,
                     height: 15,
-                    gutter: 4,
+                    gutter: 3,
                 },
                 itemSelector: '#osu-heatmap',
                 theme: 'dark',
@@ -123,19 +123,13 @@
             cal.next();
         }}>►</button>
     </div>
-    <div class='container container-lg m-4 mx-auto overflow-x-scroll'>
-        <div id="osu-heatmap"></div>
-    </div>
+    <div class='box-border container container-lg w-4/5 max-w-5/6 h-auto m-4 overflow-x-auto border border-[#111111]' id="osu-heatmap"></div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
 </heatmap>
 
 <style>
-    #osu-heatmap {
-        border: solid 10px #111111;
-    }
-
     #cal-nav {
         margin-bottom: 12px;
     }
@@ -143,7 +137,6 @@
     heatmap {
         display: flex;
         flex-direction: column;
-        justify-content: center;
         align-items: center;
     }
 

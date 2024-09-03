@@ -48,7 +48,7 @@
 <Content>
     <profile>
         {#if loaded}
-            <div id='user-info' class='flex flex-col container container-lg m-4 mx-auto overflow-auto'>
+            <div id='user-info' class='box-border container container-lg w-3/4 max-w-3/4 h-auto m-4 overflow-x-auto'>
                 <img class='flex-initial' src="https://a.ppy.sh/{id}" alt="{id}'s avatar" width='200' height='200'/>
                 <div class='flex-initial' id='username'>{username}</div>
             </div>

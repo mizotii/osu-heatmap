@@ -15,7 +15,6 @@
     {:else}
         <Overall id={id} selected={false}/>
     {/if}
-    ||
     {#if ruleset == 'osu'}
         <Osu id={id} selected={true}/>
     {:else}
