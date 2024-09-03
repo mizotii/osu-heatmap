@@ -49,9 +49,9 @@
     <profile class='w-full'>
         {#if loaded}
             <div class='box-border border-b container flex flex-row items-center'>
-                <div class='basis-1/3 border-r border-white'>
+                <div class='basis-1/3 p-4'>
                     <div class="avatar">
-                        <div class="w-32 rounded flex-initial justify-center align-center">
+                        <div class="w-9/10 rounded flex-initial justify-center align-center">
                           <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" />
                         </div>
                     </div>
