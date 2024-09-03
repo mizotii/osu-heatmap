@@ -46,11 +46,19 @@
 </script>
 
 <Content>
-    <profile>
+    <profile class='w-full'>
         {#if loaded}
-            <div id='user-info' class='box-border container container-lg w-3/4 max-w-3/4 h-auto m-4 overflow-x-auto'>
-                <img class='flex-initial' src="https://a.ppy.sh/{id}" alt="{id}'s avatar" width='200' height='200'/>
-                <div class='flex-initial' id='username'>{username}</div>
+            <div id='user-info' class='box-border container flex flex-row items-center'>
+                <div class='basis-1/3 border-r border-white'>
+                    <div class="avatar">
+                        <div class="w-32 rounded flex-initial justify-center align-center">
+                          <img src="https://a.ppy.sh/{id}" alt="{id}'s avatar" />
+                        </div>
+                    </div>
+                    <div class='flex-initial' id='username'>{username}</div>
+                </div>
+                <div class='basis-2/3'>
+                </div>
             </div>
             <div class='rulesets'>
                 <RulesetMenu id={id} ruleset={ruleset}/>
@@ -87,11 +95,6 @@
         text-align: center;
     }
 
-    img {
-        height: 200px;
-        border: solid 1px white;
-    }
-
     #heatmap {
         margin: 12px;
     }
@@ -103,6 +106,6 @@
     #username {
         color: white;
         font-weight: 500;
-        font-size: 48px;
+        font-size: 32px;
     }
 </style>
