@@ -227,11 +227,9 @@ def update_user_statistics(app, user):
 
                 setattr(user, 'streak_current', new_streak)
                 db.session.commit()
-                db.session.refresh(user)
             else:
                 setattr(user, 'streak_current', 0)
                 db.session.commit()
-                db.session.refresh(user)
 
 def update_user(app, id):
     with app.app_context():
