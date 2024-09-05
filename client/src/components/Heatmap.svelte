@@ -55,8 +55,8 @@
                 subDomain: { 
                     type: 'day',
                     radius: 2,
-                    width: 15,
-                    height: 15,
+                    width: 12,
+                    height: 12,
                     gutter: 3,
                 },
                 itemSelector: '#osu-heatmap',
@@ -125,7 +125,7 @@
             cal.next();
         }}>►</button>
     </div>
-    <div class='box-border container w-[90%] h-auto overflow-x-auto border border-[#111111]' id="osu-heatmap"></div>
+    <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap"></div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
