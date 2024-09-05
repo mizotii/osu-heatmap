@@ -95,7 +95,9 @@
                     },
                 ],
             ]
-        );
+        ).then(() => {
+            console.log(cal.dimensions());
+        });
     }
 
     onMount (async () => {
@@ -123,7 +125,7 @@
             cal.next();
         }}>►</button>
     </div>
-    <div class='box-border container container-lg w-4/5 max-w-5/6 h-auto m-4 overflow-x-auto border border-[#111111]' id="osu-heatmap"></div>
+    <div class='box-border container w-[90%] h-auto overflow-x-auto border border-[#111111]' id="osu-heatmap"></div>
     <div class='scores'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
