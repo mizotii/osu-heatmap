@@ -76,9 +76,10 @@ def create_overall_data(user):
         }
         for statistic in sc.daily_statistics:
             sum = rd.read_summed_statistic(id, start_date, statistic)
-            if sum > overall_max[statistic]:
-                overall_max[statistic] = sum
-            overall_cell[statistic] = int(sum)
+            if sum:
+                if sum > overall_max[statistic]:
+                    overall_max[statistic] = sum
+                overall_cell[statistic] = int(sum)
         overall.append(overall_cell)
 
     return overall, overall_max
