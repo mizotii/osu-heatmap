@@ -105,7 +105,6 @@ def profile_default(id):
 @app.route("/profile/<int:id>/<string:ruleset>")
 def profile_ruleset(id, ruleset):
     user = rd.read_user(id)
-    access = user.__dict__['access_token']
     
     if ruleset == 'catch':
         ruleset = 'fruits'
