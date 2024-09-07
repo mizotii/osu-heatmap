@@ -179,10 +179,18 @@ def update_user_statistics(app, user):
                     play_time_diff = (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time'])
 
                     if datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) > old_ruleset.__dict__['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+                        print('new ruleset streak day triggered', flush=True)
+
                         if play_time_diff > 0:
+                            print('new ruleset streak triggered', flush=True)
+
                             new_streak = getattr(old_ruleset, 'streak_current') + 1
+                            
+                            print('ruleset streak: ' + new_streak, flush=True)
 
                             if new_streak > getattr(old_ruleset, 'streak_longest'):
+                                print('longest ruleset streak triggered', flush=True)
+
                                 setattr(old_ruleset, 'streak_longest', new_streak)
 
                             setattr(old_ruleset, 'streak_current', new_streak)
@@ -191,6 +199,8 @@ def update_user_statistics(app, user):
 
                             was_active = True
                         else:
+                            print('no new ruleset streak triggered', flush=True)
+
                             setattr(old_ruleset, 'streak_current', 0)
                             db.session.commit()
                             db.session.refresh(old_ruleset)
@@ -218,15 +228,25 @@ def update_user_statistics(app, user):
                 db.session.refresh(old_ruleset)
         
         if datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) > user.__dict__['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
+            print('new streak day triggered', flush=True)
+
             if was_active:
+                print('new streak triggered', flush=True)
+
                 new_streak = getattr(user, 'streak_current') + 1
+                
+                print('new streak: ' + new_streak, flush=True)
 
                 if new_streak > getattr(user, 'streak_longest'):
+                    print('longest streak triggered', flush=True)
+
                     setattr(user, 'streak_longest', new_streak)
 
                 setattr(user, 'streak_current', new_streak)
                 db.session.commit()
             else:
+                print('no new streak triggered', flush=True)
+
                 setattr(user, 'streak_current', 0)
                 db.session.commit()
 
