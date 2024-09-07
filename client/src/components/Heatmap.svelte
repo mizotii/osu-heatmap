@@ -3,8 +3,10 @@
     import { onMount, afterUpdate } from "svelte";
     import { heatmapCells } from "../../config.json";
     import CalHeatmap from "cal-heatmap";
-    import Scores from "./scores/Scores.svelte";
+    import Scores from "./Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
+
+    import SampleScore from "./SampleScore.svelte";
 
     export let heatmapData;
     export let heatmapMax;
@@ -122,7 +124,9 @@
             cal.next();
         }}>►</button>
     </div>
-    <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap"></div>
+    <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap">
+    </div>
+    <SampleScore />
     <div class='container'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>

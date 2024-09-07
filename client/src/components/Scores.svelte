@@ -1,5 +1,7 @@
 <script>
-    import { scoreNotes } from "../../../config.json";
+    import { scoreNotes } from "../../config.json";
+
+    import SampleScore from "./SampleScore.svelte";
 
     export let isHidden;
     export let scores;
@@ -54,7 +56,7 @@
         text-align: center;
         margin: 12px;
         height: 50px;
-        width: 900px;
+        width: 90%;
         overflow: hidden;
         border: solid 1px white;
         color: white;
