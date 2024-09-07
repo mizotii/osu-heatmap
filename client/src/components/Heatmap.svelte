@@ -60,6 +60,7 @@
                     gutter: 3,
                 },
                 itemSelector: '#osu-heatmap',
+                theme: 'dark',
             },
             [
                 [
