@@ -125,7 +125,7 @@
         }}>►</button>
     </div>
     <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap"></div>
-    <div class='scores'>
+    <div class='container'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
 </heatmap>
