@@ -3,7 +3,7 @@
     import { onMount, afterUpdate } from "svelte";
     import { heatmapCells } from "../../config.json";
     import CalHeatmap from "cal-heatmap";
-    import Scores from "./scores/Scores.svelte";
+    import Scores from "./Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
     const apiEndpoint = process.env.BACKEND_API;
