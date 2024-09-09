@@ -9,26 +9,27 @@
 <scores>
     {#if !isHidden}
         {#each scores as score}
-            <div class='score'>
-                <div class='img'>
-                    <img src='{score.beatmapset_data.slimcover_2x}' alt='score background'>
-                </div>
-                <div class='top'>
-                    <div class='title'>{score.beatmapset_data.title} [{score.beatmap_data.version}]</div>
-                    <div class='total-score'>score: +{score.score_data.score}</div>
-                </div>
-                <div class='bottom'>
-                    <div class='left'>
-                        <div class='artist'>{score.beatmapset_data.artist}</div>
-                        <div class='timestamp'>{score.score_data.timestamp}</div>
-                        <div class='mods'>{score.score_data.mods}</div>
+            <div class="container-lg flex-row container relative m-4 flex h-16 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
+                <div class='flex flex-col basis-4/5 backdrop-blur-sm backdrop-brightness-50'>
+                    <div class='basis-3/5 font-bold text-lg'>
+                        {score.beatmapset_data.title} [{score.beatmap_data.version}]
+                    </div>
+                    <div class='basis-2/5 text-[10px]'>
+                        <span>{score.beatmapset_data.artist}</span>
+                        <span class='text-gray-300'>
+                            {score.score_data.timestamp}
+                            {score.score_data.mods}
+                        </span>
                     </div>
                 </div>
-                <div class='notes'>
-                    <div class='total-notes'>
+                <div class='basis-1/5 backdrop-blur-sm backdrop-brightness-50 text-center'>
+                    <div class='font-bold'>
+                        score: +{score.score_data.score}
+                    </div>
+                    <div class='text-[16px] font-bold'>
                         {scoreNotes[ruleset]}: +{score.score_data.notes}
                     </div>
-                    <div class='note-splits'>
+                    <div class='text-[8px]'>
                         {#if ruleset == 'mania'}
                             {score.score_data.count_geki} / 
                         {/if}
