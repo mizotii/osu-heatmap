@@ -177,26 +177,7 @@ def update_user_statistics(app, user):
                 if not old_cell:
                     store_user_daily(ruleset, id)
                 else:
-                    play_time_diff = (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time'])
-
-                    if datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) > old_ruleset.__dict__['last_updated'].replace(hour=0, minute=0, second=0, microsecond=0):
-                        if play_time_diff > 0:
-                            new_streak = getattr(old_ruleset, 'streak_current') + 1
-
-                            if new_streak > getattr(old_ruleset, 'streak_longest'):
-                                setattr(old_ruleset, 'streak_longest', new_streak)
-
-                            setattr(old_ruleset, 'streak_current', new_streak)
-                            db.session.commit()
-                            db.session.refresh(old_ruleset)
-
-                            was_active = True
-                        else:
-                            setattr(old_ruleset, 'streak_current', 0)
-                            db.session.commit()
-                            db.session.refresh(old_ruleset)
-
-                    setattr(old_cell, 'play_time', play_time_diff + getattr(old_cell, 'play_time'))                    
+                    setattr(old_cell, 'play_time', (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time']) + getattr(old_cell, 'play_time'))                    
                     setattr(old_cell, 'play_count', (updated_statistics['statistics']['play_count'] - old_ruleset.__dict__['play_count']) + getattr(old_cell, 'play_count'))                    
                     setattr(old_cell, 'total_hits', (updated_statistics['statistics']['total_hits'] - old_ruleset.__dict__['total_hits']) + getattr(old_cell, 'total_hits'))                    
                     setattr(old_cell, 'ranked_score', (updated_statistics['statistics']['ranked_score'] - old_ruleset.__dict__['ranked_score']) + getattr(old_cell, 'ranked_score'))                

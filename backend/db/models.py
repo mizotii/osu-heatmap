@@ -89,6 +89,7 @@ class User(UserMixin, Class):
 
     streak_current = db.Column(db.Integer)
     streak_longest = db.Column(db.Integer)
+    streak_counted = db.Column(db.Boolean)
 
     def get_id(self):
         return str(self.id)

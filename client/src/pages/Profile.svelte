@@ -59,6 +59,7 @@
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
                 <div class='basis-2/3'>
+                    
                 </div>
             </div>
             <div class='rulesets'>

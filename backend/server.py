@@ -164,6 +164,9 @@ with app.app_context():
     up.refresh_client_credentials()
 
 if __name__ == '__main__':
+    # midnight
+    scheduler.add_job(auto_update, 'interval', days=1, start_date=datetime.now().replace(hour=0, minute=0, second=0, microsecond=0))
+    # interval
     scheduler.add_job(auto_update, 'interval', minutes=15)
     scheduler.add_job(auto_refresh_client_key, 'interval', minutes=15)
     scheduler.start()
