@@ -1,5 +1,5 @@
 <script>
-    import { scoreNotes } from "../../../config.json";
+    import { scoreNotes } from "../../config.json";
 
     export let isHidden;
     export let scores;
