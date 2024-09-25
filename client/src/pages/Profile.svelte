@@ -3,6 +3,7 @@
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
     import Content from "../components/Content.svelte";
+    import Scores from "../components/Scores.svelte";
 
     const apiEndpoint = process.env.BACKEND_API;
 
@@ -63,6 +64,7 @@
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
                 <div class='basis-2/3'>
+                    
                 </div>
             </div>
             <div class='rulesets'>

@@ -6,7 +6,7 @@
     import Scores from "./Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
-    const apiEndpoint = process.env.BACKEND_API;
+    import SampleScore from "./SampleScore.svelte";
 
     export let heatmapData;
     export let heatmapMax;
@@ -22,7 +22,7 @@
     });
 
     async function fetchScores(id, ruleset, timestamp) {
-        const response = await fetch(`${apiEndpoint}/api/scores/${id}/${ruleset}/${timestamp}`, {
+        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`, {
             credentials: 'include',
         });
         const data = await response.json();
@@ -124,7 +124,9 @@
             cal.next();
         }}>►</button>
     </div>
-    <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap"></div>
+    <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap">
+    </div>
+    <SampleScore />
     <div class='container'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
