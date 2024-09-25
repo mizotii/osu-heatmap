@@ -40,8 +40,10 @@ class UserRuleset(db.Model):
     total_hits = db.Column(db.BigInteger)
     ranked_score = db.Column(db.BigInteger)
     total_score = db.Column(db.BigInteger)
+
     streak_current = db.Column(db.Integer)
     streak_longest = db.Column(db.Integer)
+    streak_counted = db.Column(db.Boolean)
 
 class UserDailyStatistics(Class):
     __tablename__ = 'daily_statistics'
