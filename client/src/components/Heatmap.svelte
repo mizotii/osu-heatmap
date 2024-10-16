@@ -27,6 +27,7 @@
         });
         const data = await response.json();
         scores = data;
+        console.log(scores);
     }
 
     async function reloadHeatmap() {
@@ -94,9 +95,7 @@
                     },
                 ],
             ]
-        ).then(() => {
-            console.log(cal.dimensions());
-        });
+        )
     }
 
     onMount (async () => {
