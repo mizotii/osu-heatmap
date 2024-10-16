@@ -126,7 +126,6 @@
     </div>
     <div class='box-border container h-auto overflow-x-auto border-8 border-[#111111]' id="osu-heatmap">
     </div>
-    <SampleScore />
     <div class='container'>
         <Scores isHidden={false} scores={scores} ruleset={ruleset}/>
     </div>
