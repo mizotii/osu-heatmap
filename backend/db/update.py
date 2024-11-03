@@ -1,7 +1,7 @@
 """for writing to the database"""
 
 from datetime import date, datetime, timedelta
-from db.models import db, User, UserOsu, UserTaiko, UserCatch, UserMania, UserDailyStatistics, Score, Beatmap, BeatmapSet, ClientCredentialsKey
+from db.models import db, User, UserDailyStatistics, Score, Beatmap, BeatmapSet, ClientCredentialsKey
 from config.osu_api import fetch as ft
 from config import server_config as sc
 from sqlalchemy import delete

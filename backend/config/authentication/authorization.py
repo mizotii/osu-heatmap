@@ -1,5 +1,3 @@
-import os
-import secrets
 from config.server_config import credentials, endpoints
 from urllib.parse import urlencode, urljoin
 
