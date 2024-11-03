@@ -9,9 +9,7 @@
     let loaded = false;
 
     onMount(async() => {
-        const users = await fetch(`/api/search`, {
-            credentials: 'include',
-        }).then((res) => res.json())
+        const users = await fetch(`/api/search`).then((res) => res.json())
         createUsersIndex(users)
         search = 'ready'
         setTimeout(() => {

@@ -9,9 +9,7 @@
     let loaded = false;
 
     async function fetchUser() {
-        const response = await fetch(`/api/get_user_data`, {
-            credentials: 'include',
-        });
+        const response = await fetch(`/api/get_user_data`);
         const data = await response.json();
         id = data['id'];
         username = data['username'];
@@ -20,9 +18,7 @@
 
     async function authRedirect() {
         try {
-            const response = await fetch(`/authorize`, {
-                credentials: 'include',
-            });
+            const response = await fetch(`/authorize`);
             const data = await response.json();
             window.location.href = data;
         } catch (error) {
@@ -35,9 +31,7 @@
     }
 
     const logout = () => {
-        fetch(`/api/logout`, {
-            credentials: 'include',
-        })
+        fetch(`/api/logout`)
         .then(() => {
             isAuthenticated = false;
         })
@@ -47,9 +41,7 @@
     };
 
     onMount(() => {
-        fetch(`/api/get_session`, {
-            credentials: 'include',
-        })
+        fetch(`/api/get_session`)
         .then((response) => response.json())
         .then((data) => {
             console.log(data);

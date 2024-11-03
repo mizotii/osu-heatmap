@@ -6,9 +6,7 @@
     let loaded = false;
 
     async function getUserCount() {
-        const response = await fetch(`/api/get_user_count`, {
-            credentials: 'include',
-        });
+        const response = await fetch(`/api/get_user_count`);
         const data = await response.json();
         userCountString(data.count);
     }

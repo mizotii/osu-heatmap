@@ -25,9 +25,7 @@
             } else {
                 isDefault = true;
             }
-            const response = await fetch(endpoint, {
-                credentials: 'include',
-            });
+            const response = await fetch(endpoint);
             const data = await response.json();
             user = data.user;
             userRuleset = data.user_ruleset;

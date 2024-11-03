@@ -20,9 +20,7 @@
     });
 
     async function fetchScores(id, ruleset, timestamp) {
-        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`, {
-            credentials: 'include',
-        });
+        const response = await fetch(`/api/scores/${id}/${ruleset}/${timestamp}`);
         const data = await response.json();
         scores = data;
         console.log(scores);
