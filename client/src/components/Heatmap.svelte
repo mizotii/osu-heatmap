@@ -6,8 +6,6 @@
     import Scores from "./Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
-    import SampleScore from "./SampleScore.svelte";
-
     const apiEndpoint = process.env.BACKEND_API;
 
     export let heatmapData;

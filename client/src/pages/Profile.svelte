@@ -3,7 +3,6 @@
     import Heatmap from "../components/Heatmap.svelte";
     import RulesetMenu from "../components/RulesetMenu.svelte";
     import Content from "../components/Content.svelte";
-    import Scores from "../components/Scores.svelte";
 
     const apiEndpoint = process.env.BACKEND_API;
 
