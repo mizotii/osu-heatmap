@@ -5,6 +5,8 @@
     import Content from "../components/Content.svelte";
     import Scores from "../components/Scores.svelte";
 
+    const apiEndpoint = process.env.BACKEND_API;
+
     export let id;
     export let ruleset;
 
@@ -20,7 +22,7 @@
 
     async function fetchProfile() {
         if (id) {
-            let endpoint = `/api/profile/${id}`;
+            let endpoint = `${apiEndpoint}/api/profile/${id}`;
             if (ruleset) {
                 endpoint += `/${ruleset}`;
             } else {

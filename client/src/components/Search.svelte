@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { createUsersIndex, searchUsersIndex } from "./search"
+    
+	const apiEndpoint = process.env.BACKEND_API;
 
     let search: 'loading' | 'ready' = 'loading'
     let searchTerm = ''
@@ -9,7 +11,7 @@
     let loaded = false;
 
     onMount(async() => {
-        const users = await fetch(`/api/search`, {
+        const users = await fetch(`${apiEndpoint}/api/search`, {
             credentials: 'include',
         }).then((res) => res.json())
         createUsersIndex(users)

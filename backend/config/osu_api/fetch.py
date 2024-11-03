@@ -1,5 +1,6 @@
 from config.server_config import endpoints, headers
 from db import read as rd
+from urllib.parse import urlencode, urljoin
 import requests
 
 # get own data
