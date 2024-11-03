@@ -1,7 +1,5 @@
 """backend"""
 import logging
-import pydash as _
-import requests
 import redis
 import secrets
 import sys
@@ -13,7 +11,6 @@ from config.osu_api import fetch as ft
 from db import update as up
 from db import read as rd
 from config import server_config as sc
-from datetime import datetime
 from flask import Flask, jsonify, redirect, request, send_from_directory
 from flask_cors import CORS
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
