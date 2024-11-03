@@ -1,6 +1,5 @@
 """backend"""
 import logging
-import pydash as _
 import secrets
 from api import create as cr
 from apscheduler.schedulers.background import BackgroundScheduler

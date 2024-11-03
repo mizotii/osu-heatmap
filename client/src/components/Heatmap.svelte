@@ -6,8 +6,6 @@
     import Scores from "./Scores.svelte";
     import Tooltip from "cal-heatmap/plugins/Tooltip";
 
-    import SampleScore from "./SampleScore.svelte";
-
     export let heatmapData;
     export let heatmapMax;
     export let id;

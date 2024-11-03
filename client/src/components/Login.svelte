@@ -1,6 +1,5 @@
 <script>
     import { onMount } from "svelte";
-  import { construct_svelte_component } from "svelte/internal";
 
     $: isAuthenticated = false;
     let id;
