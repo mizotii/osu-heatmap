@@ -1,0 +1,25 @@
+{
+    "heatmapCells": {
+        "total_hits": {
+            "osu": " circles clicked on ",
+            "taiko": " drums hit on ",
+            "catch": " fruits caught on ",
+            "mania": " keys pressed on ",
+            "overall": " total hits on "
+        },
+        "play_count": " plays on ",
+        "play_time": {
+            "hours": "h",
+            "minutes": "m played on "
+        },
+        "ranked_score": " ranked score on ",
+        "total_score": " total score on "
+    },
+    "scoreNotes": {
+        "osu": " circles",
+        "taiko": " drums",
+        "catch": " fruits",
+        "mania": " keys",        
+        "overall": " total hits"
+    }
+}

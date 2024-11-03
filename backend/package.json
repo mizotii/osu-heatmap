@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "flask": "^0.2.10",
+    "jsonify": "^0.0.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "daisyui": "^4.10.2"
+  }
+}
