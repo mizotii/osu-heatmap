@@ -18,9 +18,7 @@ from db.models import init_db, db
 scheduler = BackgroundScheduler()
 session = Session()
 
-app = Flask(__name__,
-    static_folder='../client/public/',
-)
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = sc.database['db_uri']
 app.config['SECRET_KEY'] = sc.credentials['sessions_key']
 init_db(app)
@@ -35,7 +33,7 @@ def base():
 
 @app.route("/<path:any>/static/<path:path>")
 def icons(any, path):
-    return send_from_directory('../client/public/static', path)
+    return send_from_directory('../client/public', path)
 
 @login_manager.user_loader
 def load_user(id):
@@ -148,7 +146,6 @@ def auto_refresh_client_key():
 with app.app_context():
     up.refresh_client_credentials()
 
-logging.basicConfig(level=logging.INFO)
 scheduler.add_job(auto_update, 'interval', hours=2)
 scheduler.add_job(auto_refresh_client_key, 'interval', hours=6)
 scheduler.start()
