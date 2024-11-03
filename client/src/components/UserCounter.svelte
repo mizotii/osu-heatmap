@@ -1,14 +1,12 @@
 <script>
     import { onMount } from "svelte";
 
-    const apiEndpoint = process.env.BACKEND_API;
-
     let users;
 
     let loaded = false;
 
     async function getUserCount() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_count`, {
+        const response = await fetch(`/api/get_user_count`, {
             credentials: 'include',
         });
         const data = await response.json();

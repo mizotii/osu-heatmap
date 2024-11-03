@@ -1,11 +1,5 @@
-import dateutil.parser
 import os
-import pydash as _
-import requests
-from datetime import datetime, timedelta
-from db.models import db, Beatmap, BeatmapSet, Score, User, UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
-from sqlalchemy import and_, between, desc, exists
-from urllib.parse import urlencode, urljoin
+from db.models import UserCatch, UserDailyStatistics, UserMania, UserOsu, UserTaiko
 
 credentials = {
     'client_id': os.environ.get('CLIENT_ID'),
@@ -28,7 +22,7 @@ database = {
 endpoints = {
     # auth
     'oauth': 'https://osu.ppy.sh/oauth/authorize',
-    'callback': 'https://mizotii-api.xyz/callback',
+    'callback': 'http://localhost:5000/callback',
 
     # callback
     'token': 'https://osu.ppy.sh/oauth/token',
@@ -46,7 +40,7 @@ endpoints = {
     'mania': '/me/mania',
 
     # client
-    'frontend': 'https://osu-heatm.app',
+    'frontend': 'http://localhost:5000',
 }
 
 headers = {

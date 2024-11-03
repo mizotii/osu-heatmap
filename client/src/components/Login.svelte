@@ -2,8 +2,6 @@
     import { onMount } from "svelte";
   import { construct_svelte_component } from "svelte/internal";
 
-    const apiEndpoint = process.env.BACKEND_API;
-
     $: isAuthenticated = false;
     let id;
     let username;
@@ -12,7 +10,7 @@
     let loaded = false;
 
     async function fetchUser() {
-        const response = await fetch(`${apiEndpoint}/api/get_user_data`, {
+        const response = await fetch(`/api/get_user_data`, {
             credentials: 'include',
         });
         const data = await response.json();
@@ -23,7 +21,7 @@
 
     async function authRedirect() {
         try {
-            const response = await fetch(`${apiEndpoint}/authorize`, {
+            const response = await fetch(`/authorize`, {
                 credentials: 'include',
             });
             const data = await response.json();
@@ -38,7 +36,7 @@
     }
 
     const logout = () => {
-        fetch(`${apiEndpoint}/api/logout`, {
+        fetch(`/api/logout`, {
             credentials: 'include',
         })
         .then(() => {
@@ -50,7 +48,7 @@
     };
 
     onMount(() => {
-        fetch(`${apiEndpoint}/api/get_session`, {
+        fetch(`/api/get_session`, {
             credentials: 'include',
         })
         .then((response) => response.json())
