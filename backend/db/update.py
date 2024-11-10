@@ -192,7 +192,7 @@ def update_user_statistics(app, user):
 
                     # first check whether streak should be reset
                     yesterday_cell = rd.read_cell(id, ruleset, date.today() - timedelta(days=1))
-                    if yesterday_cell.streak_counted is False:
+                    if yesterday_cell and yesterday_cell.streak_counted is False:
                         setattr(old_ruleset, 'streak_current', 0)
                         db.session.commit()
                         db.session.refresh(old_cell)
