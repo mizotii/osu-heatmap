@@ -180,7 +180,13 @@ def update_user_statistics(app, user):
                 if not old_cell:
                     store_user_daily(ruleset, id)
                 else:
-                    play_time_diff = (updated_statistics['statistics']['play_time'] - old_ruleset.__dict__['play_time'])
+                    old_ruleset_dict = old_ruleset.__dict__
+
+                    play_time_diff = updated_statistics['statistics']['play_time'] - old_ruleset_dict['play_time']
+                    play_count_diff = updated_statistics['statistics']['play_count'] - old_ruleset_dict['play_count']
+                    total_hits_diff = updated_statistics['statistics']['total_hits'] - old_ruleset_dict['total_hits']
+                    ranked_score_diff = updated_statistics['statistics']['ranked_score'] - old_ruleset_dict['ranked_score']
+                    total_score_diff = updated_statistics['statistics']['total_score'] - old_ruleset_dict['total_score']
 
                     # ruleset: streaks
 
@@ -199,11 +205,7 @@ def update_user_statistics(app, user):
                         if getattr(old_ruleset, 'streak_current') > getattr(old_ruleset, 'streak_longest'):
                             setattr(old_ruleset, 'streak_longest', getattr(old_ruleset, 'streak_current'))
 
-                    # update all other attributes
-                    play_count_diff = updated_statistics['statistics']['play_count'] - old_ruleset.__dict__['play_count']
-                    total_hits_diff = updated_statistics['statistics']['total_hits'] - old_ruleset.__dict__['total_hits']
-                    ranked_score_diff = updated_statistics['statistics']['ranked_score'] - old_ruleset.__dict__['ranked_score']
-                    total_score_diff = updated_statistics['statistics']['total_score'] - old_ruleset.__dict__['total_score']
+                    # update all other attributes\
 
                     setattr(old_cell, 'play_time', play_time_diff + getattr(old_cell, 'play_time'))                    
                     setattr(old_cell, 'play_count', play_count_diff + getattr(old_cell, 'play_count'))                    
