@@ -61,8 +61,40 @@
                     </div>
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
-                <div class='basis-2/3'>
-                    
+                <div class='basis-2/3 p-4 divide-y'>
+                    <h class='font-extrabold text-xl'>since nov 9 2024</h>
+                    <dl class="gap-y-3">
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">play time</dt>
+                        <dd class="text-sm">2 hrs 22 min</dd>
+                      </div>
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">play count</dt>
+                        <dd class="text-sm">67</dd>
+                      </div>
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">total hits</dt>
+                        <dd class="text-sm">67446</dd>
+                      </div>
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">ranked score</dt>
+                        <dd class="text-sm">5748371</dd>
+                      </div>
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">total score</dt>
+                        <dd class="text-sm">23851849</dd>
+                      </div>
+                    </dl>
+                    <dl class="gap-y-3">
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">current streak</dt>
+                        <dd class="text-sm">1 day</dd>
+                      </div>
+                      <div class="py-1 grid grid-cols-2 gap-x-1">
+                        <dt class="text-sm">longest streak</dt>
+                        <dd class="text-sm">727 days</dd>
+                      </div>
+                    </dl>                    
                 </div>
             </div>
             <div class='rulesets'>
