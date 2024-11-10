@@ -25,7 +25,7 @@
     {:else}
         <Taiko id={id} selected={false}/>
     {/if}
-    {#if ruleset == 'fruits'}
+    {#if ruleset == 'catch'}
         <Catch id={id} selected={true}/>
     {:else}
         <Catch id={id} selected={false}/>
