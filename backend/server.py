@@ -101,7 +101,7 @@ def search():
     all_users_query = rd.all_users(app)
     users = []
     for user in all_users_query:
-        users.append(user.as_dict())
+        users.append(user.as_dict().pop('access_token'))
     return jsonify(users)
 
 @app.route("/api/profile/<int:id>/<string:ruleset>")
