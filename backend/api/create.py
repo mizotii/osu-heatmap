@@ -20,6 +20,7 @@ def create_profile(id, ruleset, isOverall):
                 'avatar_url': user['avatar_url'],
                 'country_code': user['country_code'],
                 'playmode': user['playmode'],
+                'registration_date': user['registration_date'],
                 'username': user['username'],
             },
             'user_ruleset': user_ruleset,
