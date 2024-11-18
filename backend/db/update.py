@@ -218,11 +218,11 @@ def update_user_statistics(app, user):
                 # todo: update ruleset attributes for everything except streaks using collection above
                 
                 # ruleset
-                setattr(old_ruleset, 'accumulated_play_count', getattr(old_ruleset, 'play_count') + play_count_diff)
-                setattr(old_ruleset, 'accumulated_play_time', getattr(old_ruleset, 'play_time') + play_time_diff)
-                setattr(old_ruleset, 'accumulated_ranked_score', getattr(old_ruleset, 'ranked_score') + ranked_score_diff)
-                setattr(old_ruleset, 'accumulated_total_hits', getattr(old_ruleset, 'total_hits') + total_hits_diff)
-                setattr(old_ruleset, 'accumulated_total_score', getattr(old_ruleset, 'total_score') + total_score_diff)
+                setattr(old_ruleset, 'accumulated_play_count', getattr(old_ruleset, 'accumulated_play_count') + play_count_diff)
+                setattr(old_ruleset, 'accumulated_play_time', getattr(old_ruleset, 'accumulated_play_time') + play_time_diff)
+                setattr(old_ruleset, 'accumulated_ranked_score', getattr(old_ruleset, 'accumulated_ranked_score') + ranked_score_diff)
+                setattr(old_ruleset, 'accumulated_total_hits', getattr(old_ruleset, 'accumulated_total_hits') + total_hits_diff)
+                setattr(old_ruleset, 'accumulated_total_score', getattr(old_ruleset, 'accumulated_total_score') + total_score_diff)
                 
                 setattr(old_ruleset, 'last_updated', datetime.now())
                 setattr(old_ruleset, 'username', updated_statistics['username'])
