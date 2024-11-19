@@ -28,7 +28,7 @@ def create_profile(id, ruleset, isOverall):
             'user_heatmap_max': heatmap_max,
         }
     else:
-        heatmap_data, heatmap_max = create_overall_data(user)
+        heatmap_data, heatmap_max, user_ruleset = create_overall_data(user)
         return {
             'user': {
                 'avatar_url': user['avatar_url'],
@@ -36,6 +36,7 @@ def create_profile(id, ruleset, isOverall):
                 'playmode': user['playmode'],
                 'username': user['username'],
             },
+            'user_ruleset': user_ruleset,
             'user_heatmap_data': heatmap_data,
             'user_heatmap_max': heatmap_max,
         }
@@ -58,6 +59,16 @@ def create_overall_data(user):
     reg = user['registration_date'].replace(hour=0, minute=0, second=0, microsecond=0)
 
     overall = []
+    user_ruleset = {
+        'accumulated_play_count': 0,
+        'accumulated_play_time': 0,
+        'accumulated_ranked_score': 0,
+        'accumulated_total_hits': 0,
+        'accumulated_total_score': 0,
+
+        'streak_current': user['streak_current'],
+        'streak_longest': user['streak_longest'],
+    }
     overall_max = {
         'play_count': 0,
         'play_time': 0,
@@ -66,7 +77,13 @@ def create_overall_data(user):
         'total_score': 0,
     }
 
-    print(range((datetime.today() - reg).days))
+    for ruleset in sc.rulesets:
+        ruleset_stats = rd.read_ruleset(id, ruleset).as_dict()
+        user_ruleset['accumulated_play_count'] += ruleset_stats['accumulated_play_count']
+        user_ruleset['accumulated_play_time'] += ruleset_stats['accumulated_play_time']
+        user_ruleset['accumulated_ranked_score'] += ruleset_stats['accumulated_ranked_score']
+        user_ruleset['accumulated_total_hits'] += ruleset_stats['accumulated_total_hits']
+        user_ruleset['accumulated_total_score'] += ruleset_stats['accumulated_total_score']
 
     for i in range((datetime.today() - reg).days):
         start_date = reg + timedelta(days = i + 1)
@@ -83,4 +100,4 @@ def create_overall_data(user):
                 overall_cell[statistic] = int(sum)
         overall.append(overall_cell)
 
-    return overall, overall_max
+    return overall, overall_max, ruleset
