@@ -52,9 +52,9 @@
 
     onMount(async () => {
         await fetchProfile();
+        console.log(data)
         username = user.username;
         getPlayTime(userRuleset.accumulated_play_time);
-        console.log(userRuleset)
         loaded = true;
     })
 </script>
