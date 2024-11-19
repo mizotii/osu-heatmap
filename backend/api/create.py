@@ -100,4 +100,6 @@ def create_overall_data(user):
                 overall_cell[statistic] = int(sum)
         overall.append(overall_cell)
 
+    print(user_ruleset)
+
     return overall, overall_max, user_ruleset
