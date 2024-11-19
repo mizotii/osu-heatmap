@@ -15,6 +15,7 @@ def create_profile(id, ruleset, isOverall):
             for cell in user_cells:
                 if cell.__dict__['play_count'] != 0:
                     heatmap_data.append(cell.as_dict())
+        # needs refactoring, return statements literally the same
         return {
             'user': {
                 'avatar_url': user['avatar_url'],
@@ -34,6 +35,7 @@ def create_profile(id, ruleset, isOverall):
                 'avatar_url': user['avatar_url'],
                 'country_code': user['country_code'],
                 'playmode': user['playmode'],
+                'registration_date': user['registration_date'],
                 'username': user['username'],
             },
             'user_ruleset': user_ruleset,
@@ -99,7 +101,5 @@ def create_overall_data(user):
                     overall_max[statistic] = sum
                 overall_cell[statistic] = int(sum)
         overall.append(overall_cell)
-
-    print(user_ruleset)
 
     return overall, overall_max, user_ruleset
