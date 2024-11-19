@@ -9,7 +9,7 @@
 <scores>
     {#if !isHidden}
         {#each scores as score}
-            <div class="container-lg flex-row container relative m-4 flex h-16 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
+            <div class="container-lg flex-row container relative my-4 flex h-16 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
                 <div class='flex flex-col basis-4/5 backdrop-blur-sm backdrop-brightness-50'>
                     <div class='basis-3/5 font-bold text-lg'>
                         {score.beatmapset_data.title} [{score.beatmap_data.version}]
