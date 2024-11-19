@@ -33,6 +33,7 @@
                 credentials: 'include',
             });
             const data = await response.json();
+            console.log(data);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
