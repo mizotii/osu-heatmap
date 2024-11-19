@@ -54,6 +54,7 @@
         await fetchProfile();
         username = user.username;
         getPlayTime(userRuleset.accumulated_play_time);
+        console.log(userRuleset)
         loaded = true;
     })
 </script>
