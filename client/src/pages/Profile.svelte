@@ -72,7 +72,7 @@
                     </div>
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
-                <div class='basis-2/3 p-4 divide-y text-left'>
+                <div class='basis-2/3 p-4 text-left'>
                     <h class='font-extrabold text-xl'>
                         since 
                         <span class='font-extrabold text-3xl'>
