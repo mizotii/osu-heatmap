@@ -72,8 +72,13 @@
                     </div>
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
-                <div class='basis-2/3 p-4 divide-y'>
-                    <h class='font-extrabold text-xl'>since {user.registration_date}</h>
+                <div class='basis-2/3 p-4 divide-y text-left'>
+                    <h class='font-extrabold text-xl'>
+                        since 
+                        <span class='font-extrabold text-3xl'>
+                            {user.registration_date}
+                        </span>
+                    </h>
                     <dl class="gap-y-3">
                       <div class="py-1 grid grid-cols-2 gap-x-1">
                         <dt class="text-sm">play time</dt>
