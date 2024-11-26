@@ -63,7 +63,7 @@
 <Content>
     <profile class='w-full'>
         {#if loaded}
-            <div class='box-border border-b container flex flex-row items-center'>
+            <div class='box-border border-b container flex flex-row'>
                 <div class='basis-1/3 p-4'>
                     <div class="avatar">
                         <div class="w-9/10 rounded flex-initial justify-center align-center">
@@ -76,7 +76,7 @@
                     <h class='font-extrabold text-xl'>
                         SINCE {user.registration_date}                        
                     </h>
-                    <dl class="gap-y-3">
+                    <dl>
                       <div class="py-1 grid grid-cols-2 gap-x-1">
                         <dt class="text-sm">play time</dt>
                         <dd class="text-sm">{playTime}</dd>
@@ -97,8 +97,6 @@
                         <dt class="text-sm">total score</dt>
                         <dd class="text-sm">{userRuleset.accumulated_total_score}</dd>
                       </div>
-                    </dl>
-                    <dl class="gap-y-3">
                       <div class="py-1 grid grid-cols-2 gap-x-1">
                         <dt class="text-sm">current streak</dt>
                         <dd class="text-sm">{userRuleset.streak_current}</dd>
@@ -107,7 +105,7 @@
                         <dt class="text-sm">longest streak</dt>
                         <dd class="text-sm">{userRuleset.streak_longest}</dd>
                       </div>
-                    </dl>                    
+                    </dl>                 
                 </div>
             </div>
             <div class='rulesets'>
