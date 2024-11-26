@@ -74,10 +74,7 @@
                 </div>
                 <div class='basis-2/3 p-4 text-left'>
                     <h class='font-extrabold text-xl'>
-                        since 
-                        <span class='font-extrabold text-3xl'>
-                            {user.registration_date}
-                        </span>
+                        SINCE {user.registration_date}                        
                     </h>
                     <dl class="gap-y-3">
                       <div class="py-1 grid grid-cols-2 gap-x-1">
