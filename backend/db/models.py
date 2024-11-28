@@ -150,7 +150,7 @@ class Score(Class):
     count_miss = db.Column(db.Integer)
     notes = db.Column(db.Integer)
     # display
-    accuracy = db.Column(db.Float)
+    accuracy = db.Column(db.String(dc.constraints['veryshort']))
     beatmap_id = db.Column(db.Integer, db.ForeignKey('beatmaps.id'))
     beatmapset_id = db.Column(db.Integer, db.ForeignKey('beatmapsets.id'))
     max_combo = db.Column(db.Integer)

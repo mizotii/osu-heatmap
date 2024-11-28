@@ -25,7 +25,7 @@
                     <div class='flex flex-row basis-2/5 font-bold text-lg'>
                         {score.beatmapset_data.title} [{score.beatmap_data.version}]
                     </div>
-                    <div class='text-sm'>
+                    <div class='flex flex-row basis-3/5 text-sm'>
                         <span>{score.beatmapset_data.artist}</span>
                         <span class='text-gray-300'>
                             {score.score_data.timestamp}
