@@ -22,12 +22,12 @@
                     </div>
                 </div>
                 <div class='flex flex-col basis-[65%] backdrop-blur-sm backdrop-brightness-50 p-2'>
-                    <div class='flex flex-row basis-2/5 font-bold text-base'>
+                    <div class='flex flex-row basis-2/5 font-bold text-base py-1'>
                         {score.beatmapset_data.title} [{score.beatmap_data.version}]
                     </div>
-                    <div class='flex flex-row basis-3/5 text-xs'>
+                    <div class='flex flex-row basis-3/5 text-xs py-1'>
                         <span>{score.beatmapset_data.artist}</span>
-                        <span class='text-gray-300'>
+                        <span class='text-gray-300 mx-1'>
                             {score.score_data.timestamp}
                             {score.score_data.mods}
                         </span>
