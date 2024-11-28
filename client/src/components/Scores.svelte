@@ -22,10 +22,10 @@
                     </div>
                 </div>
                 <div class='flex flex-col basis-[65%] backdrop-blur-sm backdrop-brightness-50 p-2'>
-                    <div class='flex flex-row basis-2/5 font-bold text-lg'>
+                    <div class='flex flex-row basis-2/5 font-bold text-base'>
                         {score.beatmapset_data.title} [{score.beatmap_data.version}]
                     </div>
-                    <div class='flex flex-row basis-3/5 text-sm'>
+                    <div class='flex flex-row basis-3/5 text-xs'>
                         <span>{score.beatmapset_data.artist}</span>
                         <span class='text-gray-300'>
                             {score.score_data.timestamp}
@@ -42,7 +42,7 @@
                             {scoreNotes[ruleset]}: +{score.score_data.notes}
                         </div>
                     </div>
-                    <div class='text-[8px] mt-2'>
+                    <div class='text-[7px] mt-2'>
                     {#if ruleset == 'mania'}
                         {score.score_data.count_geki} / 
                     {/if}
