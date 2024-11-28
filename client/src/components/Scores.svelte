@@ -12,13 +12,13 @@
             <div class="container-lg flex-row container relative my-4 flex h-20 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
                 <div class='flex flex-col basis-[7%] backdrop-blur-sm backdrop-brightness-50 text-center px-2'>
                     <div class='basis-[75%] text-4xl font-bold'>
-                        {score.rank}
+                        {score.score_data.rank}
                     </div>
                     <div class='font-bold text-xs'>
-                        {score.accuracy}%
+                        {score.score_data.accuracy}%
                     </div>
                     <div class='font-bold text-sm'>
-                        {score.max_combo}x
+                        {score.score_data.max_combo}x
                     </div>
                 </div>
                 <div class='flex flex-col basis-[65%] backdrop-blur-sm backdrop-brightness-50 p-2'>
