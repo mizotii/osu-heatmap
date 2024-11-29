@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class='basis-[28%] backdrop-blur-sm backdrop-brightness-50 text-center flex-col p-2'>
-                    <div class='flex flex-row py-1'>
+                    <div class='flex flex-row py-1 justify-center'>
                         <div class='font-bold text-xs px-1'>
                             score: +{score.score_data.score}
                         </div>
