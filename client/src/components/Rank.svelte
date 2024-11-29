@@ -8,11 +8,11 @@
     <p class={rank[grade]}>
         {#if grade == 'SH'}
             S
-        {/if}
-        {#if grade == 'SSH'}
+        {:else if grade == 'SSH'}
             SS
+        {:else}
+            {grade}
         {/if}
-        {grade}
     </p>
 </div>
 
