@@ -23,7 +23,7 @@
         "overall": " total hits"
     },
     "rank": {
-        "S+": "#C0C0C0",
+        "SH": "#C0C0C0",
         "S": "#FFD700",
         "A": "#76EE00",
         "B": "#1E90FF",
