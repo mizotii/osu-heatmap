@@ -5,7 +5,7 @@
 </script>
 
 <div>
-    <p class='text-[{rank[grade]}]'>
+    <p class={rank[grade]}>
         {grade}
     </p>
 </div>
