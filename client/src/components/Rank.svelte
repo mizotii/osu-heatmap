@@ -4,11 +4,11 @@
     export let grade;
 </script>
 
-<rank>
+<div>
     <p class='text-[{rank[grade]}]'>
         {grade}
     </p>
-</rank>
+</div>
 
 <style>
 </style>
