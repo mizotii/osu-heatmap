@@ -9,15 +9,15 @@
 <scores>
     {#if !isHidden}
         {#each scores as score}
-            <div class="container-lg flex-row container relative my-4 flex h-20 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
+            <div class="container-lg flex-row container relative my-4 flex h-18 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
                 <div class='flex flex-col basis-[7%] backdrop-blur-sm backdrop-brightness-50 text-center px-2'>
                     <div class='basis-[75%] text-4xl font-bold'>
                         {score.score_data.rank}
                     </div>
-                    <div class='font-bold text-xs'>
+                    <div class='text-xs'>
                         {score.score_data.accuracy}%
                     </div>
-                    <div class='font-bold text-sm'>
+                    <div class='text-sm'>
                         {score.score_data.max_combo}x
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                         {score.beatmapset_data.title} [{score.beatmap_data.version}]
                     </div>
                     <div class='flex flex-row basis-3/5 text-xs py-1'>
-                        <span>{score.beatmapset_data.artist}</span>
+                        <span>{score.beatmapset_data.artist}&nbsp;</span>
                         <span class='text-gray-300 mx-1'>
                             {score.score_data.timestamp}
                             {score.score_data.mods}
