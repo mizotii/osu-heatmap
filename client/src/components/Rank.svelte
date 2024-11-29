@@ -6,6 +6,12 @@
 
 <div>
     <p class={rank[grade]}>
+        {#if grade == 'SH'}
+            S
+        {/if}
+        {#if grade == 'SSH'}
+            SS
+        {/if}
         {grade}
     </p>
 </div>
