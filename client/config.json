@@ -23,12 +23,12 @@
         "overall": " total hits"
     },
     "rank": {
-        "SH": "#C0C0C0",
-        "S": "#FFD700",
-        "A": "#76EE00",
-        "B": "#1E90FF",
-        "C": "#7F00FF",
-        "D": "#D2042D",
-        "F": "#FFFFFF"
+        "SH": "text-[#C0C0C0]",
+        "S": "text-[#FFD700]",
+        "A": "text-[#76EE00]",
+        "B": "text-[#1E90FF]",
+        "C": "text-[#7F00FF]",
+        "D": "text-[#D2042D]",
+        "F": "text-[#FFFFFF]"
     }
 }
