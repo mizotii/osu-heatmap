@@ -31,7 +31,9 @@
                         <span class='text-gray-300 mx-1'>
                             {score.score_data.timestamp}
                         <span class='text-[#BA55D3] mx-1'>
-                            +{score.score_data.mods}
+                            {#if score.score_data.mods != ''}
+                                +{score.score_data.mods}
+                            {/if}
                         </span>
                     </div>
                 </div>
