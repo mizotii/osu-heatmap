@@ -33,6 +33,7 @@
                 credentials: 'include',
             });
             const data = await response.json();
+            console.log(data);
             user = data.user;
             userRuleset = data.user_ruleset;
             userHeatmapData = data.user_heatmap_data;
@@ -52,6 +53,7 @@
 
     onMount(async () => {
         await fetchProfile();
+        console.log(userRuleset)
         username = user.username;
         getPlayTime(userRuleset.accumulated_play_time);
         loaded = true;
@@ -61,7 +63,7 @@
 <Content>
     <profile class='w-full'>
         {#if loaded}
-            <div class='box-border border-b container flex flex-row items-center'>
+            <div class='box-border border-b container flex flex-row'>
                 <div class='basis-1/3 p-4'>
                     <div class="avatar">
                         <div class="w-9/10 rounded flex-initial justify-center align-center">
@@ -70,9 +72,11 @@
                     </div>
                     <div class='flex-initial pb-4' id='username'>{username}</div>
                 </div>
-                <div class='basis-2/3 p-4 divide-y'>
-                    <h class='font-extrabold text-xl'>since {user.registration_date}</h>
-                    <dl class="gap-y-3">
+                <div class='basis-2/3 p-4 text-left'>
+                    <h class='font-extrabold text-xl'>
+                        SINCE {user.registration_date}                        
+                    </h>
+                    <dl>
                       <div class="py-1 grid grid-cols-2 gap-x-1">
                         <dt class="text-sm">play time</dt>
                         <dd class="text-sm">{playTime}</dd>
@@ -93,8 +97,6 @@
                         <dt class="text-sm">total score</dt>
                         <dd class="text-sm">{userRuleset.accumulated_total_score}</dd>
                       </div>
-                    </dl>
-                    <dl class="gap-y-3">
                       <div class="py-1 grid grid-cols-2 gap-x-1">
                         <dt class="text-sm">current streak</dt>
                         <dd class="text-sm">{userRuleset.streak_current}</dd>
@@ -103,7 +105,7 @@
                         <dt class="text-sm">longest streak</dt>
                         <dd class="text-sm">{userRuleset.streak_longest}</dd>
                       </div>
-                    </dl>                    
+                    </dl>                 
                 </div>
             </div>
             <div class='rulesets'>
