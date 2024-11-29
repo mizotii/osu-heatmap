@@ -11,7 +11,6 @@
 
 <Content>
     <article class="prose max-w-none">
-        <h1 class='text-center'>NOTE: THIS IS STILL IN DEVELOPMENT AND I RESET DATA PRETTY REGULARLY -- PLEASE KEEP THAT IN MIND IF YOU DO DECIDE TO PLAY AROUND ON THE SITE!</h1>
         <h2 class='text-center'>osu-heatmap! - A personal statistic tracker for osu!</h2>
         <h3>What is this?</h3>
         <p>osu-heatmap! is a calendar heatmap which allows you to visualize all the efforts you've put into the game! It does so in a manner that we hope you find motivating or more meaningful than a simple playcount graph.</p>
