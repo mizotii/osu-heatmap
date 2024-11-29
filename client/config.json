@@ -21,5 +21,14 @@
         "catch": " fruits",
         "mania": " keys",        
         "overall": " total hits"
+    },
+    "rank": {
+        "S+": "#C0C0C0",
+        "S": "#FFD700",
+        "A": "#76EE00",
+        "B": "#1E90FF",
+        "C": "#7F00FF",
+        "D": "#D2042D",
+        "F": "#FFFFFF"
     }
 }

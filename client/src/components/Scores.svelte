@@ -1,5 +1,6 @@
 <script>
     import { scoreNotes } from "../../config.json";
+    import Rank from "./Rank.svelte";
 
     export let isHidden;
     export let scores;
@@ -12,7 +13,7 @@
             <div class="container-lg flex-row container relative my-4 flex h-18 border border-white text-white" style={`background-image: url('${score.beatmapset_data.slimcover_2x}');`}>
                 <div class='flex flex-col basis-[7%] backdrop-blur-sm backdrop-brightness-50 text-center px-2'>
                     <div class='basis-[75%] text-4xl font-bold'>
-                        {score.score_data.rank}
+                        <Rank grade={score.score_data.rank} />
                     </div>
                     <div class='text-xs'>
                         {score.score_data.accuracy}%
@@ -34,7 +35,7 @@
                     </div>
                 </div>
                 <div class='basis-[28%] backdrop-blur-sm backdrop-brightness-50 text-center flex-col p-2'>
-                    <div class='flex flex-row basis-3/5'>
+                    <div class='flex flex-row basis-2/5'>
                         <div class='text-sm font-bold px-1'>
                             score: +{score.score_data.score}
                         </div>
@@ -42,7 +43,7 @@
                             {scoreNotes[ruleset]}: +{score.score_data.notes}
                         </div>
                     </div>
-                    <div class='text-[7px] mt-2'>
+                    <div class='flex flex-row basis-3/5 text-[7px] mt-2'>
                     {#if ruleset == 'mania'}
                         {score.score_data.count_geki} / 
                     {/if}
