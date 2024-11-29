@@ -34,7 +34,7 @@
                     </div>
                 </div>
                 <div class='basis-[28%] backdrop-blur-sm backdrop-brightness-50 text-center flex-col p-2'>
-                    <div class='flex flex-row basis-3/5'>
+                    <div class='flex flex-row basis-2/5'>
                         <div class='text-sm font-bold px-1'>
                             score: +{score.score_data.score}
                         </div>
@@ -42,7 +42,7 @@
                             {scoreNotes[ruleset]}: +{score.score_data.notes}
                         </div>
                     </div>
-                    <div class='text-[7px] mt-2'>
+                    <div class='flex flex-row basis-3/5 text-[7px] mt-2'>
                     {#if ruleset == 'mania'}
                         {score.score_data.count_geki} / 
                     {/if}
