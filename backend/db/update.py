@@ -136,7 +136,7 @@ def store_score(score):
         count_katu=score['statistics']['count_katu'],
         count_miss=score['statistics']['count_miss'],
         notes=total_notes(score),
-        accuracy=str(round(score['accuracy'] * 100.00, 4)),
+        accuracy=str(round(score['accuracy'] * 100.00, 2)),
         beatmap_id=score['beatmap']['id'],
         beatmapset_id=score['beatmap']['beatmapset_id'],
         max_combo=score['max_combo'],
